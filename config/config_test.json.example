@@ -1,0 +1,6 @@
+{
+    "engine_config_path": "/abs/path/to/knowledge_database_builder/config/config_es_engine.json",
+    "embedding_config_path": "/abs/path/to/knowledge_database_builder/config/config_ali_embedding.json",
+    "legacy_search_config_path": "/abs/path/to/knowledge_database_builder/config/config_for_search_index.json",
+    "test_index_name": "test_case"
+}

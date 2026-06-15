@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kdb"
+version = "0.1.0"
+description = "Knowledge Database Builder (rebuild) — high-cohesion / low-coupling refactor. Step 1: clean CRUD module."
+requires-python = ">=3.8"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-dir]
+"" = "src"
