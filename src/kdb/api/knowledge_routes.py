@@ -17,23 +17,25 @@ from typing import Any, Dict, List, Optional
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
-from kdb.crud.service import KnowledgeService
 from kdb.modify.models import ModifyPlan
 from kdb.modify.service import apply_modify_plan
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/knowledge", tags=["knowledge"])
 
-# 共享 KnowledgeService（repo+embedding 重，按需懒构建一次；index 按请求传）
-_svc: Optional[KnowledgeService] = None
+# 共享 KnowledgeService（repo+embedding 重，按需懒构建一次；index 按请求传）。
+# 注意：**不在模块顶层 import KnowledgeService**——它会经 legacy_bridge 拉旧 ES 依赖，
+# 导致无 ES 环境(CI/纯 dry_run)连 `import kdb.api.app` 都失败。真实写入(非 dry_run)时才懒构建。
+_svc = None  # type: ignore
 _svc_lock = threading.Lock()
 
 
-def _get_service() -> KnowledgeService:
+def _get_service():
     global _svc
     if _svc is None:
         with _svc_lock:
             if _svc is None:
+                from kdb.crud.service import KnowledgeService  # 懒导入：仅真实写入路径触发
                 cfg_path = os.environ.get("KDB_FORGE_CONFIG") or "config/config_test.json"
                 _svc = KnowledgeService.from_config(cfg_path)
                 logger.info("KnowledgeService 构建完成 config=%s", cfg_path)
