@@ -6,10 +6,10 @@
 
 | 旧路径 | 当前路径 | 请求/响应 | 当前实现 | 主要差异与验证 |
 |---|---|---|---|---|
-| `POST /search` | `/search` | `SearchRequest` → `SearchResponse` | 已接入 | 需要独立 HTTP Basic；ES8 BM25/native KNN；`tests/test_search_api.py` |
+| `POST /search` | `/search` | `SearchRequest` → `SearchResponse` | 已接入 | 需要独立 HTTP Basic；ES8 BM25/native KNN；后端异常返回 HTTP 503（旧服务重试后返回合成错误结果）；`tests/test_search_api.py` |
 | `POST /insert` | `/insert`；另有 `/knowledge/insert` | `InsertRequest` → `InsertResponse` | 已接入 | 旧字段和 categoryId/categoryName 转换保留；扩展字段进入 Service 归集；fake 路由测试 |
 | `POST /delete` | `/delete`；另有 `/knowledge/delete` | `DeleteRequest` → `DeleteResponse` | 已接入 | `_id` 硬删除、refresh_imm 保留；fake 路由测试 |
-| `POST /web_search` | `/web_search` | `WebSearchRequest` → `WebSearchResponse` | 已接入 | 需要独立 HTTP Basic；embedding 字段剔除、indexes 只回 text |
+| `POST /web_search` | `/web_search` | `WebSearchRequest` → `WebSearchResponse` | 已接入 | 需要独立 HTTP Basic；embedding 字段剔除、indexes 只回 text；后端异常返回 HTTP 503（旧服务重试后返回错误项） |
 | `POST /get_value_collection` | `/get_value_collection`；兼容别名 `/get_unique_values` | `ValueCollectionRequest` → `ValueCollectionResponse` | 已接入 | terms aggregation；include_doc_count 保留 |
 | `POST /list_file_names` | `/list_file_names` | `ListFileNamesRequest` → `ListFileNamesResponse` | 已接入 | document/html/manual 范围和 type_count 由兼容层执行 |
 | `POST /preview_delete_by_file` | `/preview_delete_by_file` | `PreviewDeleteByFileRequest` → `PreviewDeleteByFileResponse` | 已接入 | 只读；exact/fuzzy 严格校验；返回样例和告警 |
