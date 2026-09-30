@@ -1,20 +1,18 @@
 """KnowledgeService —— 文本级 CRUD 层。
 
-职责：接收文本字段的文档/查询，生成向量与 _id、处理时间字段、补齐 `process_one_data` 中
-**不依赖外部 HTTP/LLM** 的业务默认，委托 `KnowledgeRepository`。
+职责：接收文本字段的文档/查询，生成向量与 _id、处理时间字段、补齐旧服务业务副作用，委托
+`KnowledgeRepository`。
 注入 `EmbeddingClient`（低耦合：embedding 可替换、可测试）。
 
-**仍然刻意排除**（属重业务逻辑，留给后续 pipeline / 独立模块，不在 CRUD 内）：
-- 去重 dedup（find_duplicates / SimilityTools / Dify LLM）+ is_update_data 软删除
-- 类目映射 primary_category 构造（依赖 category_service HTTP，仅做 category_id→str 归一）
-
-**已在本层补齐**（与旧 `process_one_data` 行为对齐，纯本地、零外部 IO）：
+**已在本层补齐**（与旧 `SearchDataInterface` 行为对齐）：
 - is_audit→audit_result 迁移；audit_result/quality_level/from_type 缺省与合法性矫正
 - from_type_norm（基于规则映射 `legacy_get_from_norm_type`）
 - keywords（基于 jieba.analyse 的 `legacy_gen_keyword_by_title_content`，无外部 LLM 调用）
 - tags 缺省 = keywords
 - dataset 缺省 = index_name
 - category_infos[].category_id → str
+- 显式类目的 primary_category 构造和默认分组；不包含挖掘侧的 Payoneer Olive 推断
+- find_duplicates / SimilityTools 查重及 insert_data 的重复软删除
 - multimodal_contents → content 拼接（使用字面 `[multimodal_prefix]` 占位，与旧实现一致）
 - search_text 返回前把 content 中 `[multimodal_prefix]` 替换为构造时注入的实际前缀
 
@@ -33,9 +31,11 @@ import logging
 import os
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union
+from urllib.parse import quote
 
 from kdb.config.loader import load_config
 from kdb.crud.ids import gen_data_id
+from kdb.crud.legacy_compat import LegacySearchDataInterfaceMixin
 from kdb.crud.models import SCHEMA_FIELDS
 from kdb.crud.repository import KnowledgeRepository
 from kdb.embedding.client import EmbeddingClient, build_embedding_client
@@ -45,7 +45,7 @@ from kdb.legacy_bridge import (
     legacy_get_from_norm_type,
 )
 
-VALID_AUDIT_RESULTS = {-1, 0, 1}
+VALID_AUDIT_RESULTS = {-1, 0, 1, 2}
 VALID_QUALITY_LEVELS = {"high", "mid", "low"}
 MULTIMODAL_FILE_TYPES = {"image", "video", "audio", "file"}
 MULTIMODAL_PREFIX_PLACEHOLDER = "[multimodal_prefix]"
@@ -53,7 +53,7 @@ MULTIMODAL_PREFIX_PLACEHOLDER = "[multimodal_prefix]"
 logger = logging.getLogger(__name__)
 
 
-class KnowledgeService:
+class KnowledgeService(LegacySearchDataInterfaceMixin):
     """文本级知识库读写接口。"""
 
     def __init__(
@@ -62,6 +62,7 @@ class KnowledgeService:
         embedding_client: EmbeddingClient,
         default_index: Optional[str] = None,
         multimodal_prefix: str = "",
+        legacy_config: Optional[Dict[str, Any]] = None,
     ) -> None:
         """
         Args:
@@ -75,6 +76,7 @@ class KnowledgeService:
         self._embedding = embedding_client
         self._default_index = default_index or repository._default_index
         self._multimodal_prefix = multimodal_prefix or ""
+        self._init_legacy_compat(legacy_config)
 
     @classmethod
     def from_config(cls, config_path: str, index_name: Optional[str] = None) -> "KnowledgeService":
@@ -85,6 +87,13 @@ class KnowledgeService:
         """
         cfg = load_config(config_path)
         index_name = index_name or cfg.get("test_index_name")
+        legacy_cfg = {}
+        legacy_cfg_path = cfg.get("legacy_search_config_path") or cfg.get("search_config_path")
+        if legacy_cfg_path and os.path.exists(legacy_cfg_path):
+            try:
+                legacy_cfg = load_config(legacy_cfg_path)
+            except Exception as exc:  # pragma: no cover - malformed optional compatibility config
+                logger.warning("读取 legacy search config 失败: %s", exc)
         repo = KnowledgeRepository(
             engine_config_path=cfg["engine_config_path"], default_index=index_name
         )
@@ -95,6 +104,7 @@ class KnowledgeService:
             embedding,
             default_index=index_name,
             multimodal_prefix=multimodal_prefix,
+            legacy_config=legacy_cfg,
         )
 
     @staticmethod
@@ -206,14 +216,46 @@ class KnowledgeService:
                 data_type=data_type,
                 use_synonyms=use_synonyms,
             )
-            # 与旧 `search_data_by_query` 一致：返回前把 [multimodal_prefix] 替换为配置前缀。
-            # 当构造时未注入 prefix（空串）时该 replace 是 no-op，等价于保留占位符。
-            content = doc.get("content")
-            if isinstance(content, str) and MULTIMODAL_PREFIX_PLACEHOLDER in content:
-                doc["content"] = content.replace(
-                    MULTIMODAL_PREFIX_PLACEHOLDER, self._multimodal_prefix
-                )
+            # 与旧 `search_data_by_query` 一致：内部文件地址附带 fileName，外链不改。
+            self.render_multimodal_urls(doc)
         return candidate_docs, total_num
+
+    def render_multimodal_urls(self, doc: Dict[str, Any]) -> None:
+        """原地渲染检索结果中的多模态内部地址。
+
+        只替换 `[multimodal_prefix]` + ``path`` 占位符；如果对应条目有 fileName，
+        按旧服务规则追加 URL 编码后的 ``filename`` 参数。没有登记 fileName 的占位符
+        仍只替换前缀，外部 URL 保持不变。
+        """
+        if not doc:
+            return
+        content = doc.get("content")
+        if not isinstance(content, str) or MULTIMODAL_PREFIX_PLACEHOLDER not in content:
+            return
+
+        path_name_pairs = []
+        for file_info in doc.get("multimodal_contents") or []:
+            if not isinstance(file_info, dict):
+                continue
+            path = file_info.get("path")
+            file_name = file_info.get("fileName")
+            if path and file_name:
+                path_name_pairs.append((path, file_name))
+        path_name_pairs.sort(key=lambda pair: len(pair[0]), reverse=True)
+
+        for path, file_name in path_name_pairs:
+            placeholder = f"{MULTIMODAL_PREFIX_PLACEHOLDER}{path}"
+            if placeholder not in content:
+                continue
+            separator = "&" if "?" in path else "?"
+            full_url = (
+                f"{self._multimodal_prefix}{path}{separator}"
+                f"filename={quote(str(file_name), safe='')}"
+            )
+            content = content.replace(placeholder, full_url)
+        doc["content"] = content.replace(
+            MULTIMODAL_PREFIX_PLACEHOLDER, self._multimodal_prefix
+        )
 
     def get(self, data_id: str, index_name: Optional[str] = None) -> Optional[Dict[str, Any]]:
         """按 _id 取文档（透传仓库 get）。"""
@@ -228,7 +270,7 @@ class KnowledgeService:
         本层补齐的业务默认严格对应旧 process_one_data 中**不依赖外部 HTTP/LLM** 的部分：
         is_audit→audit_result、audit_result/quality_level/from_type 缺省与矫正、
         from_type_norm、keywords（jieba 本地）、tags、dataset、category_infos[].category_id→str、
-        multimodal_contents→content 拼接。primary_category 构造依赖外部 HTTP，留给 pipeline。
+        multimodal_contents→content 拼接、primary_category/默认类目构造和兼容查重副作用。
 
         刻意保留与旧实现完全一致的 `_id` 守卫语义：业务默认仅在新建文档（`_id` 未提供）时
         填入，更新场景（调用方传入 `_id`）一律不动。这是为了与旧 process_one_data 的写入
@@ -289,6 +331,15 @@ class KnowledgeService:
                         data["indexes"].append({"text": syn_title})
 
         # 4. indexes / image_indexes 向量化
+        # 旧 process_one_data 会先丢弃空文本，避免把空字符串送入 embedding 服务。
+        data["indexes"] = [
+            idx for idx in data["indexes"]
+            if not ("text" in idx and not str(idx.get("text") or "").strip())
+        ]
+        data["image_indexes"] = [
+            idx for idx in data["image_indexes"]
+            if not ("text" in idx and not str(idx.get("text") or "").strip())
+        ]
         for idx in data["indexes"]:
             if "text" in idx and "embedding" not in idx:
                 embedding = self._embedding.text2embedding(idx["text"])
@@ -366,11 +417,8 @@ class KnowledgeService:
         if "del_flag" not in data and is_new:
             data["del_flag"] = 0
 
-        # 13. category_infos[].category_id 强制为 str（与旧实现一致；primary_category 构造跳过）
-        if data.get("category_infos"):
-            for category_info in data["category_infos"]:
-                if "category_id" in category_info:
-                    category_info["category_id"] = str(category_info["category_id"])
+        # 13. category_infos 归一化、类目树解析和默认分组（旧服务完整行为）
+        self._apply_category_defaults(data, is_new=is_new)
 
         # 14. dataset 缺省 = index_name（仅在 index_name 非空时）
         if not data.get("dataset") and index_name:
@@ -475,3 +523,55 @@ class KnowledgeService:
                         )
             similarity = max(similarity, image_similarity)
         return similarity
+
+
+class SearchDataInterface(KnowledgeService):
+    """Drop-in constructor-compatible replacement for the old service class.
+
+    The old public method names are inherited from ``KnowledgeService``'s
+    compatibility mixin.  This constructor accepts the old
+    ``SearchDataInterface(search_engine=None, config_path=None, **kwargs)``
+    shape and converts a legacy single-provider ES config to the ES8.17
+    routed configuration in memory.
+    """
+
+    def __init__(
+        self,
+        search_engine: Any = None,
+        config_path: Optional[str] = None,
+        **kwargs: Any,
+    ) -> None:
+        legacy_config: Dict[str, Any] = {}
+        if config_path:
+            legacy_config = load_config(config_path)
+        index_name = kwargs.pop("index_name", None) or legacy_config.get("index_name")
+        embedding_client = kwargs.pop("embedding_client", None)
+
+        if search_engine is None:
+            engine_config_path = legacy_config.get("search_engine_config_path") or legacy_config.get(
+                "engine_config_path"
+            )
+            if not engine_config_path:
+                raise ValueError("config_path 必须提供 search_engine_config_path/engine_config_path")
+            search_engine = self.load_search_engine(
+                engine_config_path, index_name=index_name, **kwargs
+            )
+
+        if embedding_client is None:
+            embedding_config_path = legacy_config.get("embedding_config_path")
+            if not embedding_config_path:
+                raise ValueError("config_path 必须提供 embedding_config_path")
+            embedding_client = build_embedding_client(embedding_config_path)
+
+        default_index = index_name or getattr(search_engine, "index_name", None)
+        repository = KnowledgeRepository(engine=search_engine, default_index=default_index)
+        super().__init__(
+            repository=repository,
+            embedding_client=embedding_client,
+            default_index=default_index,
+            multimodal_prefix=legacy_config.get("multimodal_prefix", ""),
+            legacy_config=legacy_config,
+        )
+
+
+__all__ = ["KnowledgeService", "SearchDataInterface"]

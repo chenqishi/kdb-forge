@@ -1,7 +1,10 @@
 """接线层：把旧项目（knowledge_database_builder）接入 Python path，并统一 re-export 复用对象。
 
 设计决策（已与用户确认）：
-- **复用旧适配层**：CRUD 直接复用旧 `EsSearchInterface`（ES/OpenSearch 双引擎驱动）和 `AliEmbedding`，不重写底层。
+- **生产检索独立迁移**：CRUD 使用本地 `RoutedLegacyEngine` 的 ES 8.17 named API、native
+  KNN mapping 和 BM25/vector 双路召回，并按 index 选择 Serverless/PaaS 地址。
+- **旧代码仅作对齐基线**：`EsSearchInterface`、`load_legacy_search_interface` 仍保留给
+  对比测试和兼容导入，不参与 `build_legacy_engine` 的生产请求。
 - **零侵入接线**：通过 sys.path 注入旧项目根目录，不修改旧代码、不要求打包安装。
   旧项目根路径可用环境变量 `KDB_LEGACY_ROOT` 覆盖。
 
@@ -40,8 +43,11 @@ def ensure_legacy_on_path(root: str = None) -> str:
 # import 旧模块前先确保 path 就绪
 ensure_legacy_on_path()
 
-# 硬依赖：底层 ES 适配层 + embedding（缺失则无法工作，直接抛错）
-from knowledge_interface_tools.es_search_interface import EsSearchInterface  # noqa: E402
+# 生产入口：ES8.17 native engine。旧 `EsSearchInterfaceOri` 只在
+# load_legacy_search_interface() 中按需 import，避免外部默认入口继续走 ES7 API。
+from kdb.es.engine import RoutedLegacyEngine  # noqa: E402
+
+EsSearchInterface = RoutedLegacyEngine
 
 # 软依赖：相似度实现。优先复用旧实现以保证浮点口径一致；导入失败时本文件提供等价兜底。
 try:
@@ -115,21 +121,25 @@ def load_legacy_search_interface(config_path: str, index_name: str = None):
 
 
 def build_legacy_engine(config_path: str = None, index_name: str = None, **kwargs):
-    """构造旧 `EsSearchInterface`（底层 ES/OpenSearch 驱动）。
+    """构造按 index 路由的 ES 8.17 检索引擎。
 
     Args:
         config_path: config_es_engine.json 路径。
         index_name: 覆盖索引名（显式参数优先于 config 中的 index_name）。
+    查询构造、CRUD、mapping 和 BM25/vector 双路召回由本地 ES 8.17 引擎执行；
+    `index_routes` 选择 Serverless/PaaS provider。
+
     Returns:
-        EsSearchInterface 实例。
+        RoutedLegacyEngine 实例。
     """
-    return EsSearchInterface(config_path=config_path, index_name=index_name, **kwargs)
+    return RoutedLegacyEngine(config_path=config_path, index_name=index_name, **kwargs)
 
 
 __all__ = [
     "LEGACY_ROOT",
     "ensure_legacy_on_path",
     "EsSearchInterface",
+    "RoutedLegacyEngine",
     "cosine_similarity",
     "legacy_gen_data_id",
     "HAS_LEGACY_GEN_DATA_ID",

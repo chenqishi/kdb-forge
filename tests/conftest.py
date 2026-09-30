@@ -50,8 +50,8 @@ def embedding_client(cfg):
 
 @pytest.fixture(scope="session")
 def engine(cfg, test_index):
-    # 构造旧 EsSearchInterface（index_name 覆盖为 test_case）。
-    # 其 __init__ 会连接 ES 并 ensure_index(test_case)，因此这也验证了连通性。
+    # 构造 ES8 native engine（index_name 覆盖为 test_case）。
+    # 其 __init__ 会连接 ES 并 ensure_index(test_case)，因此这也验证了连通性和 mapping。
     return build_legacy_engine(config_path=cfg["engine_config_path"], index_name=test_index)
 
 
@@ -73,12 +73,17 @@ def multimodal_prefix(cfg):
 
 
 @pytest.fixture(scope="session")
-def service(repo, embedding_client, test_index, multimodal_prefix):
+def service(repo, embedding_client, test_index, multimodal_prefix, cfg):
+    legacy_cfg = {}
+    legacy_path = cfg.get("legacy_search_config_path")
+    if legacy_path and os.path.exists(legacy_path):
+        legacy_cfg = load_config(legacy_path)
     return KnowledgeService(
         repo,
         embedding_client,
         default_index=test_index,
         multimodal_prefix=multimodal_prefix,
+        legacy_config=legacy_cfg,
     )
 
 
@@ -94,8 +99,13 @@ def legacy_interface(cfg, test_index, embedding_client):
 
 
 @pytest.fixture(scope="session", autouse=True)
-def ensure_test_index(repo, test_index):
+def ensure_test_index(request):
     """确保 test_case 索引存在（用权威 mapping）并预热刷新一次，降低首测搜索可见延迟。"""
+    # 允许纯离线单测只加载路由/业务逻辑，不因为集成 fixture 自动连接 ES。
+    if not any(item.get_closest_marker("integration") for item in request.session.items):
+        return
+    repo = request.getfixturevalue("repo")
+    test_index = request.getfixturevalue("test_index")
     repo.ensure_index(test_index)
     # 预热：把可能挂起在 translog/缓存里的状态落盘到可搜索段
     repo._force_refresh(test_index)

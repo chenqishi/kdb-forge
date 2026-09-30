@@ -1,16 +1,17 @@
 """KnowledgeRepository —— 纯向量 CRUD 层。
 
-职责（单一）：把"向量已就绪的文档"原样进出 ES，封装并复用旧 `EsSearchInterface`。
+职责（单一）：把"向量已就绪的文档"原样进出 ES，封装 ES 8.17 路由引擎。
 **不**生成 embedding、**不**生成 _id、**不**做去重/类目/质量等业务过滤——这些在 Service 或后续 pipeline。
 
-所有方法都委托给底层旧引擎（`EsSearchInterface` 工厂，自动适配 ES7.x / OpenSearch2.19）。
+默认引擎使用 ES 8.17 client，并按 index 路由到 Serverless/PaaS；查询 DSL、mapping
+与双路 BM25/native KNN 召回由重构版引擎实现。
 query_dict 通用结构：`{"query": <text>, "vector": {"value": <list[float]>}, "attribute": <dict|list[dict]>}`。
 """
 
 import logging
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from kdb.legacy_bridge import EsSearchInterface
+from kdb.legacy_bridge import build_legacy_engine
 
 logger = logging.getLogger(__name__)
 
@@ -26,19 +27,18 @@ class KnowledgeRepository:
     ) -> None:
         """
         Args:
-            engine: 旧 `EsSearchInterface` 实例（鸭子类型）。为 None 时用 engine_config_path 构造。
+            engine: ES8.17 `RoutedLegacyEngine` 或兼容鸭子类型实例。为 None 时用 engine_config_path 构造。
             engine_config_path: config_es_engine.json 路径（engine 为空时必填）。
             default_index: 默认索引名；方法未显式传 index_name 时使用。为空时取 engine 内部 index_name。
         """
         if engine is None:
             if not engine_config_path:
                 raise ValueError("engine 与 engine_config_path 不能同时为空")
-            engine = EsSearchInterface(config_path=engine_config_path, index_name=default_index)
+            engine = build_legacy_engine(config_path=engine_config_path, index_name=default_index)
         self._engine = engine
-        # 旧引擎把实现放在 _impl，其 index_name 为权威默认索引
-        self._default_index = default_index or getattr(
-            getattr(engine, "_impl", engine), "index_name", None
-        )
+        # 兼容旧引擎把实现放在 _impl 的情况；路由引擎自身的 index_name 同样有效
+        impl = getattr(engine, "_impl", None) or engine
+        self._default_index = default_index or getattr(impl, "index_name", None)
 
     # ---- 辅助 ----
     def _idx(self, index_name: Optional[Union[str, List[str]]]):
@@ -46,8 +46,12 @@ class KnowledgeRepository:
 
     # ---- 索引管理 ----
     def ensure_index(self, index_name: Optional[str] = None) -> None:
-        """确保索引存在（用旧权威 mapping 创建；已存在则增量加字段，不改已有字段）。"""
+        """确保索引存在（新建为 ES8 native KNN mapping；旧未索引向量拒绝复用）。"""
         target = self._idx(index_name)
+        routed_ensure = getattr(self._engine, "_ensure_index", None)
+        if routed_ensure:
+            routed_ensure(target)
+            return
         # 旧 _ensure_index 在 _impl 上
         impl = getattr(self._engine, "_impl", self._engine)
         impl._ensure_index(target)
@@ -62,7 +66,7 @@ class KnowledgeRepository:
         """插入/upsert 一条文档。
 
         前置约定：data 必须含 `_id`；`indexes[].embedding` 已是 1024 维 list。
-        委托旧 `engine.insert`（其内部校验维度、过滤零向量、es.update(doc_as_upsert=True)）。
+        委托 ES8 `engine.insert`（校验维度、过滤零向量、update(doc_as_upsert=True)）。
         """
         return self._engine.insert(data, index_names=self._idx(index_name), refresh_imm=refresh_imm)
 
@@ -101,9 +105,21 @@ class KnowledgeRepository:
         """强制刷新索引，使最近写入立即可见。"""
         impl = getattr(self._engine, "_impl", self._engine)
         try:
-            impl.es.indices.refresh(index=self._idx(index_name))
+            target = self._idx(index_name)
+            get_client = getattr(self._engine, "get_client_by_index", None)
+            client = get_client(target) if get_client else impl.es
+            client.indices.refresh(index=target)
         except Exception as exc:  # pragma: no cover
             logger.warning("强制刷新索引失败: %s", exc)
+
+    def get_client_by_index(self, index_name: Optional[str] = None) -> Any:
+        """返回指定 index 对应的 ES client，供少量运维/刷新场景使用。"""
+        target = self._idx(index_name)
+        get_client = getattr(self._engine, "get_client_by_index", None)
+        if get_client:
+            return get_client(target)
+        impl = getattr(self._engine, "_impl", self._engine)
+        return impl.es
 
     def delete(
         self,
@@ -142,11 +158,20 @@ class KnowledgeRepository:
         index_name: Optional[Union[str, List[str]]] = None,
         size: int = 10,
         page_num: int = 1,
+        recall_mode: Optional[str] = None,
     ) -> Tuple[List[Dict[str, Any]], int]:
-        """多向量/多索引混合检索，返回 (docs, total_num)。委托旧 `engine.search_multi`。"""
-        return self._engine.search_multi(
-            query_dict, index_names=self._idx(index_name), size=size, page_num=page_num
-        )
+        """多向量/多索引混合检索，返回 (docs, total_num)。
+
+        默认使用配置中的 dual 模式；传入 recall_mode 时可显式切换为旧 legacy 融合模式。
+        """
+        kwargs = {
+            "index_names": self._idx(index_name),
+            "size": size,
+            "page_num": page_num,
+        }
+        if recall_mode is not None:
+            kwargs["recall_mode"] = recall_mode
+        return self._engine.search_multi(query_dict, **kwargs)
 
     def search_by_page(
         self,

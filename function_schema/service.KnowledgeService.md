@@ -4,12 +4,13 @@
 `src/kdb/crud/service.py`
 
 ## 功能描述
-文本级 CRUD 层。接收文本字段的文档/查询，生成向量与 _id、补齐 `process_one_data` 中**纯本地**的业务默认（jieba 关键词、from_type_norm、多模态拼接等），委托 `KnowledgeRepository`。注入 `EmbeddingClient`。向量化、业务默认与相似度逐行复刻旧 `search_index_data_interface.py`，保证与旧 `SearchDataInterface` 对齐。
+文本级 CRUD 层。接收文本字段的文档/查询，生成向量与 _id、补齐旧 `process_one_data` 的业务副作用，委托 `KnowledgeRepository`。同时继承旧接口兼容层，保证旧 `SearchDataInterface` 调用方无需改方法名。
 
 ## 构造
 - `__init__(repository: KnowledgeRepository, embedding_client: EmbeddingClient, default_index=None, multimodal_prefix: str = "")`
   - `multimodal_prefix`：`search_text` 返回前替换 content 中 `[multimodal_prefix]` 占位的真实前缀；与旧 `SearchDataInterface.multimodal_prefix` 一致；空串等效不替换。
 - `from_config(config_path, index_name=None) -> KnowledgeService`：从 config_test.json 构造；若 cfg 含 `legacy_search_config_path` 自动读取 `multimodal_prefix` 注入。
+- `legacy_config`：可选旧 search config；用于查重、类目 HTTP、默认参数和旧文件操作。
 
 ## 方法 Inputs/Outputs
 - `insert_text(doc: Dict, index_name=None, refresh_imm=False) -> Tuple[bool, str]`
@@ -35,15 +36,17 @@
   10. 时间字段（insert_time 仅新建；update_time 总刷新）；
   11. 新建时 from_type/from_type_norm/tags 缺省（from_type_norm 用 `legacy_get_from_norm_type` 规则映射；tags 缺省=keywords）；
   12. `del_flag=0`（底层引擎存储契约，新建必填）；
-  13. category_infos[].category_id 强制 str（primary_category 构造依赖 HTTP，跳过）；
+  13. category_infos[].category_id 强制 str、显式类目树解析、primary_category 和默认分组；不执行挖掘侧的 Payoneer Olive 推断；
   14. dataset 缺省 = index_name；
   15. `_id = gen_data_id`（仅新建）。
 - `_join_multimodal_contents(multimodal_contents)`：与旧 `SearchDataInterface.join_multimodal_contents` 等价；file/image/video/audio 用字面 `[multimodal_prefix]` 占位，由 search_text 阶段替换。
 - `_cal_similarity / _cal_title_similarity`：复刻旧实现，复用 `cosine_similarity`。qa：有 title → `title_sim + 0.2*content_sim`，否则 content_sim；非 qa → max；data_type 含 image → 叠加 image_indexes 最大相似度。
 
-## 仍然刻意排除（属重业务，不在 CRUD）
-- 去重 dedup（find_duplicates / SimilityTools / Dify LLM）+ is_update_data 软删除
-- primary_category 构造（依赖 category_service HTTP）
+## 兼容层
+- `SearchDataInterface` 兼容类支持旧的 `search_engine/config_path/**kwargs` 构造方式。
+- 旧公开方法（insert_data、search_data、search_data_by_query、search_data_by_multi_query、
+  web_search_data、批量插入、查重、类目和按文件操作）由 `LegacySearchDataInterfaceMixin` 提供；
+  外部类目 HTTP 和 SimilityTools 使用旧配置，但 ES 数据请求统一走 ES8.17 路由引擎。
 
 ## 关键依赖
 - `kdb.crud.repository.KnowledgeRepository`

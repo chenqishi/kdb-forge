@@ -1,8 +1,8 @@
 """与旧 `SearchDataInterface` 的对齐测试（核心）。
 
 目标：证明新 CRUD（KnowledgeService 文本入口）在 CRUD 负责的字段与 search 行为上，
-与旧 `SearchDataInterface` 一致。这里**不对比业务逻辑**（dedup/category/keyword/质量默认值），
-那些已被刻意排除——对比的范围限定在 CRUD 负责的子集：
+与旧 `SearchDataInterface` 一致。本文件先覆盖向量、字段和检索主路径；兼容层另有公开接口
+签名和离线调用契约测试。
 
 ①  `_id` 对齐：新 `_prepare_document['_id']` == 旧 `gen_data_id` == 旧 `process_one_data` 后的 `_id`。
 ②  prepared 字段对齐：同一份输入，新 `_prepare_document` 与旧 `process_one_data` 产出的
@@ -81,8 +81,8 @@ def test_id_alignment_with_legacy_process_one_data(service, legacy_interface):
 def test_prepared_fields_alignment(service, legacy_interface):
     """同输入下，新/旧 prepared 在 CRUD 负责字段上一致。
 
-    业务默认值（audit_result/quality_level/from_type/tags/from_type_norm/primary_category/
-    keywords/dataset）不在对比范围——它们属业务逻辑，已刻意从新 CRUD 排除。
+    业务默认值在完整兼容入口中已实现；本测试仍聚焦两条路径的基础字段，避免把类目 HTTP
+    服务依赖引入这个字段对齐断言。
     """
     inp = _align_input("fields")
 

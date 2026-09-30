@@ -3,9 +3,17 @@
 本文件记录对比旧项目 `/Users/chenqishi/stone_fish/knowledge_database_builder`
 与当前重构版 CRUD 模块后发现的行为差异；每项标注**当前状态**（已闭合 / 已遗留 / 不再实现）。
 
-> 闭合原则：旧 `process_one_data` 中**纯本地、零外部 IO**（jieba / 规则映射 / 字符串拼接 / 字段
-> 缺省）的业务默认已在 `KnowledgeService` 中按旧实现逐条补齐；**依赖外部 HTTP / LLM** 的业务
-> 逻辑（primary_category 构造、Dify 去重 / 摘要 / 翻译）仍刻意排除在 CRUD 之外，留给 pipeline。
+> 闭合原则：旧 `SearchDataInterface` 的公开方法和服务副作用必须由兼容层暴露；外部 HTTP/LLM
+> 仍通过旧配置和兼容依赖接入，底层 ES 请求全部改走 ES8.17 named API。
+> 范围例外：Payoneer Olive 自动类目推断属于挖掘侧，用户明确排除，不作为 CRUD/检索遗漏项。
+
+## 范围澄清：Payoneer Olive 类目推断
+
+2026-09-28 用户确认此功能属于挖掘，不纳入 CRUD/检索重构。重构版已移除专属推断及
+按模型来源丢弃类目候选的分支；不改旧项目的聊天 QA/挖掘实现。
+保留显式 `category_infos` 归一化、类目树解析、已有 `primary_category`、默认分组，
+以及 `web_search` 的类目过滤。没有显式类目时不会从 marketplace/model_platform、tags 或 title 猜类目。
+对应离线回归见 `tests/test_legacy_service_compat.py`；这不是完整服务等价或真实 ES 验证结论。
 
 ## 1. 旧 `process_one_data` 的业务默认字段未补齐
 
@@ -18,7 +26,7 @@
 |---|---|
 | `is_audit` → `audit_result` | 直接迁移字段名 |
 | `audit_result` 缺省 `-1` | 仅新建（`_id` not in data） |
-| 非法 `audit_result` 重置 `-1` | 校验集合 `{-1, 0, 1}` |
+| 非法 `audit_result` 重置 `-1` | 校验集合 `{-1, 0, 1, 2}` |
 | `quality_level` 缺省 `"mid"` | 仅新建 |
 | 非法 `quality_level` 重置 `"mid"` | 校验集合 `{"high", "mid", "low"}` |
 | `from_type` 缺省 `"unknown"` | 仅新建 |
@@ -30,12 +38,17 @@
 | `dataset` 缺省 = `index_name` | 通过 `insert_text(index_name=...)` 传入 |
 | `multimodal_contents` → `content` 拼接 | `_join_multimodal_contents`，与旧 `join_multimodal_contents` 等价；占位符仍为字面 `[multimodal_prefix]`，由 search_text 阶段替换 |
 
-### 仍然遗留（明确不在本层）
+### 兼容层已补齐
 
 | 项目 | 原因 |
 |---|---|
-| `primary_category` 构造 | 需要 `get_category_parent_chain` 的 category_service HTTP 调用，属 pipeline 范畴 |
-| dedup / `is_update_data` | 需要 `SimilityTools` 与 Dify LLM 调用，属 pipeline 范畴 |
+| `primary_category` 构造 | `LegacySearchDataInterfaceMixin._apply_category_defaults` 调用兼容类目接口 |
+| dedup / `is_update_data` | `find_duplicates` 和 `insert_data` 保留旧 SimilityTools/软删除入口 |
+
+旧服务的 `SearchDataInterface` 方法名通过 `KnowledgeService` 直接暴露；同时提供
+`kdb.crud.SearchDataInterface` 和 `kdb.knowledge_interface_tools.search_index_data_interface.SearchDataInterface`
+兼容构造入口。`web_search_data`、`search_data_by_multi_query`、`batch_insert_data`、按文件名操作
+均已纳入兼容层。
 
 ### 验证
 

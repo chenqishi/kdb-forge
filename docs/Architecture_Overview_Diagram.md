@@ -11,10 +11,11 @@
                 │ 文本级文档 / query
                 ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  kdb.crud.KnowledgeService（文本级 CRUD）                     │
-│  - insert_text / search_text / update / delete / get          │
-│  - _prepare_document：向量化 + _id + 时间（复刻旧 process_one_data 子集）│
-│  - _cal_similarity：相似度重排（复刻旧实现）                   │
+│  kdb.crud.KnowledgeService（文本级 CRUD + 旧接口兼容）          │
+│  - 新式：insert_text / search_text / update / delete / get      │
+│  - 旧式：insert_data / search_data / web_search_data / ...      │
+│  - _prepare_document：CRUD 预处理，不含客户专属挖掘推断         │
+│  - _cal_similarity：相似度重排（复刻旧实现）                    │
 │  依赖注入：EmbeddingClient                                     │
 └──────┬──────────────────────────────────┬────────────────────┘
        │ 已含向量的文档 / query_dict        │ text2embedding
@@ -30,33 +31,54 @@
                │ 全部委托                          │
                ▼                                   ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  kdb.legacy_bridge（接线层：sys.path 注入旧项目）            │
-│  re-export: EsSearchInterface / AliEmbedding /                │
-│             gen_data_id / cosine_similarity                   │
+│  kdb.legacy_bridge（接线层：旧项目仅用于兼容/对齐测试）       │
+│  RoutedLegacyEngine（ES8 named API + native KNN）             │
+│  + re-export: AliEmbedding / gen_data_id / cosine_similarity  │
 └───────────────┬─────────────────────────────────────────────┘
-                │ import 复用（不修改旧代码）
+                │ 仅 embedding、_id、对齐基线按需 import
                 ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  旧项目 knowledge_database_builder                            │
-│  - knowledge_interface_tools/es_search_interface.py           │
-│      EsSearchInterface（ES7.x / OpenSearch2.19 双引擎驱动）    │
-│      权威 ES mapping（_ensure_index）                         │
+│  兼容入口 kdb.knowledge_interface_tools                         │
+│  - SearchDataInterface：保留旧构造函数和公开方法名              │
+│  - 旧调用方无需改 insert/search/web_search 方法名               │
 │  - commons/embedding_tools.py（AliEmbedding / DashScope）     │
 └───────────────┬─────────────────────────────────────────────┘
                 ▼
-        Elasticsearch / OpenSearch（索引：生产索引 / test_case）
+┌──────────────────────────┐    ┌────────────────────────────┐
+│ IndexClientRouter         │───▶│ ES 8.17 Serverless client   │
+│ index -> provider ->      │    └──────────────┬─────────────┘
+│ cached client             │                   │
+│ exact > wildcard > default│    ┌──────────────▼─────────────┐
+│                           │───▶│ ES 8.17 PaaS client         │
+└──────────────────────────┘    └──────────────┬─────────────┘
+                                               ▼
+                                Aliyun Elasticsearch（混用）
 ```
+
+检索时 `RoutedLegacyEngine.search_multi` 使用 ES8 named `search(query=...)`，把 BM25 和
+native KNN 分成两路召回，按 `_index + _id` 合并；`search_multi_by_page` 使用 named
+`from_` 保持 BM25 分页路径。每个 index 通过 `IndexClientRouter` 交给正确的 ES8.17
+Serverless/PaaS client，跨 provider 的多索引请求按 provider 拆分。
 
 ## 关键约束
 
-- **Schema 不变**：CRUD 不修改 ES mapping 字段（不删、不改义；可增）。权威定义在旧 `_ensure_index`。
-- **CRUD 纯净**：Repository 只进出向量；Service 只做向量化/_id/时间；**不含** 去重、类目映射、关键词、质量过滤、多模态 join——这些属业务逻辑，留给后续 pipeline 模块。
-- **对齐基准**：Service 的 `_prepare_document` / `search_text` / `_cal_similarity` 逐行复刻旧
-  `search_index_data_interface.py` 的对应逻辑，保证与旧 `SearchDataInterface` 行为对齐。
+- **Schema 不变且可迁移**：字段语义沿用旧 mapping，但新索引的 `indexes.embedding` 必须是
+  `index=true`、`similarity=cosine`、HNSW。旧 ES7 未索引向量不可原地改 mapping，必须新建
+  ES8 索引并 reindex。
+- **分层但不丢接口**：Repository 只进出向量；Service/兼容层负责旧 `SearchDataInterface`
+  的 CRUD/检索公开契约，包括查重、通用类目、文件名操作、批量插入和 web_search。
+- **挖掘边界**：Payoneer Olive 自动类目推断属于上游挖掘，不迁入 CRUD/检索层。
+  CRUD 仅规范化、解析显式类目并补默认分组，不按平台线索、标签、标题猜类目；
+  类目树不可用时保留上游候选，不按 `source` 丢弃。`web_search` 的类目名转 ID 过滤保留。
+- **对齐基准**：旧方法名和返回结构保持不变；底层请求统一改为 ES8 named API，向量路由改为
+  native KNN。旧 ES7 索引仍需先迁移到 native KNN mapping。
 
 ## 数据流
 
-- **写**：`insert_text(doc)` → `_prepare_document`（归集 ext_info、构造 indexes、向量化、_id、时间）→ `repo.insert` → 旧 `engine.insert`（校验维度/过滤零向量/upsert）→ ES。
-- **读**：`search_text(query)` → embed query → `repo.search_multi`（混合检索，候选 size*2）→ 逐 doc `_cal_similarity` → 返回 (docs, total)，不排序不截断。
+- **写**：`insert_text(doc)` → `_prepare_document`（归集 ext_info、构造 indexes、向量化、_id、时间）→ `repo.insert` → ES8 `RoutedLegacyEngine.insert`（校验维度/过滤零向量/upsert）→ ES。
+- **读**：`search_text(query)` → embed query → `repo.search_multi`（BM25/vector 双路，候选 size*2）→ 逐 doc `_cal_similarity` → 渲染多模态 URL → 返回 (docs, total)，不排序不截断。
 - **改**：`update`（局部合并 + 刷新 update_time，可选重算向量）/ `repo.update_by_condition`（软删除 del_flag=1 等）。
-- **删**：`delete` → 旧 `engine.delete`。
+- **删**：`delete` → ES8 `RoutedLegacyEngine.delete`。
+- **兼容**：`SearchDataInterface(config_path=..., index_name=...)` → `KnowledgeService` 兼容层；
+  `web_search_data` → ES8 BM25 分页 + 类目 ID 转换 + URL/score 后处理；文件名删除使用
+  ES8 `count/search/agg_terms/update_by_query`，删前写 JSONL 快照。

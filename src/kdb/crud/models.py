@@ -1,6 +1,7 @@
 """schema 常量：与旧索引 schema 对齐的顶层字段集合。
 
-权威 ES mapping 定义在旧 `knowledge_interface_tools/es_search_interface.py:_ensure_index`。
+权威 ES8.17 native KNN mapping 定义在 `kdb.es.engine.RoutedLegacyEngine._build_mapping`；
+旧 `knowledge_interface_tools/es_search_interface.py` 仅作为对齐基线。
 重构约束（已与用户确认）：**不能删字段、不能改字段含义；新增字段（不影响旧数据）允许。**
 
 `SCHEMA_FIELDS` 与旧 `SearchDataInterface.doc_schema_field` 严格一致，用于 `_prepare_document`
