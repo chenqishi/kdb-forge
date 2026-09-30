@@ -124,3 +124,10 @@ payoneer_payoneercs
 - PaaS 端已恢复只读连通并验证为 ES8.17.0，但只有系统索引；旧源的业务索引尚未迁移，且 PaaS 只支持 HTTP 传输。
 - Serverless 新端为空，且只提供 HTTP；没有 `test_case` 或其它现成 native KNN 索引，因此本轮没有真实 ES8 检索命中验证，也没有写入测试数据。
 - 重构服务的 `/search` 与 `/web_search` 已实现并通过离线契约测试；公网入口需在运行环境使用 TLS 反代和 Basic 认证，写入/删除路由不挂到该公开路径。
+
+## 当前部署验收
+
+- 提交链：`63d8385`（检索 API）+ `5ab22d5`（检索进程隔离）+ `8552b95`（本盘点更新）。运行工作区已通过 `git pull --ff-only` 接收。
+- systemd：`kdb-forge-retrieval.service`，监听 `127.0.0.1:8012`，运行 `.venv-es817` 的 `elasticsearch 8.17.2` 客户端；日志为 `/root/kdb-forge/logs/uvicorn_search_8012.log`。
+- 公网入口：`https://api.marsmind.co/kdb-search/health`、`https://api.marsmind.co/kdb-search/search`、`https://api.marsmind.co/kdb-search/web_search`。入口复用现有 TLS，检索路由使用独立 HTTP Basic；检索进程没有写入/删除路由。
+- 实测：公网 `/health` 返回 200；未认证 `/search` 返回 401；认证 `/search` 与 `/web_search` 均到达 ES8.17 后端，但因 `test_case` 在两个新集群均不存在而返回 503。该结果证明入口、鉴权、ES8 客户端和错误边界可用，不代表已有业务数据的召回验收。
