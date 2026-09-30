@@ -54,6 +54,26 @@ class InsertRequest(BaseModel):
     is_need_llm: bool = False
     is_update_data: bool = True
 
+    @property
+    def _id(self) -> Optional[str]:
+        """Expose the aliased ID under the old attribute name."""
+        return self.id
+
+    def get_ext_info_with_extra_fields(
+        self, defined_fields: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
+        """Collect Pydantic extra fields into ``ext_info`` as old callers expect."""
+        fields = set(defined_fields or ())
+        extras: Dict[str, Any] = {}
+        for field_name, value in self.model_dump(exclude_none=True).items():
+            if field_name in {"categoryId", "categoryName"}:
+                continue
+            if field_name not in fields:
+                extras[field_name] = value
+        merged = dict(self.ext_info or {})
+        merged.update(extras)
+        return merged
+
 
 class InsertResponse(BaseModel):
     success: bool
