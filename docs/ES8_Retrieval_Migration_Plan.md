@@ -119,7 +119,7 @@ payoneer_payoneercs
 - 路由规则仍是索引名小写后 `*payoneer* -> paas`，其余业务索引 -> `serverless`。本次 76 个命中项全部只是候选清单，不代表全部都要创建目标索引。
 - 先由业务确认 manifest：生产索引、replay 副本、测试/探针索引、空索引分别列出 owner、用途、保留期和是否迁移。默认先迁移已确认的生产索引；replay、`*_test*`、`*_smoke*`、`probe` 及 65 个空索引不自动迁移。
 - 目标采用物理索引名 `<source>__v817_<batch>`，迁移完成后在目标集群建立同名 alias。这样可以保留旧源和目标两套物理索引，切换只是 alias/路由变更，回滚不需要覆盖数据。
-- 目标 mapping 必须先在空索引上创建并预检：`indexes`、`image_indexes` 为 `nested`；其 `embedding` 为 `dense_vector(dims=1024,index=true,similarity=cosine,index_options.type=hnsw)`；`title_embedding`、`content_embedding` 可以保留为 `index=false` 兼容字段。`title`、`content` 使用目标端已确认存在的 analyzer，`del_flag` 为 integer。若目标端没有 `ik_max_word`，必须先用 `_analyze` 和 canary 索引确定替代 analyzer 并做检索回归，不能在迁移时临时失败。
+- 目标 mapping 必须先在空索引上创建并预检：`title_embedding`、`content_embedding`、`indexes.embedding`、`image_indexes.embedding` 四个向量字段全部为 `dense_vector(dims=1024,index=true,similarity=cosine,index_options.type=hnsw)`；后两个字段所在对象为 `nested`。`title`、`content` 使用目标端已确认存在的 analyzer，`del_flag` 为 integer。若目标端没有 `ik_max_word`，必须先用 `_analyze` 和 canary 索引确定替代 analyzer 并做检索回归，不能在迁移时临时失败。
 - 创建前逐个获批源索引保存完整 mapping/settings/templates/aliases，做字段兼容 diff（dynamic、date format、keyword、object/nested、`ignore_above`、`_source` 和未知字段）；不能只复制几个字段后假定旧 `_source` 一定可写入。目标容量按根文档、嵌套向量数量、向量字节、segment、replica 和增长率估算并留 headroom；不直接套用当前 engine 的固定 `3 primary + 1 replica`。
 - 目标写入前必须分别验证 source 的 metadata/read/scroll 权限，以及 target 的 create/mapping/bulk/refresh/alias/cluster-monitor 权限。当前只有只读探测，这些写权限与容量检查尚未完成。
 
@@ -130,7 +130,7 @@ payoneer_payoneercs
 3. **创建目标索引**：在目标 provider 创建带 `__v817_<batch>` 后缀的物理索引、mapping、经容量计算的分片/副本和 refresh 策略；不能盲用固定 `3 primary + 1 replica`。
 4. **跨集群流式迁移**：当前两个目标是独立 HTTP 端点，不能假定 `_reindex` 的 remote source 已被白名单和权限放通。实际执行使用 sg 上的受控迁移进程：源端 scroll（ES7 若不支持 PIT 就不用 PIT；批次不超过 500 条、单请求不超过 20 MB）读取 `_source`，保留原 `_id` 和全部业务字段，直接 bulk 到目标；不落 Mac 或单机全量文件。仅在双方明确配置 remote reindex、TLS/权限和限流后才考虑 `_reindex`。
 5. **向量和异常处理**：逐条检查 `indexes.embedding`/`image_indexes.embedding` 的维度、NaN 和零向量；维度为 1024 且模型一致时直接复用向量，缺失、维度不符或模型不一致的文档进入重算队列，不能静默丢弃或混用模型。bulk 使用幂等 `_id`，记录 checkpoint（索引、slice、scroll/search_after 游标、批次、目标 ack）、失败 ID/DLQ、错误和重试次数；自写 bulk 显式设置并发、字节/条数上限、refresh 策略和退避，遇到 429/5xx 重试。
-6. **增量追平**：开始前必须选定一致性策略。首选“暂停获批索引写入 + 一致性 scroll + 最终停写窗口 delta”；暂停期间验证写入闸门，最终 delta 同时覆盖新增、更新和硬删除。若不能停写，必须提供包含 delete 的可靠 CDC/变更日志或双写及版本冲突规则；单靠可能缺失、秒级碰撞的 `update_time` 不能宣称追平。迁移工具不自动修改源端写入状态。
+6. **增量追平**：先做一次完整批量迁移，记录每个索引的 `snapshot_started_at`、`snapshot_finished_at`、源端最大 `update_time` 和迁移 checkpoint；这次完成后不再重复查询旧 ES 做全量同步。后续只同步该水位之后的新增/更新，硬删除必须来自包含 delete 的 CDC/变更日志；若没有可靠删除日志，则在停写窗口做最终一致性重扫。`update_time` 只作为水位，不能单独证明没有硬删除或秒级碰撞。迁移工具不自动修改源端写入状态。
 7. **完整校验**：对源/目标分别比较根文档总数、`del_flag`/`data_type`/`audit_result` 分组计数和 nested 子文档计数；流式按 `_id` 比较 canonical `_source` hash，报告 missing、extra、mismatch；计算稳定分片 ID hash，抽查 `title`、`content`、`synonyms_title`、`indexes.text`、向量维度/NaN/模型元数据。bulk failures 必须为 0 并完成 refresh 后，再用固定 gold query 集合验证 BM25、native nested KNN、双路合并、`del_flag` 过滤、分页和排序，记录结果 ID overlap、召回@k 和延迟。
 8. **灰度和切换**：先将一个已校验索引的读取路由切到目标 alias，做 smoke 和监控；再按 manifest 批次扩大。切换记录路由版本和时间，旧服务/旧源保持可读。
 9. **回滚和收尾**：若计数/hash 有差异、bulk 出现未重试成功的失败、召回@k 或结果 overlap 低于 gold 基线、错误率/延迟超过阈值，则停止扩大并把路由切回旧读取路径；保留源索引、目标 `__v817_<batch>` 索引和 checkpoint。稳定观察期结束后，由业务批准旧索引归档；迁移程序不执行删除。

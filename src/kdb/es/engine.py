@@ -177,8 +177,14 @@ class RoutedLegacyEngine:
                     "fields": {"keyword": {"type": "keyword", "ignore_above": 256}},
                 },
                 "content": {"type": "text", "analyzer": "ik_max_word"},
-                "title_embedding": {"type": "dense_vector", "dims": dims, "index": False},
-                "content_embedding": {"type": "dense_vector", "dims": dims, "index": False},
+                "title_embedding": {
+                    "type": "dense_vector", "dims": dims, "index": True,
+                    "similarity": "cosine", "index_options": {"type": "hnsw"},
+                },
+                "content_embedding": {
+                    "type": "dense_vector", "dims": dims, "index": True,
+                    "similarity": "cosine", "index_options": {"type": "hnsw"},
+                },
                 "data_type": {"type": "keyword"}, "platform": {"type": "keyword"},
                 "dataset": {"type": "keyword", "index": False}, "audit_result": {"type": "integer"},
                 "del_flag": {"type": "integer"},
@@ -240,15 +246,28 @@ class RoutedLegacyEngine:
             return
         mappings = _as_dict(client.indices.get_mapping(index=index))
         current = mappings.get(index) or (next(iter(mappings.values())) if mappings else {})
-        vector_mapping = self._existing_vector_mapping(current)
-        if (
-            vector_mapping.get("type") != "dense_vector"
-            or vector_mapping.get("index") is not True
-            or int(vector_mapping.get("dims", -1)) != self._vector_dimension()
-        ):
+        properties = current.get("mappings", {}).get("properties", {})
+        vector_mappings = {
+            "title_embedding": properties.get("title_embedding", {}),
+            "content_embedding": properties.get("content_embedding", {}),
+            "indexes.embedding": properties.get("indexes", {}).get("properties", {}).get("embedding", {}),
+            "image_indexes.embedding": properties.get("image_indexes", {}).get("properties", {}).get("embedding", {}),
+        }
+        invalid = [
+            field for field, vector_mapping in vector_mappings.items()
+            if (
+                vector_mapping.get("type") != "dense_vector"
+                or vector_mapping.get("index") is not True
+                or int(vector_mapping.get("dims", -1)) != self._vector_dimension()
+                or vector_mapping.get("similarity") != "cosine"
+                or vector_mapping.get("index_options", {}).get("type") != "hnsw"
+            )
+        ]
+        if invalid:
             raise RuntimeError(
                 f"索引 {index!r} 不是 ES8 native KNN mapping："
-                "indexes.embedding 必须是 index=true 的 dense_vector。"
+                f"向量字段 {', '.join(invalid)} 必须是 index=true、dims={self._vector_dimension()}、"
+                "similarity=cosine、index_options.type=hnsw。"
                 "旧 ES7/script_score 索引不能原地升级，请新建 ES8 索引并 reindex。"
             )
 

@@ -139,6 +139,11 @@ def test_native_knn_mapping_and_query_are_used():
     assert embedding["index"] is True
     assert embedding["similarity"] == "cosine"
     assert embedding["index_options"]["type"] == "hnsw"
+    for field in ("title_embedding", "content_embedding"):
+        root_vector = mapping["properties"][field]
+        assert root_vector["index"] is True
+        assert root_vector["similarity"] == "cosine"
+        assert root_vector["index_options"]["type"] == "hnsw"
 
     engine.search_by_vector([0.1, 0.2, 0.3], "indexes_embedding", size=2)
     call = clients[0].calls[-1]
