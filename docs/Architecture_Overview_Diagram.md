@@ -81,9 +81,9 @@ Serverless/PaaS client，跨 provider 的多索引请求按 provider 拆分。
   类目树不可用时保留上游候选，不按 `source` 丢弃。`web_search` 的类目名转 ID 过滤保留。
 - **对齐基准**：旧方法名和返回结构保持不变；底层请求统一改为 ES8 named API，向量路由改为
   native KNN。旧 ES7 索引仍需先迁移到 native KNN mapping。
-- **写入 API 合并**：保留远端 `/knowledge/insert`、`/knowledge/delete`、
-  `/knowledge/modify_direct_update` 和 `/health`，请求字段/返回结构不改。它们不是旧
-  `/insert`、`/search`、`/web_search` HTTP 路径的完整替代，不能凭合并成功声称端到端等价。
+- **HTTP 契约**：`/search`、`/web_search` 复用旧请求/返回结构并加独立 HTTP Basic；
+  `/knowledge/insert`、`/knowledge/delete`、`/knowledge/modify_direct_update` 保持写入接口，
+  不因公开检索入口而暴露写入或删除能力。
 - **依赖注入**：远端 similarity/category 注入参数保留；通用类目映射复用兼容层，
   不引入缺失的 CategoryClient 包；查重工具缺失时懒加载本地阈值实现，不跳过查重。
 

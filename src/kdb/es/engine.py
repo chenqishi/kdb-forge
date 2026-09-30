@@ -108,6 +108,9 @@ class RoutedLegacyEngine:
         self.es_version = str(config.get("es_version") or "8.17")
         if not self.es_version.startswith("8.17"):
             raise ValueError(f"重构版要求 Elasticsearch 8.17.x，当前配置为 {self.es_version!r}")
+        configured_ensure = configured_extra.get("ensure_index_on_init")
+        if configured_ensure is not None:
+            ensure_index = bool(configured_ensure)
         self._ensure_index_on_init = ensure_index
         self._impls: "OrderedDict[str, SimpleNamespace]" = OrderedDict()
         self._impl: Optional[SimpleNamespace] = None

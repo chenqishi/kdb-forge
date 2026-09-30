@@ -20,8 +20,7 @@
         }
     },
     "index_routes": {
-        "test_case": "serverless",
-        "business_*": "paas"
+        "*payoneer*": "paas"
     },
     "extra_params": {
         "recall_mode": "dual",

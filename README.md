@@ -58,7 +58,7 @@ KDB_LEGACY_ROOT=/path/to/old ./run_tests.sh   # 覆盖旧项目根路径
 `python3 -m pytest -q -m 'not integration'` 可运行离线路由/业务单测；完整集成测试需要可访问的 ES8.17 与 DashScope embedding 服务，使用配置中的独立测试索引。
 合并后的 API/modify 回归也在 `tests/`，不会因缺少 FastAPI 而跳过。安装项目和测试依赖：
 `python -m pip install -e . pytest numpy httpx`。启动写入 API：
-`KDB_FORGE_CONFIG=config/config_test.json uvicorn kdb.api.app:app --port 8010`。
+`KDB_FORGE_CONFIG=config/config_search_runtime.local.json KDB_SEARCH_BASIC_USER=... KDB_SEARCH_BASIC_PASSWORD=... uvicorn kdb.api.app:app --host 127.0.0.1 --port 8012`（检索 API；写入 API 仍可单独运行在 8010）。
 
 混用两个 Aliyun ES 服务时，按 `config/config_es_engine.json.example` 增加 `providers`、
 `default_provider` 和 `index_routes`；`pass` 是 `paas` 的兼容别名。
@@ -71,3 +71,10 @@ KDB_LEGACY_ROOT=/path/to/old ./run_tests.sh   # 覆盖旧项目根路径
 4. **旧 ES7 索引不能直接复用 native KNN**。如果 `indexes.embedding` 的 mapping 缺少 `index:true` 或维度不符，ES8 引擎会明确拒绝启动；必须创建新索引、使用新 mapping，然后 reindex。这样可以避免误以为“客户端升级了”就已经启用向量索引。
 5. **多 shard ES 在两个不同 `EsSearchInterface` 实例下查同一份数据，分数极接近时 raw 结果顺序可能微抖动**。对齐口径：①命中 `_id` 集合相同；②每个 _id 的 `similarity` 在 `1e-6` 容差内一致；③按 `similarity` 降序排序后顺序完全一致（见 `test_alignment_with_legacy.py`）。
 6. **`legacy_bridge` 通过 sys.path 注入旧项目根**（环境变量 `KDB_LEGACY_ROOT` 可覆盖）。`gen_data_id` 走旧 import 链可能稍慢（实测约 1.4s 一次性 import）；不可用时 `ids.py` 内置字节级一致的复刻兜底（`md5(f"{title}_{content}_{data_type}")`）。
+
+
+## ES8.17 检索 HTTP API
+
+`/search` 与 `/web_search` 保留旧检索服务的请求和返回字段，但底层只使用 Elasticsearch 8.17 的 named API、BM25 和 native nested HNSW KNN。两个路由都要求 HTTP Basic；用户名和密码从运行环境读取，不能写进仓库或命令行。默认运行配置为 `config/config_search_runtime.local.json`，示例配置见 `config/config_es_engine.json.example`。
+
+索引路由按标准化后的名称匹配 `*payoneer*` 到 `paas`，其余索引使用 `serverless`。跨 provider 查询由 `IndexClientRouter` 分组后分别请求。生产数据迁移只按 [docs/ES8_Retrieval_Migration_Plan.md](docs/ES8_Retrieval_Migration_Plan.md) 的只读盘点和审批步骤执行。
