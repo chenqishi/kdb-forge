@@ -9,7 +9,7 @@
 - 旧源端：旧配置对应的 ES 7.10 服务，发现 342 个索引。旧 `test_case` 存在，但 `indexes.embedding` 是 1024 维、未启用 `index:true` 的 dense vector，不能原地升级或作为 ES8 native KNN 测试索引。
 - 旧源中按名称小写后包含 `payoneer` 的索引共 76 个。CAT 的 `docs.count=769,364` 包含 nested 子文档，不能作为根文档迁移量；对 11 个非空索引用 `_count` 得到根文档 263,192 个，其中 `del_flag=0` 为 59,027 个、`del_flag=1` 为 204,165 个。其余 65 个为空或只有约 1.5 KB 的空索引。`payoneer_olive` 和 `payoneer` 等非空索引仍需业务确认是否迁移，不能因为命中规则就直接批量操作。
 - sg 临时 canary 已验证两端完整链路：以 `individual_20_payoneer` 的 318 个根文档做首轮 scroll→bulk，两个目标 bulk 失败均为 0，计数和 `del_flag=292/26` 一致；四个 embedding 字段均成功创建 HNSW mapping，代码生成的 root/nested KNN 查询均返回 200。测试索引和测试文档已删除，没有保留生产数据。
-- **执行门槛**：小批量 canary 已通过；整体批量迁移暂不执行，必须等用户在晚上明确下令后才启动。当前两个目标的 `codex_*` 临时索引盘点均为空。
+- **执行状态**：小批量 canary 已通过，用户已明确下令启动首轮全量迁移。当前按 provider 串行写入 staging 物理索引，记录 checkpoint；不创建线上 alias、不切线上路由。
 
 ## 路由分配清单
 
