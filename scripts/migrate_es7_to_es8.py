@@ -106,8 +106,12 @@ def source_mapping(source: ESHttp, index: str) -> Tuple[Dict[str, Any], str]:
         properties[root] = vector_mapping()
     for parent in ("indexes", "image_indexes"):
         nested = properties.get(parent)
-        if not isinstance(nested, dict) or nested.get("type") != "nested":
-            raise RuntimeError(f"{index}: {parent} 不是 nested mapping")
+        if not isinstance(nested, dict):
+            nested = {"properties": {}}
+            properties[parent] = nested
+        # Some ES7 indexes mapped image_indexes as object. Promote it to nested
+        # in the ES8 target so every embedding path remains independently KNN-searchable.
+        nested["type"] = "nested"
         nested.setdefault("properties", {})["embedding"] = vector_mapping()
     return mappings, sha256_json(mappings)
 
