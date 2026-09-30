@@ -94,6 +94,7 @@ def test_insert_preserves_old_fields_and_category_conversion(client):
 
 def test_management_routes_map_to_compatibility_methods(client):
     assert client.post("/delete", json={"id": "d1", "index_names": "idx", "refresh_imm": True}).json()["success"]
+    assert lr._service.calls[0][2] == {"data_id": "d1", "index_names": "idx", "refresh": True}
     assert client.post("/get_value_collection", json={"index_name": "idx", "field_name": "platform"}).json()["values"] == ["x"]
     assert client.post("/get_unique_values", json={"index_name": "idx", "field_name": "platform", "include_doc_count": True}).json()["values"] == [{"value": "x", "doc_count": 2}]
     assert client.post("/list_file_names", json={"index_name": "idx"}).json()["total_count"] == 1

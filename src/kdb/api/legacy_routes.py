@@ -294,7 +294,9 @@ def delete(request: DeleteRequest) -> DeleteResponse:
     """旧 ``POST /delete``，按 ID 硬删除。"""
     try:
         ok = _get_service().delete_data(
-            request.id, index_names=request.index_names, refresh=request.refresh_imm
+            data_id=request.id,
+            index_names=request.index_names,
+            refresh=request.refresh_imm,
         )
         return DeleteResponse(
             success=bool(ok),
