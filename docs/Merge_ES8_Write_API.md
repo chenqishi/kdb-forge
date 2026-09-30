@@ -39,3 +39,43 @@
 - 远端 KnowledgeService 的 20 个公开方法均存在，参数名称/顺序检查通过；这不替代行为测试。
 - HTTP/modify 源文件与远端保持一致，ES engine/router 源文件与本地 d62a5c6 保持一致。
 - compileall 和 diff whitespace 检查通过；未访问 ES、迁移索引或部署服务。
+
+## 合并后回归加固（2026-09-30）
+
+基线为已推送的 merge `db996da`。用户明确本项目只面向 ES8，因此兼容范围是
+业务方法/配置调用，不是 ES7 服务端。发现并修复：
+
+1. 构造签名冲突：本地第五位置参数是 legacy_config，远端是 check_duplicate。
+   合并后把位置配置当成查重开关，会静默丢失类目/LLM 等配置。现在 Mapping 按业务
+   配置解释，bool/None 按查重开关解释；同次传两个配置明确报 TypeError。
+2. 写入与 native KNN 的已有衔接缺口：modify 修改标题仅更新根 title_embedding，
+   未同步 KNN 实际使用的 indexes.embedding。现在重算向量时，先按目标 index 取原文档，
+   替换失效的标题/同义问派生项，保留自定义和图片检索项；显式 indexes 仍优先。
+   同文本的归属沿用插入阶段按 text 去重的规则，不新增 provenance 字段。清空根文本
+   时将向量设为 null；取不到源文档则不进行会丢失其他检索项的写入。
+
+### 验证结果
+
+- `.venv/bin/python -m pytest -q -m 'not integration'`：69 passed，11 deselected。
+  原 52 项全部通过，新增 17 项位于 `tests/test_es8_merge_regressions.py`。
+- 新测试贯穿 FastAPI → Service → Repository → 路由引擎 → **真实 elasticsearch-py
+  8.17.2 client**，仅替换 Transport.perform_request，不访问网络。
+- 覆盖 PaaS/Serverless 定向插入、修改、删除和 refresh；audit=2、同义问、自定义/图片
+  索引；标题/同义问变更、空文本清理、显式索引替换；双路 BM25/native KNN、共享过滤、
+  分索引去重、多模态渲染；web 分页、显式类目过滤；ES7/9 配置拒绝。
+- 在独立测试进程中临时替换为 `db996da` 的三个修复前方法（未改工作区），同一组针对性
+  用例得到 9 failed / 2 passed / 6 deselected，确认测试能捕获问题，而非只检查方法存在。
+- ES engine/router 与 `d62a5c6` 无差异；HTTP/modify 与 `a6d7d86` 无差异。
+  改动集中在 Service；方法名、HTTP 请求/返回结构和客户端依赖未变。
+- compileall 和 `git diff --check` 通过。
+
+### 验证边界与复用步骤
+
+这不是阿里云真实 ES8.17 的验收，也未实测 HNSW 召回率、排序质量、刷新可见性或并发
+更新。网络替身记录请求，不执行服务端 DSL。记录的集成索引仍是 config_test.json 的
+test_case；在用户确认 ES8.17 地址与 native KNN mapping 前，不跑有写入的集成测试，
+不自动创建/迁移/清空该索引。本轮无部署。
+
+以后合并 Service 修改时，先比较双方构造函数的位置含义，而非仅检查参数名；对任何
+文本修改接口，同时检查 root 向量与 indexes 检索向量。复跑上述离线命令，确认真实
+ES8.17 测试环境后再补两种 provider 的写入/查询回环与召回效果验收。

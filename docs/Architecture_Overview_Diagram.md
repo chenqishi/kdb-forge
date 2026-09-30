@@ -69,6 +69,8 @@ Serverless/PaaS client，跨 provider 的多索引请求按 provider 拆分。
 
 ## 关键约束
 
+- **ES8 专用**：运行目标只有 ES8.17.x；`Legacy` 类名、方法和配置兼容不意味着支持
+  ES7 服务端。合并远端写入功能时不得恢复 ES7 驱动或 script_score 模拟召回。
 - **Schema 不变且可迁移**：字段语义沿用旧 mapping，但新索引的 `indexes.embedding` 必须是
   `index=true`、`similarity=cosine`、HNSW。旧 ES7 未索引向量不可原地改 mapping，必须新建
   ES8 索引并 reindex。
@@ -89,7 +91,10 @@ Serverless/PaaS client，跨 provider 的多索引请求按 provider 拆分。
 
 - **写**：`insert_text(doc)` → `_prepare_document`（归集 ext_info、构造 indexes、向量化、_id、时间）→ `repo.insert` → ES8 `RoutedLegacyEngine.insert`（校验维度/过滤零向量/upsert）→ ES。
 - **读**：`search_text(query)` → embed query → `repo.search_multi`（BM25/vector 双路，候选 size*2）→ 逐 doc `_cal_similarity` → 渲染多模态 URL → 返回 (docs, total)，不排序不截断。
-- **改**：`update`（局部合并 + 刷新 update_time，可选重算向量）/ `repo.update_by_condition`（软删除 del_flag=1 等）。
+- **改**：`update` → title/synonyms 变更且未显式提供 indexes 时，通过同一 index 的
+  `repo.get` 读取原文档 → 合并派生检索项并保留其他项 → 重算 root/indexes 向量 →
+  `repo.update_by_id` → 按目标 index 刷新；读不到原文档则拒绝该合并写入。
+  content-only 更新不额外读库；`repo.update_by_condition` 用于软删除 del_flag=1 等。
 - **删**：`delete` → ES8 `RoutedLegacyEngine.delete`。
 - **兼容**：`SearchDataInterface(config_path=..., index_name=...)` → `KnowledgeService` 兼容层；
   `web_search_data` → ES8 BM25 分页 + 类目 ID 转换 + URL/score 后处理；文件名删除使用

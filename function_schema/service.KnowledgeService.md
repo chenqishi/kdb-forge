@@ -10,6 +10,7 @@
 - `__init__(repository, embedding_client, default_index=None, multimodal_prefix="", check_duplicate=None, is_need_llm=None, simility_tools=None, category_client=None, *, legacy_config=None)`。
   - `multimodal_prefix`：检索返回前替换 content 中 `[multimodal_prefix]` 占位；空串会删除占位符。
   - 显式 check_duplicate/is_need_llm 覆盖旧配置；未传取配置缺省。simility_tools 支持注入或懒加载，缺旧依赖时使用本地阈值实现，不静默跳过查重。
+  - 第五个位置参数若为 Mapping，按合并前本地 legacy_config 解释；若为 bool/None，按远端查重开关解释。位置配置和 keyword legacy_config 重复传入则报错，不静默覆盖。兼容业务调用形式，不兼容 ES7 引擎。
   - category_client 注入对象只需提供 `map_cate_name_to_id(client, name)`；未注入则用已有通用类目接口，不依赖缺失的 `kdb.category` 包。
 - `from_config(config_path, index_name=None) -> KnowledgeService`：显式索引 > default_index_name > test_index_name > engine 配置；测试/engine 回退会告警。旧配置读取 legacy_search_config_path 或 search_config_path。
 - `legacy_config`：可选旧 search config；用于查重、类目 HTTP、默认参数和旧文件操作。
@@ -20,7 +21,7 @@
   - index_name 同时作为 `_prepare_document` 的 dataset 缺省值来源，与旧 `process_one_data(data, index_name=...)` 一致。
 - `search_text(query: str, index_name=None, condition_dicts=None, size=10, search_type='qa', data_type='text', use_synonyms=False) -> Tuple[List[Dict], int]`
   - embed query → 默认条件填充（无条件时 quality_level=high/audit_result∈{1,2}；每条补 audit_result∈{1,2,-1}）→ `repo.search_multi(size=size*2)` → 每 doc 加 `similarity` 并把 content 中 `[multimodal_prefix]` 替换成实际前缀（与旧 `search_data_by_query` 一致）。**不排序不截断**。
-- `update(data_id, doc, index_name=None, regenerate_embedding=False, refresh=False) -> bool`：局部合并 + 刷新 update_time；regenerate_embedding 时重算 title/content/indexes 向量；refresh=True 时强制刷新索引。
+- `update(data_id, doc, index_name=None, regenerate_embedding=False, refresh=False) -> bool`：局部合并 + 刷新 update_time；regenerate_embedding 时重算 title/content/indexes 向量。修改 title/synonyms 且未提供 indexes 时，先按同一 index 读取原文档，同步派生检索项并保留其他自定义/图片项；读不到则拒绝写入。显式 indexes 仍是调用方的替换列表。清空根文本时向量置 null，避免旧向量残留；refresh=True 时强制刷新索引。
 - `delete(data_id, index_name=None, refresh=False) -> bool`。
 - `get(data_id, index_name=None) -> Optional[Dict]`。
 - `search_text_multi`、`web_search`、`batch_insert`：保留远端新增名称，统一委托兼容层的多查询、分页和批量实现；index 参数支持字符串或列表，不复制另一套算法。

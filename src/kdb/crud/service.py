@@ -30,7 +30,7 @@ import json
 import logging
 import os
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
 from urllib.parse import quote
 
 from kdb.config.loader import load_config
@@ -91,7 +91,7 @@ class KnowledgeService(LegacySearchDataInterfaceMixin):
         embedding_client: EmbeddingClient,
         default_index: Optional[str] = None,
         multimodal_prefix: str = "",
-        check_duplicate: Optional[bool] = None,
+        check_duplicate: Optional[Union[bool, Mapping[str, Any]]] = None,
         is_need_llm: Optional[bool] = None,
         simility_tools: Any = None,
         category_client: Any = None,
@@ -108,8 +108,14 @@ class KnowledgeService(LegacySearchDataInterfaceMixin):
             check_duplicate/is_need_llm: 显式值覆盖旧配置，None 使用配置缺省。
             simility_tools: 注入查重工具，否则在查重时懒加载。
             category_client: 可选 map_cate_name_to_id 协议实例，用于 web 类目过滤。
-            legacy_config: 旧 search 配置，保留本地兼容入口。
+            legacy_config: 旧 search 业务配置；也兼容作为第五个位置参数传入。
         """
+        # The two merge parents used the fifth position for different arguments.
+        if isinstance(check_duplicate, Mapping):
+            if legacy_config is not None:
+                raise TypeError("legacy_config supplied both positionally and by keyword")
+            legacy_config = dict(check_duplicate)
+            check_duplicate = None
         self._repo = repository
         self._embedding = embedding_client
         self._default_index = default_index or repository._default_index
@@ -228,6 +234,11 @@ class KnowledgeService(LegacySearchDataInterfaceMixin):
         payload = copy.deepcopy(doc)
         payload.pop("_id", None)  # _id 通过参数传，不放进 doc 体
         if regenerate_embedding:
+            if "indexes" not in payload and ("title" in payload or "synonyms_title" in payload):
+                existing = self._repo.get(data_id, index_name=index_name)
+                if existing is None:
+                    raise ValueError("Cannot rebuild retrieval indexes without the stored document")
+                self._sync_retrieval_indexes(payload, existing)
             self._regenerate_embeddings(payload)
         payload["update_time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         return self._repo.update_by_id(data_id, payload, index_name=index_name, refresh=refresh)
@@ -545,14 +556,38 @@ class KnowledgeService(LegacySearchDataInterfaceMixin):
                 content = f"{content}\n{address}" if content else address
         return content
 
+    @staticmethod
+    def _sync_retrieval_indexes(data: Dict[str, Any], existing: Dict[str, Any]) -> None:
+        """同步修改后的检索文本，同时保留自定义和图片检索项。"""
+        previous = [existing.get("title"), *(existing.get("synonyms_title") or [])]
+        current = [
+            data.get("title", existing.get("title")),
+            *(data.get("synonyms_title", existing.get("synonyms_title")) or []),
+        ]
+        current = [text for text in current if isinstance(text, str) and text.strip()]
+        retained = set(current)
+        retained.update(
+            item["text"] for item in existing.get("image_indexes", [])
+            if isinstance(item.get("text"), str)
+        )
+        obsolete = {text for text in previous if isinstance(text, str)} - retained
+        indexes = [
+            copy.deepcopy(item) for item in existing.get("indexes", [])
+            if item.get("text") not in obsolete
+        ]
+        for text in current:
+            if not any(item.get("text") == text for item in indexes):
+                indexes.append({"text": text})
+        data["indexes"] = indexes
+
     def _regenerate_embeddings(self, data: Dict[str, Any]) -> None:
         """更新时按需重算向量（仅对传入的 title/content/indexes 生效）。"""
         if "title" in data:
-            data.pop("title_embedding", None)
+            data["title_embedding"] = None
             if data.get("title"):
                 data["title_embedding"] = self._embedding.text2embedding(data["title"]).tolist()
         if "content" in data:
-            data.pop("content_embedding", None)
+            data["content_embedding"] = None
             if data.get("content"):
                 data["content_embedding"] = self._embedding.text2embedding(
                     data["content"]

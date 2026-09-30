@@ -1,5 +1,11 @@
 # ES 8.17 按索引路由
 
+## 支持范围
+
+本项目只运行 Elasticsearch 8.17.x，PaaS 与 Serverless 都使用同一套 ES8 客户端、
+schema 和查询实现。不增加 ES7 驱动或降级分支。文中的“旧配置兼容”只指 JSON
+字段/业务接口形式；`legacy` 召回模式名只是 ES8 单路融合模式的别名，不代表 ES7。
+
 ## 配置
 
 `config/config_es_engine.json` 可以继续使用旧的单地址格式：
