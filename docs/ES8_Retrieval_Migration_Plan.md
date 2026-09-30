@@ -5,11 +5,13 @@
 本计划只记录盘点和后续步骤，本轮没有创建、写入、重建、清空或删除任何索引。
 
 - 新 Serverless 端：服务端返回 Elasticsearch `8.17.0`，集群健康为 green；`/_cat/indices` 返回空集，`test_case` 不存在，因而没有可用于写入回环的 native KNN 索引。该端点仅接受用户提供的 HTTP 入口，HTTPS 9200 的 TLS 握手失败；公网服务必须由独立 TLS 反代保护。
-- 新 PaaS 端：DNS 可解析，但本机对 9200 和 443 的 TCP 连接均超时，尚未取得版本、索引、mapping 或权限结果。补齐安全组/网络访问前，不把它当作可用迁移目标。
+- 新 PaaS 端：白名单放通后已只读核验为 Elasticsearch `8.17.0`，cluster health 为 green（3 节点、36 primary/72 active shards），当前可见 36 个索引全部是 `.kibana`、`.monitoring`、`.internal` 等系统索引；没有业务索引、没有 `test_case`，mapping 中没有 native vector 字段。该端点的 9200 只接受 HTTP，HTTPS 握手失败；公网检索不会直连 ES，后端传输安全限制仍需纳入上线评审。
 - 旧源端：旧配置对应的 ES 7.10 服务，发现 342 个索引。旧 `test_case` 存在，但 `indexes.embedding` 是 1024 维、未启用 `index:true` 的 dense vector，不能原地升级或作为 ES8 native KNN 测试索引。
 - 旧源中按名称小写后包含 `payoneer` 的索引共 76 个，合计 `docs.count=769,364`；其中 11 个有文档，其余 65 个为空或只有约 1.5 KB 的空索引。`payoneer_olive` 和 `payoneer` 等非空索引仍需业务确认是否迁移，不能因为命中规则就直接批量操作。
 
 ## 路由分配清单
+
+本轮目标 PaaS 的实际索引命中清单为空（仅系统索引），Serverless 也为空；下列 76 个名称来自旧源，只是迁移候选和规则命中清单，不代表目标端已存在。
 
 索引名先转换为小写，再按精确规则、通配规则、默认 provider 的顺序解析。当前约定是 `*payoneer* -> paas`，其余索引默认 `serverless`；`payoneer_olive` 已被前者覆盖。下表是旧源只读发现的完整命中清单，全部属于待确认的 PaaS 候选：
 
@@ -119,6 +121,6 @@ payoneer_payoneercs
 
 ## 当前阻塞与验收边界
 
-- PaaS 端点在 sg 上无法建立 TCP 连接，无法验证版本、mapping、容量或迁移权限；需要网络/安全组放通后再继续。
+- PaaS 端已恢复只读连通并验证为 ES8.17.0，但只有系统索引；旧源的业务索引尚未迁移，且 PaaS 只支持 HTTP 传输。
 - Serverless 新端为空，且只提供 HTTP；没有 `test_case` 或其它现成 native KNN 索引，因此本轮没有真实 ES8 检索命中验证，也没有写入测试数据。
 - 重构服务的 `/search` 与 `/web_search` 已实现并通过离线契约测试；公网入口需在运行环境使用 TLS 反代和 Basic 认证，写入/删除路由不挂到该公开路径。
