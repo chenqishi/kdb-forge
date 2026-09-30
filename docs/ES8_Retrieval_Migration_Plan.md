@@ -7,7 +7,7 @@
 - 新 Serverless 端：服务端返回 Elasticsearch `8.17.0`，集群健康为 green；`/_cat/indices` 返回空集，`test_case` 不存在，因而没有可用于写入回环的 native KNN 索引。该端点仅接受用户提供的 HTTP 入口，HTTPS 9200 的 TLS 握手失败；公网服务必须由独立 TLS 反代保护。
 - 新 PaaS 端：白名单放通后已只读核验为 Elasticsearch `8.17.0`，cluster health 为 green（3 节点、36 primary/72 active shards），当前可见 36 个索引全部是 `.kibana`、`.monitoring`、`.internal` 等系统索引；没有业务索引、没有 `test_case`，mapping 中没有 native vector 字段。该端点的 9200 只接受 HTTP，HTTPS 握手失败；公网检索不会直连 ES，后端传输安全限制仍需纳入上线评审。
 - 旧源端：旧配置对应的 ES 7.10 服务，发现 342 个索引。旧 `test_case` 存在，但 `indexes.embedding` 是 1024 维、未启用 `index:true` 的 dense vector，不能原地升级或作为 ES8 native KNN 测试索引。
-- 旧源中按名称小写后包含 `payoneer` 的索引共 76 个，合计 `docs.count=769,364`；其中 11 个有文档，其余 65 个为空或只有约 1.5 KB 的空索引。`payoneer_olive` 和 `payoneer` 等非空索引仍需业务确认是否迁移，不能因为命中规则就直接批量操作。
+- 旧源中按名称小写后包含 `payoneer` 的索引共 76 个。CAT 的 `docs.count=769,364` 包含 nested 子文档，不能作为根文档迁移量；对 11 个非空索引用 `_count` 得到根文档 263,192 个，其中 `del_flag=0` 为 59,027 个、`del_flag=1` 为 204,165 个。其余 65 个为空或只有约 1.5 KB 的空索引。`payoneer_olive` 和 `payoneer` 等非空索引仍需业务确认是否迁移，不能因为命中规则就直接批量操作。
 
 ## 路由分配清单
 
@@ -96,33 +96,60 @@ payoneer_payoneercs
 
 有文档的 11 个索引及盘点容量如下；重复 replay 索引保留为独立候选，等待业务确认去留：
 
-| 索引 | 文档数 | 大小 |
-|---|---:|---:|
-| payoneer_olive | 179446 | 10.6 GB |
-| replay_e8eb8b49ed354520ad98ae58624d948f_payoneer_olive | 179164 | 8.9 GB |
-| replay_0fb44409b83746c188fa48a5099926b0_payoneer_olive | 179164 | 8.9 GB |
-| replay_4d9530d4335744b58ad9b71b408a189d_payoneer_olive | 179268 | 8.9 GB |
-| payoneer | 32576 | 1.8 GB |
-| payoneer_olive_payoneer_olive | 4746 | 287.4 MB |
-| replay_0fb44409b83746c188fa48a5099926b0_payoneer_olive_payoneer_olive | 4746 | 227.2 MB |
-| replay_4d9530d4335744b58ad9b71b408a189d_payoneer_olive_payoneer_olive | 4746 | 227.2 MB |
-| replay_e8eb8b49ed354520ad98ae58624d948f_payoneer_olive_payoneer_olive | 4746 | 227.2 MB |
-| individual_20_payoneer | 736 | 47 MB |
-| payoneer_payoneer | 26 | 1.8 MB |
+| 索引 | CAT docs（含 nested） | 根文档 | del_flag=0 | del_flag=1 | store.size |
+|---|---:|---:|---:|---:|---:|
+| payoneer_olive | 179446 | 60504 | 13265 | 47239 | 10.6 GB |
+| replay_e8eb8b49ed354520ad98ae58624d948f_payoneer_olive | 179164 | 60363 | 13124 | 47239 | 8.9 GB |
+| replay_0fb44409b83746c188fa48a5099926b0_payoneer_olive | 179164 | 60363 | 13124 | 47239 | 8.9 GB |
+| replay_4d9530d4335744b58ad9b71b408a189d_payoneer_olive | 179268 | 60415 | 13176 | 47239 | 8.9 GB |
+| payoneer | 32576 | 15936 | 997 | 14939 | 1.8 GB |
+| payoneer_olive_payoneer_olive | 4746 | 1320 | 1260 | 60 | 287.4 MB |
+| replay_0fb44409b83746c188fa48a5099926b0_payoneer_olive_payoneer_olive | 4746 | 1320 | 1260 | 60 | 227.2 MB |
+| replay_4d9530d4335744b58ad9b71b408a189d_payoneer_olive_payoneer_olive | 4746 | 1320 | 1260 | 60 | 227.2 MB |
+| replay_e8eb8b49ed354520ad98ae58624d948f_payoneer_olive_payoneer_olive | 4746 | 1320 | 1260 | 60 | 227.2 MB |
+| individual_20_payoneer | 736 | 318 | 292 | 26 | 47 MB |
+| payoneer_payoneer | 26 | 13 | 9 | 4 | 1.8 MB |
+
+根文档和 `del_flag` 分布来自只读 `_count`/terms aggregation；迁移校验必须使用这个口径，不能直接复用 CAT 数字。`del_flag=1` 的记录先保留，除非业务明确批准清理。
 
 ## 目标 mapping 与迁移步骤
 
-1. PaaS 网络已恢复；下一步读取两端版本、权限、alias、索引容量、mapping、向量维度和删除标记分布，并对 76 个命中项逐项确认，不将空索引和 replay 副本自动纳入。
-2. 为每个获批目标创建新的 ES8.17 索引，沿用业务字段语义；`indexes` 和 `image_indexes` 使用 nested，`embedding` 使用 `dense_vector`、`dims=1024`、`index=true`、`similarity=cosine`、`index_options.type=hnsw`。旧根向量保留为兼容字段，但不把未索引旧向量当作 native KNN。
-3. 在 ES 集群内优先使用 `_reindex` 或受控 scroll/bulk 流式迁移，设置 `requests_per_second`、批量上限和断点状态；不把全量文档下载到 Mac 或单机磁盘。可复用且维度和模型一致的 `indexes[].embedding` 直接复制，只有缺失、维度不符或文本/模型不一致时才排入重算队列。
-4. 迁移期间保存每批 checkpoint、失败文档 ID 和重试次数；按 `_id` 幂等写入，bulk 部分失败可重试，源索引保持只读快照或保留版本。先迁移小规模获批索引做 mapping、字段和向量抽样校验，再扩大批量。
-5. 以源/目标文档总数、按 `del_flag`/`data_type`/`audit_result` 分组计数和抽样字段 hash 做校验；随机抽查 `title`、`content`、`synonyms_title`、`indexes.text` 与向量维度。用同一 query 集合分别验证 BM25、native KNN、双路合并、过滤、分页和分数排序。
-6. 增量追平按 `update_time` 或源端变更日志执行，完成停写窗口最后一轮增量、计数和检索回归；灰度阶段把路由指向新索引，保留旧索引与回滚路由。确认稳定后再由业务批准旧索引归档，迁移脚本不自动删除。
+### 目标结构和索引范围
+
+- 路由规则仍是索引名小写后 `*payoneer* -> paas`，其余业务索引 -> `serverless`。本次 76 个命中项全部只是候选清单，不代表全部都要创建目标索引。
+- 先由业务确认 manifest：生产索引、replay 副本、测试/探针索引、空索引分别列出 owner、用途、保留期和是否迁移。默认先迁移已确认的生产索引；replay、`*_test*`、`*_smoke*`、`probe` 及 65 个空索引不自动迁移。
+- 目标采用物理索引名 `<source>__v817_<batch>`，迁移完成后在目标集群建立同名 alias。这样可以保留旧源和目标两套物理索引，切换只是 alias/路由变更，回滚不需要覆盖数据。
+- 目标 mapping 必须先在空索引上创建并预检：`indexes`、`image_indexes` 为 `nested`；其 `embedding` 为 `dense_vector(dims=1024,index=true,similarity=cosine,index_options.type=hnsw)`；`title_embedding`、`content_embedding` 可以保留为 `index=false` 兼容字段。`title`、`content` 使用目标端已确认存在的 analyzer，`del_flag` 为 integer。若目标端没有 `ik_max_word`，必须先用 `_analyze` 和 canary 索引确定替代 analyzer 并做检索回归，不能在迁移时临时失败。
+- 创建前逐个获批源索引保存完整 mapping/settings/templates/aliases，做字段兼容 diff（dynamic、date format、keyword、object/nested、`ignore_above`、`_source` 和未知字段）；不能只复制几个字段后假定旧 `_source` 一定可写入。目标容量按根文档、嵌套向量数量、向量字节、segment、replica 和增长率估算并留 headroom；不直接套用当前 engine 的固定 `3 primary + 1 replica`。
+- 目标写入前必须分别验证 source 的 metadata/read/scroll 权限，以及 target 的 create/mapping/bulk/refresh/alias/cluster-monitor 权限。当前只有只读探测，这些写权限与容量检查尚未完成。
+
+### 执行顺序
+
+1. **预检和冻结清单**：保存每个源索引完整 mapping、settings、templates、aliases、权限结果和根文档/删除标记分布；确认目标配额、容量、分片上限和写入权限。建立可复现 manifest（源/目标名、mapping hash、计数、ID 分片 hash、向量模型/维度、owner、批准人）。
+2. **目标能力 canary**：经授权后，用临时索引验证 analyzer、native HNSW、nested KNN、过滤、bulk、refresh、alias 和权限；该 canary 通过前不触碰业务索引。当前目标为空，尚未执行这一步。
+3. **创建目标索引**：在目标 provider 创建带 `__v817_<batch>` 后缀的物理索引、mapping、经容量计算的分片/副本和 refresh 策略；不能盲用固定 `3 primary + 1 replica`。
+4. **跨集群流式迁移**：当前两个目标是独立 HTTP 端点，不能假定 `_reindex` 的 remote source 已被白名单和权限放通。实际执行使用 sg 上的受控迁移进程：源端 scroll（ES7 若不支持 PIT 就不用 PIT；批次不超过 500 条、单请求不超过 20 MB）读取 `_source`，保留原 `_id` 和全部业务字段，直接 bulk 到目标；不落 Mac 或单机全量文件。仅在双方明确配置 remote reindex、TLS/权限和限流后才考虑 `_reindex`。
+5. **向量和异常处理**：逐条检查 `indexes.embedding`/`image_indexes.embedding` 的维度、NaN 和零向量；维度为 1024 且模型一致时直接复用向量，缺失、维度不符或模型不一致的文档进入重算队列，不能静默丢弃或混用模型。bulk 使用幂等 `_id`，记录 checkpoint（索引、slice、scroll/search_after 游标、批次、目标 ack）、失败 ID/DLQ、错误和重试次数；自写 bulk 显式设置并发、字节/条数上限、refresh 策略和退避，遇到 429/5xx 重试。
+6. **增量追平**：开始前必须选定一致性策略。首选“暂停获批索引写入 + 一致性 scroll + 最终停写窗口 delta”；暂停期间验证写入闸门，最终 delta 同时覆盖新增、更新和硬删除。若不能停写，必须提供包含 delete 的可靠 CDC/变更日志或双写及版本冲突规则；单靠可能缺失、秒级碰撞的 `update_time` 不能宣称追平。迁移工具不自动修改源端写入状态。
+7. **完整校验**：对源/目标分别比较根文档总数、`del_flag`/`data_type`/`audit_result` 分组计数和 nested 子文档计数；流式按 `_id` 比较 canonical `_source` hash，报告 missing、extra、mismatch；计算稳定分片 ID hash，抽查 `title`、`content`、`synonyms_title`、`indexes.text`、向量维度/NaN/模型元数据。bulk failures 必须为 0 并完成 refresh 后，再用固定 gold query 集合验证 BM25、native nested KNN、双路合并、`del_flag` 过滤、分页和排序，记录结果 ID overlap、召回@k 和延迟。
+8. **灰度和切换**：先将一个已校验索引的读取路由切到目标 alias，做 smoke 和监控；再按 manifest 批次扩大。切换记录路由版本和时间，旧服务/旧源保持可读。
+9. **回滚和收尾**：若计数/hash 有差异、bulk 出现未重试成功的失败、召回@k 或结果 overlap 低于 gold 基线、错误率/延迟超过阈值，则停止扩大并把路由切回旧读取路径；保留源索引、目标 `__v817_<batch>` 索引和 checkpoint。稳定观察期结束后，由业务批准旧索引归档；迁移程序不执行删除。
+
+### 建议批次
+
+| 批次 | 范围 | 目的 |
+|---|---|---|
+| C0 | 1 个获批的小索引（优先 `individual_20_payoneer`） | 验证 mapping、analyzer、HNSW、bulk 和校验流程 |
+| C1 | `payoneer_olive` | 验证最大生产索引的吞吐、容量和召回 |
+| C2 | `payoneer` | 验证第二个生产索引并完成路由灰度 |
+| C3 | 其余已确认的非空业务索引 | 按 owner 和容量限流迁移 |
+| C4 | replay/测试/空索引 | 仅在 owner 明确批准后迁移；否则保留源端 |
 
 ## 当前阻塞与验收边界
 
 - PaaS 端已恢复只读连通并验证为 ES8.17.0，但只有系统索引；旧源的业务索引尚未迁移，且 PaaS 只支持 HTTP 传输。
 - Serverless 新端为空，且只提供 HTTP；没有 `test_case` 或其它现成 native KNN 索引，因此本轮没有真实 ES8 检索命中验证，也没有写入测试数据。
+- 当前代码没有跨集群迁移器、checkpoint/manifest、DLQ 或 delta 组件；迁移应另做独立的 dry-run/执行命令，默认不得自动 create、clear、delete 或写入真实 `test_case`。
 - 重构服务的 `/search` 与 `/web_search` 已实现并通过离线契约测试；公网入口需在运行环境使用 TLS 反代和 Basic 认证，写入/删除路由不挂到该公开路径。
 
 ## 当前部署验收
