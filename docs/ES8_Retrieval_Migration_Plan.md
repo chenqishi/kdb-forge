@@ -112,7 +112,7 @@ payoneer_payoneercs
 
 ## 目标 mapping 与迁移步骤
 
-1. 先恢复 PaaS 网络访问，读取两端版本、权限、alias、索引容量、mapping、向量维度和删除标记分布；对 76 个命中项逐项确认，不将空索引和 replay 副本自动纳入。
+1. PaaS 网络已恢复；下一步读取两端版本、权限、alias、索引容量、mapping、向量维度和删除标记分布，并对 76 个命中项逐项确认，不将空索引和 replay 副本自动纳入。
 2. 为每个获批目标创建新的 ES8.17 索引，沿用业务字段语义；`indexes` 和 `image_indexes` 使用 nested，`embedding` 使用 `dense_vector`、`dims=1024`、`index=true`、`similarity=cosine`、`index_options.type=hnsw`。旧根向量保留为兼容字段，但不把未索引旧向量当作 native KNN。
 3. 在 ES 集群内优先使用 `_reindex` 或受控 scroll/bulk 流式迁移，设置 `requests_per_second`、批量上限和断点状态；不把全量文档下载到 Mac 或单机磁盘。可复用且维度和模型一致的 `indexes[].embedding` 直接复制，只有缺失、维度不符或文本/模型不一致时才排入重算队列。
 4. 迁移期间保存每批 checkpoint、失败文档 ID 和重试次数；按 `_id` 幂等写入，bulk 部分失败可重试，源索引保持只读快照或保留版本。先迁移小规模获批索引做 mapping、字段和向量抽样校验，再扩大批量。
