@@ -14,10 +14,12 @@ from __future__ import annotations
 from fastapi import FastAPI
 
 from kdb.api.knowledge_routes import router as knowledge_router
+from kdb.api.legacy_routes import router as legacy_router
 from kdb.api.search_routes import router as search_router
 
 app = FastAPI(title="kdb-forge", version="0.1.0")
 app.include_router(knowledge_router)
+app.include_router(legacy_router)
 app.include_router(search_router)
 
 
