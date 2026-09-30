@@ -50,16 +50,7 @@ class LegacySearchDataInterfaceMixin:
         self.category_update_time_dict: Dict[str, float] = {}
         self.all_client_category_dict: Dict[str, Dict[str, Any]] = {}
         self.doc_schema_field = set(SCHEMA_FIELDS)
-        simility_path = config.get("simility_config_path", "")
         self.simility_tools = None
-        if simility_path:
-            try:
-                ensure_legacy_on_path()
-                from commons import simility_tools
-
-                self.simility_tools = simility_tools.SimilityTools(simility_path)
-            except Exception as exc:  # pragma: no cover - optional legacy dependency
-                logger.warning("初始化 SimilityTools 失败: %s", exc)
 
     @staticmethod
     def _load_json(path: str) -> Dict[str, Any]:
@@ -304,7 +295,7 @@ class LegacySearchDataInterfaceMixin:
                 if not exclude_self:
                     duplicates.append(candidate)
                 continue
-            if self.simility_tools is not None and self.simility_tools.is_simility_knowledge(
+            if self._get_simility_tools().is_simility_knowledge(
                 processed,
                 candidate,
                 is_need_llm=is_need_llm,
@@ -341,10 +332,7 @@ class LegacySearchDataInterfaceMixin:
     ) -> Tuple[bool, str]:
         """Insert with the old processing, deduplication, and return contract."""
         check_duplicate = self.check_duplicate if check_duplicate is None else check_duplicate
-        original = data
         prepared = copy.deepcopy(data)
-        if not original.get("_id"):
-            original["_id"] = prepared.get("_id")
         if not self.process_one_data(prepared, index_name=index_name):
             return False, "数据处理失败"
         llm = self.is_need_llm if is_need_llm is None else is_need_llm
@@ -361,14 +349,17 @@ class LegacySearchDataInterfaceMixin:
             if duplicates:
                 duplicate_ids = [item["_id"] for item in duplicates]
                 if is_update_data:
-                    self.engine.update_value(
-                        index_name=index_name,
-                        update_value_dict={
-                            "del_flag": 1,
-                            "del_reason": f"cover_by_new {prepared.get('_id')}",
-                        },
-                        conditions=[{"_id": duplicate_ids}],
-                    )
+                    try:
+                        self.engine.update_value(
+                            index_name=index_name,
+                            update_value_dict={
+                                "del_flag": 1,
+                                "del_reason": f"cover_by_new {prepared.get('_id')}",
+                            },
+                            conditions=[{"_id": duplicate_ids}],
+                        )
+                    except Exception as exc:
+                        logger.error("软删除重复数据失败: %s", exc)
                 else:
                     return False, "数据重复"
         ok = self.engine.insert(prepared, index_names=index_name, refresh_imm=refresh_imm)
@@ -470,7 +461,9 @@ class LegacySearchDataInterfaceMixin:
             "query": query_list,
             "vector": embeddings if embeddings else None,
         }
-        indexes = index_names.split(",") if index_names else None
+        indexes = None
+        if index_names:
+            indexes = index_names.split(",") if isinstance(index_names, str) else list(index_names)
         if not condition_dicts:
             condition_dicts = [
                 {"quality_level": ["high"], "data_type": ["qa"]},
@@ -562,7 +555,9 @@ class LegacySearchDataInterfaceMixin:
             }
         else:
             search_query = {}
-        indexes = index_names.split(",") if index_names else None
+        indexes = None
+        if index_names:
+            indexes = index_names.split(",") if isinstance(index_names, str) else list(index_names)
         first_index = indexes[0] if indexes else None
         condition_dicts = condition_dicts or []
         client = client or first_index
@@ -572,7 +567,7 @@ class LegacySearchDataInterfaceMixin:
                 names = condition["category_names"]
                 names = names if isinstance(names, list) else [names]
                 category_ids.extend(
-                    value for value in (self.map_cate_name_to_id(client, name) for name in names) if value
+                    value for value in (self._category.map_cate_name_to_id(client, name) for name in names) if value
                 )
                 condition.pop("category_names")
             if "category_ids" in condition:

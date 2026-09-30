@@ -9,6 +9,9 @@ description = "Knowledge Database Builder (rebuild) — high-cohesion / low-coup
 requires-python = ">=3.8"
 dependencies = [
     "elasticsearch>=8.17,<8.18",
+    "fastapi>=0.100",
+    "pydantic>=2,<3",
+    "uvicorn",
 ]
 
 [tool.setuptools.packages.find]

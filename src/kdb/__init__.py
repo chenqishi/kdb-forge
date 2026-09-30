@@ -5,8 +5,17 @@
 - crud.service.KnowledgeService：文本级 CRUD（注入 embedding 客户端）
 """
 
-from kdb.crud import KnowledgeRepository, KnowledgeService, SearchDataInterface
+from importlib import import_module
 
 __version__ = "0.1.0"
 
 __all__ = ["KnowledgeRepository", "KnowledgeService", "SearchDataInterface"]
+
+
+def __getattr__(name):
+    """Keep health/dry-run imports independent of the CRUD dependencies."""
+    if name not in __all__:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    value = getattr(import_module("kdb.crud"), name)
+    globals()[name] = value
+    return value

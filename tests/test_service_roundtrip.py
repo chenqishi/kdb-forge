@@ -180,3 +180,36 @@ def test_service_ext_info_routing(service, test_index, cleanup_ids):
     assert ext.get("foo") == 1
     assert ext.get("bar") == "baz"
     assert ext.get("nested") == {"a": [1, 2]}
+
+
+def test_audit_result_2_preserved_on_insert(service, test_index, cleanup_ids):
+    """audit_result=2 是合法已审核态（旧实现 si:476 合法集 [-1,0,1,2]，检索契约
+    audit_result∈[1,2] 依赖），插入/upsert 不得被"非法值矫正"重置为 -1。
+    回归：2026-09-02 VALID_AUDIT_RESULTS 抄漏 2，生产 upsert 把 audit=2 的 doc 静默降为 -1。"""
+    from kdb.crud.ids import gen_data_id
+
+    inp = _input_doc()
+    inp["title"] = "kdb svc rt：audit=2 保持用例"
+    inp["audit_result"] = 2
+    expected_id = gen_data_id(
+        {"title": inp["title"], "content": inp["content"], "data_type": inp["data_type"]}
+    )
+    cleanup_ids.append(expected_id)
+
+    ok, msg = service.insert_text(dict(inp), index_name=test_index, refresh_imm=True)
+    assert ok, f"insert_text 失败：{msg}"
+    stored = wait_for_present(service._repo, expected_id, test_index)
+    assert stored["audit_result"] == 2, "合法值 2 被矫正逻辑误伤"
+
+    # 对照：真正的非法值仍应矫正为 -1
+    inp2 = _input_doc()
+    inp2["title"] = "kdb svc rt：audit 非法值矫正用例"
+    inp2["audit_result"] = 99
+    bad_id = gen_data_id(
+        {"title": inp2["title"], "content": inp2["content"], "data_type": inp2["data_type"]}
+    )
+    cleanup_ids.append(bad_id)
+    ok, msg = service.insert_text(dict(inp2), index_name=test_index, refresh_imm=True)
+    assert ok, f"insert_text 失败：{msg}"
+    stored2 = wait_for_present(service._repo, bad_id, test_index)
+    assert stored2["audit_result"] == -1, "非法值 99 未被矫正"

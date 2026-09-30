@@ -52,9 +52,11 @@ EsSearchInterface = RoutedLegacyEngine
 # 软依赖：相似度实现。优先复用旧实现以保证浮点口径一致；导入失败时本文件提供等价兜底。
 try:
     from commons.simility_tools import cosine_similarity as _legacy_cosine_similarity  # noqa: E402
+    from commons.simility_tools import SimilityTools as LegacySimilityTools  # noqa: E402
 except Exception as exc:  # pragma: no cover - 仅在旧依赖缺失时触发
     logger.warning("无法导入旧 cosine_similarity，使用内置等价实现: %s", exc)
     _legacy_cosine_similarity = None
+    LegacySimilityTools = None
 
 # 软依赖：旧 _id 生成。失败则由 kdb.crud.ids 兜底。
 try:
@@ -141,6 +143,7 @@ __all__ = [
     "EsSearchInterface",
     "RoutedLegacyEngine",
     "cosine_similarity",
+    "LegacySimilityTools",
     "legacy_gen_data_id",
     "HAS_LEGACY_GEN_DATA_ID",
     "legacy_gen_keyword_by_title_content",

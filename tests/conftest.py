@@ -22,17 +22,28 @@ os.environ.setdefault(
     "KDB_LEGACY_ROOT", "/Users/chenqishi/stone_fish/knowledge_database_builder"
 )
 
-from kdb.config.loader import load_config  # noqa: E402
-from kdb.crud.repository import KnowledgeRepository  # noqa: E402
-from kdb.crud.service import KnowledgeService  # noqa: E402
-from kdb.embedding.client import build_embedding_client  # noqa: E402
-from kdb.legacy_bridge import build_legacy_engine, load_legacy_search_interface  # noqa: E402
+# 集成 fixture 依赖旧 ES/embedding(经 legacy_bridge 注入旧项目)；这些只在**真实集成测试**里用到。
+# 用 try/except 兜底：legacy/真实 config 不在时(如纯单测环境)，仅让集成 fixture 在被调用时 skip，
+# 不让 conftest 导入失败而拖垮同目录下的**纯单测**(如 tests/test_modify_service.py)。
+try:
+    from kdb.config.loader import load_config  # noqa: E402
+    from kdb.crud.repository import KnowledgeRepository  # noqa: E402
+    from kdb.crud.service import KnowledgeService  # noqa: E402
+    from kdb.embedding.client import build_embedding_client  # noqa: E402
+    from kdb.legacy_bridge import build_legacy_engine, load_legacy_search_interface  # noqa: E402
+    _LEGACY_IMPORT_ERR = None
+except Exception as _e:  # noqa: BLE001
+    load_config = KnowledgeRepository = KnowledgeService = None  # type: ignore
+    build_embedding_client = build_legacy_engine = load_legacy_search_interface = None  # type: ignore
+    _LEGACY_IMPORT_ERR = _e
 
 CONFIG_PATH = os.path.join(_ROOT, "config", "config_test.json")
 
 
 @pytest.fixture(scope="session")
 def cfg():
+    if _LEGACY_IMPORT_ERR is not None:
+        pytest.skip(f"旧 ES/embedding 依赖不可用，跳过集成测试：{_LEGACY_IMPORT_ERR}")
     if not os.path.exists(CONFIG_PATH):
         pytest.skip(f"缺少 {CONFIG_PATH}（从 config_test.json.example 复制并填路径）")
     return load_config(CONFIG_PATH)

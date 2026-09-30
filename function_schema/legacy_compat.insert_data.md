@@ -6,6 +6,7 @@ basic_threshold, title_basic_threshold, refresh_imm, is_need_llm)` 参数。
 
 ## Outputs
 返回 `(bool, str)`；保留 process、查重、重复软删除/拒绝和 ES 写入副作用。
+保留远端修复：不改调用方字典（不塞 _id=None）；软删除异常记录后仍尝试写入。
 
 ## SQL
 无；读写 Elasticsearch。

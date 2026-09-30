@@ -12,6 +12,7 @@
 - `EsSearchInterface`：兼容名称，实际指向 ES8.17 `RoutedLegacyEngine`；不会默认走旧 ES7 API。
 - `RoutedLegacyEngine`：默认构造的 ES 8.17 路由引擎；按 index 选择 Serverless/PaaS client，使用 native KNN 与 ES8 named API。
 - `cosine_similarity(vec1, vec2) -> float`：复用旧实现，失败退回等价实现（公式相同）。
+- `LegacySimilityTools`：可选旧查重工具类；不可导入时为 None，由 Service 本地阈值工具兜底。
 - `legacy_gen_data_id` / `HAS_LEGACY_GEN_DATA_ID`：旧 _id 生成（软依赖，可兜底）。
 - `build_legacy_engine(config_path=None, index_name=None, **kwargs)`：构造 `RoutedLegacyEngine`。
 - `load_legacy_search_interface(config_path, index_name=None)`：按需构造旧项目原实现，仅用于新旧结果对比；生产兼容入口为 `kdb.crud.SearchDataInterface`。

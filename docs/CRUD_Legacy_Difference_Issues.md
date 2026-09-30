@@ -7,6 +7,17 @@
 > 仍通过旧配置和兼容依赖接入，底层 ES 请求全部改走 ES8.17 named API。
 > 范围例外：Payoneer Olive 自动类目推断属于挖掘侧，用户明确排除，不作为 CRUD/检索遗漏项。
 
+## 合并口径（2026-09-30）
+
+- 保留远端 API/modify 写入能力与 service 修复；重复的方法统一走本地兼容层和 ES8 引擎。
+- 保留远端 `insert_data` 不改调用方 dict 的行为，不再复制旧 `_id=None` 回填副作用。
+- truthy 非法 audit_result、非字符串 from_type 对 upsert 也处理；合法 audit_result=2 保留。
+- 保留本地最新多模态 URL 渲染（包括多 query 和 fileName），覆盖远端旧版只做前缀替换的实现。
+- 保留本地显式类目和默认分组，不恢复任何客户专属挖掘推断。
+- soft-delete 按 `_id` 使用 ES8 ids 查询，不复刻远端注释中提到的旧 terms no-op。
+- 本文的历史闭合记录不是本次真实 ES8 集成验证结果；合并验证与范围见
+  `docs/Merge_ES8_Write_API.md`。
+
 ## 范围澄清：Payoneer Olive 类目推断
 
 2026-09-28 用户确认此功能属于挖掘，不纳入 CRUD/检索重构。重构版已移除专属推断及
@@ -26,7 +37,7 @@
 |---|---|
 | `is_audit` → `audit_result` | 直接迁移字段名 |
 | `audit_result` 缺省 `-1` | 仅新建（`_id` not in data） |
-| 非法 `audit_result` 重置 `-1` | 校验集合 `{-1, 0, 1, 2}` |
+| 非法 `audit_result` 重置 `-1` | truthy 非法值不分新旧均矫正，校验集合 `{-1, 0, 1, 2}` |
 | `quality_level` 缺省 `"mid"` | 仅新建 |
 | 非法 `quality_level` 重置 `"mid"` | 校验集合 `{"high", "mid", "low"}` |
 | `from_type` 缺省 `"unknown"` | 仅新建 |

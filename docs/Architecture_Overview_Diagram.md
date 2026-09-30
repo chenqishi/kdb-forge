@@ -6,14 +6,21 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  调用方 / 后续 pipeline / tasks（预留）                       │
+│  调用方 / sell_agent / 后续 pipeline / tasks（预留）           │
 └───────────────┬─────────────────────────────────────────────┘
-                │ 文本级文档 / query
+                │ 文本级文档 / query，或 HTTP 写入请求
+                ▼
+┌─────────────────────────────────────────────────────────────┐
+│  kdb.api：health / knowledge insert / delete / modify         │
+│  kdb.modify：执行已决策的单索引写入计划；dry_run 不加载 CRUD    │
+│  包级公开 CRUD 类懒导入；首次实际写入才构建 Service            │
+└───────────────┬─────────────────────────────────────────────┘
                 ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  kdb.crud.KnowledgeService（文本级 CRUD + 旧接口兼容）          │
 │  - 新式：insert_text / search_text / update / delete / get      │
 │  - 旧式：insert_data / search_data / web_search_data / ...      │
+│  - 新增别名：search_text_multi / web_search / batch_insert      │
 │  - _prepare_document：CRUD 预处理，不含客户专属挖掘推断         │
 │  - _cal_similarity：相似度重排（复刻旧实现）                    │
 │  依赖注入：EmbeddingClient                                     │
@@ -72,6 +79,11 @@ Serverless/PaaS client，跨 provider 的多索引请求按 provider 拆分。
   类目树不可用时保留上游候选，不按 `source` 丢弃。`web_search` 的类目名转 ID 过滤保留。
 - **对齐基准**：旧方法名和返回结构保持不变；底层请求统一改为 ES8 named API，向量路由改为
   native KNN。旧 ES7 索引仍需先迁移到 native KNN mapping。
+- **写入 API 合并**：保留远端 `/knowledge/insert`、`/knowledge/delete`、
+  `/knowledge/modify_direct_update` 和 `/health`，请求字段/返回结构不改。它们不是旧
+  `/insert`、`/search`、`/web_search` HTTP 路径的完整替代，不能凭合并成功声称端到端等价。
+- **依赖注入**：远端 similarity/category 注入参数保留；通用类目映射复用兼容层，
+  不引入缺失的 CategoryClient 包；查重工具缺失时懒加载本地阈值实现，不跳过查重。
 
 ## 数据流
 

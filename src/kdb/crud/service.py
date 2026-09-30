@@ -40,6 +40,7 @@ from kdb.crud.models import SCHEMA_FIELDS
 from kdb.crud.repository import KnowledgeRepository
 from kdb.embedding.client import EmbeddingClient, build_embedding_client
 from kdb.legacy_bridge import (
+    LegacySimilityTools,
     cosine_similarity,
     legacy_gen_keyword_by_title_content,
     legacy_get_from_norm_type,
@@ -53,6 +54,34 @@ MULTIMODAL_PREFIX_PLACEHOLDER = "[multimodal_prefix]"
 logger = logging.getLogger(__name__)
 
 
+class _FallbackSimilityTools:
+    """Local legacy thresholds when the optional similarity dependency is absent."""
+
+    def is_simility_knowledge(
+        self, doc_1, doc_2, is_need_llm=False, is_only_title=False,
+        basic_threshold=0.7, title_basic_threshold=0.95,
+    ) -> int:
+        if doc_1.get("data_type") != doc_2.get("data_type") or doc_1.get("platform") != doc_2.get("platform"):
+            return 0
+        scores = []
+        for field in ("title_embedding", "content_embedding"):
+            if field in doc_1 and field in doc_2:
+                scores.append(cosine_similarity(doc_1[field], doc_2[field]))
+            elif field not in doc_1 and field not in doc_2:
+                scores.append(-1)
+            else:
+                return 0
+        if max(scores) < basic_threshold:
+            return 0
+        if is_only_title and scores[0] > title_basic_threshold:
+            return 1
+        if min(scores) > title_basic_threshold:
+            return 1
+        if is_need_llm:
+            raise RuntimeError("LLM 判重不可用：请配置或注入带 LLM 能力的 SimilityTools")
+        return 0
+
+
 class KnowledgeService(LegacySearchDataInterfaceMixin):
     """文本级知识库读写接口。"""
 
@@ -62,6 +91,11 @@ class KnowledgeService(LegacySearchDataInterfaceMixin):
         embedding_client: EmbeddingClient,
         default_index: Optional[str] = None,
         multimodal_prefix: str = "",
+        check_duplicate: Optional[bool] = None,
+        is_need_llm: Optional[bool] = None,
+        simility_tools: Any = None,
+        category_client: Any = None,
+        *,
         legacy_config: Optional[Dict[str, Any]] = None,
     ) -> None:
         """
@@ -70,13 +104,23 @@ class KnowledgeService(LegacySearchDataInterfaceMixin):
             embedding_client: 向量生成客户端（注入）。
             default_index: 默认索引名。
             multimodal_prefix: search_text 返回时把 `[multimodal_prefix]` 替换成该字符串
-                （与旧 `SearchDataInterface.multimodal_prefix` 一致）；空串表示不替换。
+                （与旧 `SearchDataInterface.multimodal_prefix` 一致）；空串会删除占位符。
+            check_duplicate/is_need_llm: 显式值覆盖旧配置，None 使用配置缺省。
+            simility_tools: 注入查重工具，否则在查重时懒加载。
+            category_client: 可选 map_cate_name_to_id 协议实例，用于 web 类目过滤。
+            legacy_config: 旧 search 配置，保留本地兼容入口。
         """
         self._repo = repository
         self._embedding = embedding_client
         self._default_index = default_index or repository._default_index
         self._multimodal_prefix = multimodal_prefix or ""
         self._init_legacy_compat(legacy_config)
+        if check_duplicate is not None:
+            self.check_duplicate = check_duplicate
+        if is_need_llm is not None:
+            self.is_need_llm = is_need_llm
+        self.simility_tools = simility_tools
+        self._category = category_client if category_client is not None else self
 
     @classmethod
     def from_config(cls, config_path: str, index_name: Optional[str] = None) -> "KnowledgeService":
@@ -86,19 +130,21 @@ class KnowledgeService(LegacySearchDataInterfaceMixin):
         读取 `multimodal_prefix` 自动注入，保证 search 返回与旧 `search_data_by_query` 一致。
         """
         cfg = load_config(config_path)
-        index_name = index_name or cfg.get("test_index_name")
-        legacy_cfg = {}
-        legacy_cfg_path = cfg.get("legacy_search_config_path") or cfg.get("search_config_path")
-        if legacy_cfg_path and os.path.exists(legacy_cfg_path):
-            try:
-                legacy_cfg = load_config(legacy_cfg_path)
-            except Exception as exc:  # pragma: no cover - malformed optional compatibility config
-                logger.warning("读取 legacy search config 失败: %s", exc)
+        index_name = index_name or cfg.get("default_index_name")
+        if not index_name:
+            index_name = cfg.get("test_index_name")
+            logger.warning(
+                "未指定 default_index_name；回退到 %s，请确认生产索引配置",
+                f"test_index_name={index_name}" if index_name else "engine 默认索引",
+            )
+        legacy_cfg = cls._load_legacy_search_cfg(cfg)
         repo = KnowledgeRepository(
             engine_config_path=cfg["engine_config_path"], default_index=index_name
         )
         embedding = build_embedding_client(cfg["embedding_config_path"])
-        multimodal_prefix = cls._read_multimodal_prefix(cfg)
+        multimodal_prefix = legacy_cfg.get("multimodal_prefix", "") or ""
+        if not multimodal_prefix:
+            logger.warning("multimodal_prefix 未配置；检索时占位符将被替换为空串")
         return cls(
             repo,
             embedding,
@@ -106,6 +152,34 @@ class KnowledgeService(LegacySearchDataInterfaceMixin):
             multimodal_prefix=multimodal_prefix,
             legacy_config=legacy_cfg,
         )
+
+    @staticmethod
+    def _load_legacy_search_cfg(cfg: Dict[str, Any]) -> Dict[str, Any]:
+        """Read the optional legacy service config without hiding missing configuration."""
+        path = cfg.get("legacy_search_config_path") or cfg.get("search_config_path")
+        if not path or not os.path.exists(path):
+            logger.warning("旧 search 配置缺失，使用内置缺省: %r", path)
+            return {}
+        try:
+            return load_config(path)
+        except Exception as exc:
+            logger.warning("读取旧 search 配置失败: %s", exc)
+            return {}
+
+    def _get_simility_tools(self) -> Any:
+        """Use injected/configured duplicate checking, falling back to local thresholds."""
+        if self.simility_tools is None:
+            if LegacySimilityTools is not None:
+                path = self._legacy_config.get("simility_config_path")
+                try:
+                    self.simility_tools = LegacySimilityTools(path or None)
+                except Exception as exc:
+                    logger.warning("加载 SimilityTools 失败，使用本地阈值判重: %s", exc)
+            if self.simility_tools is None:
+                self.simility_tools = _FallbackSimilityTools()
+        return self.simility_tools
+
+    batch_insert = LegacySearchDataInterfaceMixin.batch_insert_data
 
     @staticmethod
     def _read_multimodal_prefix(cfg: Dict[str, Any]) -> str:
@@ -220,6 +294,35 @@ class KnowledgeService(LegacySearchDataInterfaceMixin):
             self.render_multimodal_urls(doc)
         return candidate_docs, total_num
 
+    def search_text_multi(
+        self, query_list: List[str], index_name=None, condition_dicts=None,
+        size: int = 10, search_type: str = "qa", data_type: str = "text",
+        use_synonyms: bool = False,
+    ) -> Tuple[List[Dict[str, Any]], int]:
+        """Remote public name backed by the same routed multi-query implementation."""
+        return self.search_data_by_multi_query(
+            query_list, index_name, condition_dicts, size, search_type, data_type, use_synonyms
+        )
+
+    def _search_text_multi_threading(
+        self, query_list: List[str], index_name=None, condition_dicts=None,
+        size: int = 10, search_type: str = "qa", data_type: str = "text",
+        use_synonyms: bool = False,
+    ) -> Tuple[List[Dict[str, Any]], int]:
+        """Retain the remote fallback entry point without a second search algorithm."""
+        return self._search_data_by_multi_query_threading(
+            query_list, index_name, condition_dicts, size, search_type, data_type, use_synonyms
+        )
+
+    def web_search(
+        self, query: str, client=None, index_name=None, condition_dicts=None,
+        page_size=None, page_num: int = 1, score_threshold=None,
+    ) -> Tuple[List[Dict[str, Any]], int]:
+        """Remote public name backed by the generic category/pagination implementation."""
+        return self.web_search_data(
+            query, client, index_name, condition_dicts, page_size, page_num, score_threshold
+        )
+
     def render_multimodal_urls(self, doc: Dict[str, Any]) -> None:
         """原地渲染检索结果中的多模态内部地址。
 
@@ -267,14 +370,13 @@ class KnowledgeService(LegacySearchDataInterfaceMixin):
     ) -> Dict[str, Any]:
         """生成向量 + _id + 时间字段 + 业务默认（逐行对齐旧 `process_one_data`）。
 
-        本层补齐的业务默认严格对应旧 process_one_data 中**不依赖外部 HTTP/LLM** 的部分：
+        本层补齐旧 process_one_data 的通用 CRUD 默认：
         is_audit→audit_result、audit_result/quality_level/from_type 缺省与矫正、
         from_type_norm、keywords（jieba 本地）、tags、dataset、category_infos[].category_id→str、
-        multimodal_contents→content 拼接、primary_category/默认类目构造和兼容查重副作用。
+        multimodal_contents→content 拼接、显式 primary_category/默认类目构造。
 
         刻意保留与旧实现完全一致的 `_id` 守卫语义：业务默认仅在新建文档（`_id` 未提供）时
-        填入，更新场景（调用方传入 `_id`）一律不动。这是为了与旧 process_one_data 的写入
-        路径行为对齐。
+        填入；非法 audit_result 和非字符串 from_type 在更新时也会规范化。
         """
         is_new = "_id" not in data
 
@@ -285,24 +387,19 @@ class KnowledgeService(LegacySearchDataInterfaceMixin):
                 ext_info[field] = data.pop(field)
         data["ext_info"] = ext_info
 
-        # 2. is_audit → audit_result；audit_result/quality_level 缺省与合法性矫正（仅新建）
+        # 2. 缺省仅用于新建；truthy 非法 audit_result 在 upsert 时也需要矫正。
         if "is_audit" in data:
             data["audit_result"] = data.pop("is_audit")
-        if is_new:
-            if "audit_result" not in data:
-                data["audit_result"] = -1
-            elif data.get("audit_result") and data["audit_result"] not in VALID_AUDIT_RESULTS:
-                logger.warning(
-                    "audit_result 非法 %r，重置为 -1", data["audit_result"]
-                )
-                data["audit_result"] = -1
-            if "quality_level" not in data:
-                data["quality_level"] = "mid"
-            elif data.get("quality_level") not in VALID_QUALITY_LEVELS:
-                logger.warning(
-                    "quality_level 非法 %r，重置为 mid", data["quality_level"]
-                )
-                data["quality_level"] = "mid"
+        if "audit_result" not in data and is_new:
+            data["audit_result"] = -1
+        if data.get("audit_result") and data["audit_result"] not in VALID_AUDIT_RESULTS:
+            logger.warning("audit_result 非法 %r，重置为 -1", data["audit_result"])
+            data["audit_result"] = -1
+        if "quality_level" not in data and is_new:
+            data["quality_level"] = "mid"
+        elif is_new and data.get("quality_level") not in VALID_QUALITY_LEVELS:
+            logger.warning("quality_level 非法 %r，重置为 mid", data["quality_level"])
+            data["quality_level"] = "mid"
 
         # 3. indexes / image_indexes 初始化与冗余构造
         if "indexes" not in data:
@@ -372,11 +469,11 @@ class KnowledgeService(LegacySearchDataInterfaceMixin):
                     raw = legacy_gen_keyword_by_title_content(
                         data.get("title", ""), data.get("content", ""), topK=5
                     )
-                    keywords = [w["word"] for w in raw if isinstance(w, dict) and "word" in w]
+                    keywords = [w["word"] for w in raw]
                     if keywords:
                         data["keywords"] = keywords
-                except Exception as exc:  # pragma: no cover
-                    logger.warning("生成 keywords 失败: %s", exc)
+                except ImportError:
+                    logger.warning("关键词生成工具未实现，跳过关键词生成")
 
         # 8. 空 indexes 清理（旧实现：不允许更新时清空，故空则删字段）
         if "indexes" in data and not data.get("indexes"):
@@ -397,19 +494,15 @@ class KnowledgeService(LegacySearchDataInterfaceMixin):
             data["insert_time"] = current_time
         data["update_time"] = current_time
 
-        # 11. from_type / from_type_norm / tags（仅新建）
-        if is_new:
-            if "from_type" not in data:
-                data["from_type"] = "unknown"
-            elif not isinstance(data["from_type"], str):
-                data["from_type"] = str(data["from_type"])
-            if "from_type_norm" not in data and legacy_get_from_norm_type is not None:
-                try:
-                    data["from_type_norm"] = legacy_get_from_norm_type(data)
-                except Exception as exc:  # pragma: no cover
-                    logger.warning("生成 from_type_norm 失败: %s", exc)
-            if "tags" not in data:
-                data["tags"] = data.get("keywords", [])
+        # 11. from_type 转字符串不分新旧；其余缺省仍只补新建。
+        if "from_type" not in data and is_new:
+            data["from_type"] = "unknown"
+        elif "from_type" in data and not isinstance(data["from_type"], str):
+            data["from_type"] = str(data["from_type"])
+        if is_new and "from_type_norm" not in data and legacy_get_from_norm_type is not None:
+            data["from_type_norm"] = legacy_get_from_norm_type(data)
+        if is_new and "tags" not in data:
+            data["tags"] = data.get("keywords", [])
 
         # 12. del_flag=0：底层引擎的存储契约（不是业务默认值）：
         #     旧 EsSearchInterface 的 search_multi/search/search_by_page 在未显式指定 del_flag
@@ -417,7 +510,7 @@ class KnowledgeService(LegacySearchDataInterfaceMixin):
         if "del_flag" not in data and is_new:
             data["del_flag"] = 0
 
-        # 13. category_infos 归一化、类目树解析和默认分组（旧服务完整行为）
+        # 13. 显式类目归一化、类目树解析和默认分组；不做挖掘推断。
         self._apply_category_defaults(data, is_new=is_new)
 
         # 14. dataset 缺省 = index_name（仅在 index_name 非空时）
@@ -441,8 +534,7 @@ class KnowledgeService(LegacySearchDataInterfaceMixin):
             ftype = file_info.get("type")
             if ftype == "text":
                 piece = file_info.get("content")
-                if piece:
-                    content = f"{content}\n{piece}" if content else piece
+                content = f"{content}\n{piece}" if content else piece
             elif ftype in MULTIMODAL_FILE_TYPES:
                 if file_info.get("path"):
                     address = f'{MULTIMODAL_PREFIX_PLACEHOLDER}{file_info["path"]}'

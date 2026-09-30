@@ -15,11 +15,14 @@
   - **已对齐**（纯本地、零外部 IO）：is_audit→audit_result、audit_result/quality_level/from_type 缺省与矫正、from_type_norm（规则映射）、keywords（jieba.analyse 本地分词）、tags=keywords、category_infos[].category_id→str、dataset 缺省=index_name、multimodal_contents→content 拼接、search 返回时 `[multimodal_prefix]` 替换。
   - **兼容服务已补齐**：dedup 去重、primary_category 构造、web_search、批量插入和按文件操作都由兼容层暴露，底层请求统一走 ES8.17。
   - **范围排除**：Payoneer Olive 自动类目推断属于上游挖掘，CRUD/检索不实现；仍支持显式类目入库、通用类目解析和过滤。
+- **知识写入 HTTP API**：保留远端 `/knowledge/insert`、`/knowledge/delete`、`/knowledge/modify_direct_update` 和 `/health`；`dry_run` 不加载 CRUD/ES。它们不代表旧检索 HTTP 路径已全部迁移。
 
 ## 目录
 
 ```
 src/kdb/
+  api/                # FastAPI 写入接口，首次实写才构建 Service
+  modify/             # 上游决策后的单索引写入计划（无挖掘逻辑）
   legacy_bridge.py     # 接线：路由引擎 + 兼容旧 embedding/_id/AliEmbedding
   es/client_router.py  # index -> Serverless/PaaS -> ES8.17 client
   es/engine.py         # ES8 named API、native KNN、按 provider 拆分多索引请求
@@ -53,6 +56,9 @@ KDB_LEGACY_ROOT=/path/to/old ./run_tests.sh   # 覆盖旧项目根路径
 ```
 
 `python3 -m pytest -q -m 'not integration'` 可运行离线路由/业务单测；完整集成测试需要可访问的 ES8.17 与 DashScope embedding 服务，使用配置中的独立测试索引。
+合并后的 API/modify 回归也在 `tests/`，不会因缺少 FastAPI 而跳过。安装项目和测试依赖：
+`python -m pip install -e . pytest numpy httpx`。启动写入 API：
+`KDB_FORGE_CONFIG=config/config_test.json uvicorn kdb.api.app:app --port 8010`。
 
 混用两个 Aliyun ES 服务时，按 `config/config_es_engine.json.example` 增加 `providers`、
 `default_provider` 和 `index_routes`；`pass` 是 `paas` 的兼容别名。
