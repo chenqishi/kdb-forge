@@ -24,7 +24,7 @@ VECTOR_PATHS = (
     "indexes.embedding",
     "image_indexes.embedding",
 )
-BATCH_DOCS = 100
+BATCH_DOCS = 500
 MAX_BULK_BYTES = 15 * 1024 * 1024
 RETRY_STATUSES = {429, 500, 502, 503, 504}
 
