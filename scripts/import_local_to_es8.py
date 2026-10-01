@@ -221,6 +221,16 @@ def main() -> int:
     # Export checkpoints use status=done; after this phase the same checkpoint
     # is status=import_done.  Keep both forms resumable without touching ES7.
     states = [x for x in states if x.get("status") == "done" or x.get("import_status") == "done"]
+    if args.provider == "all":
+        manifest_path = dump_dir / "manifest.json"
+        if manifest_path.exists():
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            expected = int(manifest.get("selected_count", len(states)))
+            if len(states) != expected:
+                raise SystemExit(
+                    f"本地导出尚未完成：checkpoint={len(states)} expected={expected}；"
+                    "先完成 export/enrich，再执行 import"
+                )
     if args.provider != "all":
         states = [x for x in states if ("payoneer" in x.get("source_index", "").lower()) == (args.provider == "paas")]
     manifest_path = dump_dir / "import_manifest.json"
