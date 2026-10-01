@@ -25,7 +25,9 @@ VECTOR_PATHS = (
     "image_indexes.embedding",
 )
 BATCH_DOCS = 500
-SCROLL_KEEPALIVE = "30m"
+# The source ES7 cluster caps search.max_keep_alive at 15m; leave headroom
+# for a slow bulk request while avoiding a rejected scroll request.
+SCROLL_KEEPALIVE = "10m"
 MAX_BULK_BYTES = 15 * 1024 * 1024
 RETRY_STATUSES = {429, 500, 502, 503, 504}
 MAX_BULK_ATTEMPTS = 8
