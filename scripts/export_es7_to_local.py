@@ -62,6 +62,9 @@ def export_index(source: ESHttp, index: str, dump_dir: Path, state_path: Path) -
         watermark = source_watermark(source, index)
         state.update({
             "source_mapping_sha256": mapping_hash,
+            # Keep the transformed ES8 mapping in the checkpoint.  Import must
+            # be able to create the target without querying ES7 again.
+            "source_mapping": mappings,
             "source_settings": settings,
             "source_watermark": watermark,
         })
@@ -74,6 +77,7 @@ def export_index(source: ESHttp, index: str, dump_dir: Path, state_path: Path) -
         scroll_id = search.get("_scroll_id")
         state["source_count_at_start"] = total_hits(search)
         dump_dir.mkdir(parents=True, exist_ok=True)
+        ndjson_digest = hashlib.sha256()
         with gzip.open(temp_output, "wt", encoding="utf-8", newline="\n") as out:
             body = search
             while True:
@@ -87,6 +91,7 @@ def export_index(source: ESHttp, index: str, dump_dir: Path, state_path: Path) -
                         separators=(",", ":"),
                     ) + "\n"
                     out.write(line)
+                    ndjson_digest.update(line.encode("utf-8"))
                     state["docs_exported"] += 1
                     state["bytes_uncompressed"] += len(line.encode("utf-8"))
                 atomic_json(state_path, state)
@@ -102,6 +107,7 @@ def export_index(source: ESHttp, index: str, dump_dir: Path, state_path: Path) -
         state.update({
             "compressed_bytes": output.stat().st_size,
             "sha256": digest.hexdigest(),
+            "ndjson_sha256": ndjson_digest.hexdigest(),
             "finished_at": utc_now(),
             "status": "done",
         })
