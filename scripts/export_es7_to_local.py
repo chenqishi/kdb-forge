@@ -37,6 +37,14 @@ def atomic_json(path: Path, value: Mapping[str, Any]) -> None:
     temp.replace(path)
 
 
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def file_name(index: str) -> str:
     safe = re.sub(r"[^a-z0-9_.-]+", "_", index.lower())[:160]
     digest = hashlib.sha256(index.encode()).hexdigest()[:16]
@@ -158,9 +166,13 @@ def main() -> int:
         if state_path.exists():
             existing = json.loads(state_path.read_text(encoding="utf-8"))
             if existing.get("status") == "done" and Path(existing.get("file", "")).exists():
-                manifest["indices"].append(existing)
-                print(json.dumps({"index": index, "status": "already_done"}, ensure_ascii=False), flush=True)
-                continue
+                # A dump is importable only when its transformed mapping and
+                # checksum are present.  Older exporters wrote only the hash;
+                # those checkpoints are deliberately re-exported.
+                if existing.get("source_mapping") and existing.get("sha256") == sha256_file(Path(existing["file"])):
+                    manifest["indices"].append(existing)
+                    print(json.dumps({"index": index, "status": "already_done"}, ensure_ascii=False), flush=True)
+                    continue
         print(json.dumps({"index": index, "status": "start"}, ensure_ascii=False), flush=True)
         try:
             result = export_index(source, index, dump_dir, state_path)
