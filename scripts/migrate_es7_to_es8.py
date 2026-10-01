@@ -10,6 +10,7 @@ import argparse
 import copy
 import hashlib
 import json
+import os
 import sys
 import time
 from datetime import datetime, timezone
@@ -44,7 +45,7 @@ def total_hits(body: Mapping[str, Any]) -> int:
 
 def atomic_json(path: Path, value: Mapping[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    temp = path.with_suffix(path.suffix + ".tmp")
+    temp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
     temp.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     temp.replace(path)
 
