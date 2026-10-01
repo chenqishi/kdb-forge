@@ -218,7 +218,9 @@ def main() -> int:
     targets = {name: ESHttp(cfg) for name, cfg in target_cfg["providers"].items()}
     paths = sorted(states_dir.glob("*.json"))
     states = [json.loads(path.read_text(encoding="utf-8")) for path in paths]
-    states = [x for x in states if x.get("status") == "done"]
+    # Export checkpoints use status=done; after this phase the same checkpoint
+    # is status=import_done.  Keep both forms resumable without touching ES7.
+    states = [x for x in states if x.get("status") == "done" or x.get("import_status") == "done"]
     if args.provider != "all":
         states = [x for x in states if ("payoneer" in x.get("source_index", "").lower()) == (args.provider == "paas")]
     manifest_path = dump_dir / "import_manifest.json"
