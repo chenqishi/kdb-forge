@@ -108,6 +108,11 @@ def export_index(source: ESHttp, index: str, dump_dir: Path, state_path: Path) -
                 body = source.json("POST", "/_search/scroll", json={"scroll": SCROLL_KEEPALIVE, "scroll_id": scroll_id})
                 scroll_id = body.get("_scroll_id", scroll_id)
         temp_output.replace(output)
+        if state.get("docs_exported") != state.get("source_count_at_start"):
+            raise RuntimeError(
+                f"数量不一致 source={state.get('source_count_at_start')} "
+                f"exported={state.get('docs_exported')}"
+            )
         digest = hashlib.sha256()
         with output.open("rb") as inp:
             for chunk in iter(lambda: inp.read(1024 * 1024), b""):
