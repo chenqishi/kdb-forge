@@ -225,6 +225,16 @@ def main() -> int:
         manifest_path = dump_dir / "manifest.json"
         if manifest_path.exists():
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            selected_names = {
+                str(item.get("source_index"))
+                for item in manifest.get("indices", [])
+                if item.get("source_index")
+            }
+            if selected_names:
+                # The dump directory can contain checkpoints from an older
+                # canary/replay run.  Only the current export manifest is
+                # authoritative for this import phase.
+                states = [x for x in states if x.get("source_index") in selected_names]
             expected = int(manifest.get("selected_count", len(states)))
             if len(states) != expected:
                 raise SystemExit(
