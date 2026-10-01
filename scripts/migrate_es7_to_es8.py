@@ -28,6 +28,7 @@ BATCH_DOCS = 500
 SCROLL_KEEPALIVE = "30m"
 MAX_BULK_BYTES = 15 * 1024 * 1024
 RETRY_STATUSES = {429, 500, 502, 503, 504}
+MAX_BULK_ATTEMPTS = 8
 
 
 def utc_now() -> str:
@@ -190,16 +191,19 @@ def create_target(
 
 
 def bulk_batch(target: ESHttp, target_index: str, hits: List[Mapping[str, Any]]) -> Tuple[int, List[str], int]:
-    lines: List[str] = []
-    ids: List[str] = []
-    for hit in hits:
-        doc_id = str(hit["_id"])
-        ids.append(doc_id)
-        lines.append(json.dumps({"index": {"_index": target_index, "_id": doc_id}}, ensure_ascii=False, separators=(",", ":")))
-        lines.append(json.dumps(hit.get("_source") or {}, ensure_ascii=False, separators=(",", ":")))
-    payload = ("\n".join(lines) + "\n").encode("utf-8")
+    pending = list(hits)
+    total_bytes = 0
     last_error = ""
-    for attempt in range(5):
+    for attempt in range(MAX_BULK_ATTEMPTS):
+        lines: List[str] = []
+        ids: List[str] = []
+        for hit in pending:
+            doc_id = str(hit["_id"])
+            ids.append(doc_id)
+            lines.append(json.dumps({"index": {"_index": target_index, "_id": doc_id}}, ensure_ascii=False, separators=(",", ":")))
+            lines.append(json.dumps(hit.get("_source") or {}, ensure_ascii=False, separators=(",", ":")))
+        payload = ("\n".join(lines) + "\n").encode("utf-8")
+        total_bytes += len(payload)
         response = target.request("POST", "/_bulk", data=payload, headers={"Content-Type": "application/x-ndjson"})
         if response.status_code in RETRY_STATUSES:
             last_error = f"HTTP {response.status_code}"
@@ -208,16 +212,29 @@ def bulk_batch(target: ESHttp, target_index: str, hits: List[Mapping[str, Any]])
         if response.status_code != 200:
             raise RuntimeError(f"bulk 请求失败: HTTP {response.status_code}: {response.text[:600]}")
         body = response.json()
-        failed: List[str] = []
-        for doc_id, item in zip(ids, body.get("items", [])):
+        if len(body.get("items", [])) != len(pending):
+            last_error = f"bulk 返回 item 数量不一致 expected={len(pending)} actual={len(body.get('items', []))}"
+            time.sleep(min(30, 2 ** attempt))
+            continue
+        failed_hits: List[Mapping[str, Any]] = []
+        failure_details: List[str] = []
+        failed_statuses: List[int] = []
+        for hit, doc_id, item in zip(pending, ids, body.get("items", [])):
             op = item.get("index") or item.get("create") or {}
-            if int(op.get("status", 500)) >= 300:
-                failed.append(doc_id)
-        if not failed:
-            return len(hits), [], len(payload)
-        last_error = f"bulk item failures={len(failed)}"
+            status = int(op.get("status", 500))
+            if status >= 300:
+                failed_hits.append(hit)
+                failed_statuses.append(status)
+                error = op.get("error") or {}
+                failure_details.append(f"{doc_id}:{error.get('type', 'unknown')}:{error.get('reason', '')[:160]}")
+        if not failed_hits:
+            return len(hits), [], total_bytes
+        pending = failed_hits
+        last_error = f"bulk item failures={len(failed_hits)}; {' | '.join(failure_details[:5])}"
+        if any(status not in RETRY_STATUSES for status in failed_statuses):
+            break
         time.sleep(min(30, 2 ** attempt))
-    raise RuntimeError(f"bulk 重试耗尽: {last_error}; ids={ids[:5]}")
+    raise RuntimeError(f"bulk 重试耗尽: {last_error}; ids={[str(hit['_id']) for hit in pending[:5]]}")
 
 
 def migrate_index(
