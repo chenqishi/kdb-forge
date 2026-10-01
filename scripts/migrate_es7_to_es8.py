@@ -25,6 +25,7 @@ VECTOR_PATHS = (
     "image_indexes.embedding",
 )
 BATCH_DOCS = 500
+SCROLL_KEEPALIVE = "30m"
 MAX_BULK_BYTES = 15 * 1024 * 1024
 RETRY_STATUSES = {429, 500, 502, 503, 504}
 
@@ -253,7 +254,7 @@ def migrate_index(
         try:
             body = source.json(
                 "POST",
-                f"/{index}/_search?scroll=5m",
+                f"/{index}/_search?scroll={SCROLL_KEEPALIVE}",
                 json={"size": BATCH_DOCS, "sort": ["_doc"], "track_total_hits": True, "query": {"match_all": {}}},
             )
             scroll_id = body.get("_scroll_id")
@@ -282,7 +283,7 @@ def migrate_index(
                     atomic_json(state_path, state)
                 if not scroll_id:
                     break
-                body = source.json("POST", "/_search/scroll", json={"scroll": "5m", "scroll_id": scroll_id})
+                body = source.json("POST", "/_search/scroll", json={"scroll": SCROLL_KEEPALIVE, "scroll_id": scroll_id})
                 scroll_id = body.get("_scroll_id", scroll_id)
         finally:
             if scroll_id:
