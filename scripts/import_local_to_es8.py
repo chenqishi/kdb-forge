@@ -121,10 +121,6 @@ def create_target(
     body = {
         "settings": {
             "number_of_shards": int(new_index_shards),
-            # Reserve a 1 -> 3 split path for new one-primary indices.  The
-            # Serverless service still needs to support the split API; if it
-            # does not, the local dump remains the safe re-import fallback.
-            "number_of_routing_shards": 3 if int(new_index_shards) == 1 else int(new_index_shards),
             "number_of_replicas": 0,
             "refresh_interval": "-1",
         },
