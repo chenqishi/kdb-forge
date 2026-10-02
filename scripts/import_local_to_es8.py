@@ -43,6 +43,24 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def load_shard_plan(path: Path | None) -> Dict[str, Dict[str, Any]]:
+    if path is None:
+        return {}
+    body = json.loads(path.read_text(encoding="utf-8"))
+    rows = body.get("selected", [])
+    if not isinstance(rows, list):
+        raise RuntimeError(f"分片计划格式错误: {path}")
+    result: Dict[str, Dict[str, Any]] = {}
+    for row in rows:
+        name = str(row.get("source_index", ""))
+        if not name or int(row.get("target_shards", 0)) < 1:
+            raise RuntimeError(f"分片计划缺少有效配置: {row}")
+        if name in result:
+            raise RuntimeError(f"分片计划存在重复索引: {name}")
+        result[name] = row
+    return result
+
+
 def staged_name(index: str, run_id: str) -> str:
     return f"{index}__v817_{run_id}".lower()[:240]
 
@@ -69,6 +87,23 @@ def ensure_target_mapping(target: ESHttp, index: str) -> None:
         raise RuntimeError(f"目标 {index} 向量 mapping 不合格: {', '.join(bad)}")
 
 
+def ensure_target_shards(target: ESHttp, index: str, expected: int) -> None:
+    body = target.json("GET", f"/{index}/_settings")
+    entry = body.get(index) or next(iter(body.values()))
+    settings = entry.get("settings", {})
+    actual_raw = settings.get("index.number_of_shards")
+    if actual_raw is None:
+        actual_raw = settings.get("index", {}).get("number_of_shards")
+    if actual_raw is None:
+        raise RuntimeError(f"目标 {index} 无法读取 number_of_shards")
+    actual = int(actual_raw)
+    if actual != int(expected):
+        raise RuntimeError(
+            f"目标 {index} 已存在但主分片数不符合计划: actual={actual} expected={expected}; "
+            "主分片数创建后不能原地修改，需要新建版本索引并重新导入"
+        )
+
+
 def create_target(
     target: ESHttp,
     target_index: str,
@@ -78,6 +113,7 @@ def create_target(
 ) -> None:
     exists = target.request("HEAD", f"/{target_index}")
     if exists.status_code == 200:
+        ensure_target_shards(target, target_index, new_index_shards)
         ensure_target_mapping(target, target_index)
         return
     if exists.status_code != 404:
@@ -224,6 +260,7 @@ def main() -> int:
     parser.add_argument("--provider", choices=["paas", "serverless", "all"], default="all")
     parser.add_argument("--new-index-shards", type=int, default=1)
     parser.add_argument("--target-replicas", type=int, default=0)
+    parser.add_argument("--shard-plan", type=Path, help="按 source_index 指定目标主分片数的本地 JSON 计划")
     args = parser.parse_args()
     dump_dir = Path(args.dump_dir)
     states_dir = dump_dir / "states"
@@ -231,6 +268,7 @@ def main() -> int:
         raise SystemExit(f"找不到导出 checkpoint: {states_dir}")
     target_cfg = json.loads(Path(args.target_config).read_text(encoding="utf-8"))
     targets = {name: ESHttp(cfg) for name, cfg in target_cfg["providers"].items()}
+    shard_plan = load_shard_plan(args.shard_plan)
     paths = sorted(states_dir.glob("*.json"))
     states = [json.loads(path.read_text(encoding="utf-8")) for path in paths]
     manifest_path = dump_dir / "manifest.json"
@@ -246,7 +284,11 @@ def main() -> int:
             # canary/replay run.  Only the current export manifest is
             # authoritative for this import phase.
             states = [x for x in states if x.get("source_index") in selected_names]
+        if shard_plan:
+            states = [x for x in states if x.get("source_index") in shard_plan]
         expected = int(manifest.get("selected_count", len(states)))
+        if shard_plan:
+            expected = len(states)
         # Import failures change checkpoint status to import_failed.  The
         # dump itself remains valid and must be eligible for retry.
         states = [
@@ -271,6 +313,7 @@ def main() -> int:
         index = state["source_index"]
         provider = "paas" if "payoneer" in index.lower() else "serverless"
         target_index = staged_name(index, args.run_id)
+        planned_shards = int(shard_plan.get(index, {}).get("target_shards", args.new_index_shards))
         state_path = states_dir / (hashlib.sha256(index.encode()).hexdigest()[:16] + ".json")
         # A completed import is idempotently skipped after its checkpoint is retained.
         if state.get("import_status") == "done" and state.get("target_index") == target_index:
@@ -282,7 +325,7 @@ def main() -> int:
         try:
             result = import_one(
                 targets[provider], state_path, state, target_index,
-                args.new_index_shards, args.target_replicas,
+                planned_shards, args.target_replicas,
             )
             done += 1
             manifest["indices"].append(result)
