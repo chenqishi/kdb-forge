@@ -69,7 +69,13 @@ def ensure_target_mapping(target: ESHttp, index: str) -> None:
         raise RuntimeError(f"目标 {index} 向量 mapping 不合格: {', '.join(bad)}")
 
 
-def create_target(target: ESHttp, target_index: str, mappings: Mapping[str, Any], settings: Mapping[str, Any]) -> None:
+def create_target(
+    target: ESHttp,
+    target_index: str,
+    mappings: Mapping[str, Any],
+    settings: Mapping[str, Any],
+    new_index_shards: int,
+) -> None:
     exists = target.request("HEAD", f"/{target_index}")
     if exists.status_code == 200:
         ensure_target_mapping(target, target_index)
@@ -78,7 +84,7 @@ def create_target(target: ESHttp, target_index: str, mappings: Mapping[str, Any]
         raise RuntimeError(f"检查目标索引失败 {target_index}: HTTP {exists.status_code}")
     body = {
         "settings": {
-            "number_of_shards": int(settings.get("shards", 3)),
+            "number_of_shards": int(new_index_shards),
             "number_of_replicas": 0,
             "refresh_interval": "-1",
         },
@@ -162,7 +168,13 @@ def iter_batches(path: Path) -> Iterable[List[Mapping[str, Any]]]:
             yield batch
 
 
-def import_one(target: ESHttp, state_path: Path, state: Dict[str, Any], target_index: str) -> Dict[str, Any]:
+def import_one(
+    target: ESHttp,
+    state_path: Path,
+    state: Dict[str, Any],
+    target_index: str,
+    new_index_shards: int,
+) -> Dict[str, Any]:
     dump = Path(state["file"])
     if not dump.exists():
         raise RuntimeError(f"本地 dump 不存在: {dump}")
@@ -177,7 +189,7 @@ def import_one(target: ESHttp, state_path: Path, state: Dict[str, Any], target_i
     state.update({"target_index": target_index, "import_status": "running", "import_started_at": utc_now(), "docs_imported": 0, "bulk_batches": 0, "bulk_bytes": 0})
     atomic_json(state_path, state)
     try:
-        create_target(target, target_index, mappings, settings)
+        create_target(target, target_index, mappings, settings, new_index_shards)
         for batch in iter_batches(dump):
             sent, byte_count = bulk_batch(target, target_index, list(batch))
             state["docs_imported"] += sent
@@ -209,6 +221,7 @@ def main() -> int:
     parser.add_argument("--dump-dir", required=True, help="与 export_es7_to_local.py 相同的目录")
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--provider", choices=["paas", "serverless", "all"], default="all")
+    parser.add_argument("--new-index-shards", type=int, default=1)
     args = parser.parse_args()
     dump_dir = Path(args.dump_dir)
     states_dir = dump_dir / "states"
@@ -218,9 +231,6 @@ def main() -> int:
     targets = {name: ESHttp(cfg) for name, cfg in target_cfg["providers"].items()}
     paths = sorted(states_dir.glob("*.json"))
     states = [json.loads(path.read_text(encoding="utf-8")) for path in paths]
-    # Export checkpoints use status=done; after this phase the same checkpoint
-    # is status=import_done.  Keep both forms resumable without touching ES7.
-    states = [x for x in states if x.get("status") == "done" or x.get("import_status") == "done"]
     if args.provider == "all":
         manifest_path = dump_dir / "manifest.json"
         if manifest_path.exists():
@@ -236,6 +246,15 @@ def main() -> int:
                 # authoritative for this import phase.
                 states = [x for x in states if x.get("source_index") in selected_names]
             expected = int(manifest.get("selected_count", len(states)))
+            # Import failures change checkpoint status to import_failed.  The
+            # dump itself remains valid and must be eligible for retry.
+            states = [
+                x for x in states
+                if x.get("file")
+                and Path(x["file"]).exists()
+                and x.get("sha256")
+                and x.get("docs_exported") == x.get("source_count_at_start")
+            ]
             if len(states) != expected:
                 raise SystemExit(
                     f"本地导出尚未完成：checkpoint={len(states)} expected={expected}；"
@@ -260,7 +279,7 @@ def main() -> int:
             continue
         print(json.dumps({"index": index, "provider": provider, "status": "start", "target": target_index}, ensure_ascii=False), flush=True)
         try:
-            result = import_one(targets[provider], state_path, state, target_index)
+            result = import_one(targets[provider], state_path, state, target_index, args.new_index_shards)
             done += 1
             manifest["indices"].append(result)
             print(json.dumps({"index": index, "status": "done", "source_count": result.get("docs_exported"), "target_count": result.get("target_count")}, ensure_ascii=False), flush=True)
