@@ -174,6 +174,7 @@ def import_one(
     state: Dict[str, Any],
     target_index: str,
     new_index_shards: int,
+    target_replicas: int,
 ) -> Dict[str, Any]:
     dump = Path(state["file"])
     if not dump.exists():
@@ -204,7 +205,7 @@ def import_one(
             raise RuntimeError(f"数量不一致 exported={state.get('docs_exported')} target={target_count}")
         del_body = target.json("POST", f"/{target_index}/_search", json={"size": 0, "track_total_hits": False, "aggs": {"del": {"terms": {"field": "del_flag", "size": 10}}}})
         state["target_del_flag"] = del_body.get("aggregations", {}).get("del", {}).get("buckets", [])
-        settings_response = target.request("PUT", f"/{target_index}/_settings", json={"index": {"refresh_interval": "30s", "number_of_replicas": int(settings.get("replicas", 1))}})
+        settings_response = target.request("PUT", f"/{target_index}/_settings", json={"index": {"refresh_interval": "30s", "number_of_replicas": target_replicas}})
         state["replicas_update_status"] = settings_response.status_code
         state.update({"import_status": "done", "status": "import_done", "import_finished_at": utc_now()})
         atomic_json(state_path, state)
@@ -222,6 +223,7 @@ def main() -> int:
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--provider", choices=["paas", "serverless", "all"], default="all")
     parser.add_argument("--new-index-shards", type=int, default=1)
+    parser.add_argument("--target-replicas", type=int, default=0)
     args = parser.parse_args()
     dump_dir = Path(args.dump_dir)
     states_dir = dump_dir / "states"
@@ -279,7 +281,10 @@ def main() -> int:
             continue
         print(json.dumps({"index": index, "provider": provider, "status": "start", "target": target_index}, ensure_ascii=False), flush=True)
         try:
-            result = import_one(targets[provider], state_path, state, target_index, args.new_index_shards)
+            result = import_one(
+                targets[provider], state_path, state, target_index,
+                args.new_index_shards, args.target_replicas,
+            )
             done += 1
             manifest["indices"].append(result)
             print(json.dumps({"index": index, "status": "done", "source_count": result.get("docs_exported"), "target_count": result.get("target_count")}, ensure_ascii=False), flush=True)
