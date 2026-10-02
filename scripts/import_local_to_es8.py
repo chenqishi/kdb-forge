@@ -233,35 +233,34 @@ def main() -> int:
     targets = {name: ESHttp(cfg) for name, cfg in target_cfg["providers"].items()}
     paths = sorted(states_dir.glob("*.json"))
     states = [json.loads(path.read_text(encoding="utf-8")) for path in paths]
-    if args.provider == "all":
-        manifest_path = dump_dir / "manifest.json"
-        if manifest_path.exists():
-            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-            selected_names = {
-                str(item.get("source_index"))
-                for item in manifest.get("indices", [])
-                if item.get("source_index")
-            }
-            if selected_names:
-                # The dump directory can contain checkpoints from an older
-                # canary/replay run.  Only the current export manifest is
-                # authoritative for this import phase.
-                states = [x for x in states if x.get("source_index") in selected_names]
-            expected = int(manifest.get("selected_count", len(states)))
-            # Import failures change checkpoint status to import_failed.  The
-            # dump itself remains valid and must be eligible for retry.
-            states = [
-                x for x in states
-                if x.get("file")
-                and Path(x["file"]).exists()
-                and x.get("sha256")
-                and x.get("docs_exported") == x.get("source_count_at_start")
-            ]
-            if len(states) != expected:
-                raise SystemExit(
-                    f"本地导出尚未完成：checkpoint={len(states)} expected={expected}；"
-                    "先完成 export/enrich，再执行 import"
-                )
+    manifest_path = dump_dir / "manifest.json"
+    if manifest_path.exists():
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        selected_names = {
+            str(item.get("source_index"))
+            for item in manifest.get("indices", [])
+            if item.get("source_index")
+        }
+        if selected_names:
+            # The dump directory can contain checkpoints from an older
+            # canary/replay run.  Only the current export manifest is
+            # authoritative for this import phase.
+            states = [x for x in states if x.get("source_index") in selected_names]
+        expected = int(manifest.get("selected_count", len(states)))
+        # Import failures change checkpoint status to import_failed.  The
+        # dump itself remains valid and must be eligible for retry.
+        states = [
+            x for x in states
+            if x.get("file")
+            and Path(x["file"]).exists()
+            and x.get("sha256")
+            and x.get("docs_exported") == x.get("source_count_at_start")
+        ]
+        if args.provider == "all" and len(states) != expected:
+            raise SystemExit(
+                f"本地导出尚未完成：checkpoint={len(states)} expected={expected}；"
+                "先完成 export/enrich，再执行 import"
+            )
     if args.provider != "all":
         states = [x for x in states if ("payoneer" in x.get("source_index", "").lower()) == (args.provider == "paas")]
     manifest_path = dump_dir / "import_manifest.json"
