@@ -519,6 +519,32 @@ def main() -> int:
         "keyword_probes": sum(len(x["keyword_probes"]) for x in report["providers"].values()),
         "knn_probes": sum(len(x["knn_probes"]) for x in report["providers"].values()),
     }
+    index_checks = [item for provider in report["providers"].values() for item in provider["indices"].values()]
+    keyword_checks = [item for provider in report["providers"].values() for item in provider["keyword_probes"] if item.get("status") != "skipped"]
+    knn_checks = [item for provider in report["providers"].values() for item in provider["knn_probes"] if item.get("status") != "skipped"]
+    report["summary"].update({
+        "count_mismatch_indices": sum(not item.get("count_equal") for item in index_checks),
+        "export_count_mismatch_indices": sum(not item.get("target_count_matches_export") for item in index_checks),
+        "del_flag_mismatch_indices": sum(item.get("source_del_flag") != item.get("target_del_flag") for item in index_checks),
+        "vector_mapping_failures": sum(
+            1 for item in index_checks for mapping in item.get("mapping_vectors", {}).values() if not mapping.get("target_hnsw_ok")
+        ),
+        "keyword_errors": sum(item.get("status") == "error" for item in keyword_checks),
+        "knn_errors": sum(item.get("status") == "error" for item in knn_checks),
+        # ``data_equal_pass`` is deliberately strict.  Query overlap is kept
+        # as a metric because HNSW is approximate and may legitimately reorder
+        # near-ties even when both mappings and stored vectors are correct.
+        "data_equal_pass": bool(index_checks) and all(
+            item.get("count_equal") and item.get("target_count_matches_export") and item.get("source_del_flag") == item.get("target_del_flag")
+            for item in index_checks
+        ) and all(x.get("equal") for x in all_doc_results),
+        "vector_mapping_pass": bool(index_checks) and all(
+            mapping.get("target_hnsw_ok")
+            for item in index_checks
+            for mapping in item.get("mapping_vectors", {}).values()
+        ),
+        "query_transport_pass": all(item.get("status") == "ok" for item in keyword_checks + knn_checks),
+    })
     output = Path(args.report) if args.report else dump_dir / "online_compare.json"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
