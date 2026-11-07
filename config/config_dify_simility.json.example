@@ -1,0 +1,4 @@
+{
+  "simility_dify_api_key": "SET_CURRENT_API_KEY",
+  "simility_dify_api_base": "https://dify.example.invalid/v1"
+}

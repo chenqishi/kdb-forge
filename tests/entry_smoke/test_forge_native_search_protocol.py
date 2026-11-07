@@ -5,9 +5,9 @@ from unittest.mock import Mock
 import numpy as np
 import pytest
 
-from test_es8_interface import routed_clients
-from kdb.crud.repository import KnowledgeRepository
-from kdb.crud.service import KnowledgeService
+from tests.retrieval.test_es8_interface import routed_clients
+from kdb.services.forge_compat.repository import KnowledgeRepository
+from kdb.services.forge_compat.adapter import KnowledgeService
 
 
 @pytest.mark.parametrize("method,query", [

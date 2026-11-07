@@ -17,10 +17,10 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any, Optional
 
-from kdb.modify.models import ModifyPlan, ModifyResult
+from kdb.services.forge_compat.modify.models import ModifyPlan, ModifyResult
 
 if TYPE_CHECKING:  # 仅类型注解用；运行期不导入 kdb.crud(避免拉入旧 ES 依赖，单测可纯 mock)
-    from kdb.crud.service import KnowledgeService
+    from kdb.services.forge_compat.adapter import KnowledgeService
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ def apply_modify_plan(
     """执行一次写入计划，返回 ModifyResult。
 
     Args:
-        knowledge_service: kdb.crud.KnowledgeService（共享 repo+embedding；index 按 plan.es_index 传）。
+        knowledge_service: kdb.services.forge_compat.adapter.KnowledgeService（共享 repo+embedding；index 按 plan.es_index 传）。
         plan: 写入计划（单 es_index）。
         dry_run: True 则不真写，仅回计划。
     """

@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 """
@@ -15,8 +16,6 @@
 另外对方已声明其 348 条本身带约 43% 的闸门误杀偏差，
 所以**匹配不上不代表对方没有该 query**，可能只是被它上游的闸门筛掉了。
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('query_understanding_analysis/align_gap_queries.py')
 
 import argparse
 import csv
@@ -27,12 +26,9 @@ import re
 import sys
 from typing import Dict, List, Optional, Tuple
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+PROJECT_ROOT = str(_PROJECT_ROOT)
 
-DEFAULT_GAP_CSV = ('/root/sell_agents/docs/payoneer_olive_v6_data/'
-                   '缺口query_供交叉对齐_348条.csv')
+DEFAULT_GAP_CSV = os.environ.get('KDB_GAP_CSV')
 
 _PUNCT_RE = re.compile(r'[\s，。！？!?、,.；;：:（）()【】\[\]「」“”"\'`~\-_/\\|]+')
 
@@ -115,7 +111,8 @@ def align(peer: List[dict], local: List[dict],
 
 def main():
     ap = argparse.ArgumentParser(description='缺口 query ↔ 本地未答复检 对齐')
-    ap.add_argument('--gap-csv', default=DEFAULT_GAP_CSV)
+    ap.add_argument('--gap-csv', default=DEFAULT_GAP_CSV, required=not bool(DEFAULT_GAP_CSV),
+                    help='缺口CSV路径；也可通过KDB_GAP_CSV配置')
     ap.add_argument('--local-jsonl', required=True,
                     help='本地复检产物 review_*.jsonl')
     ap.add_argument('--platform', default=None, help='只对齐某个平台')

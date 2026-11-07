@@ -1,4 +1,4 @@
-"""Read-only local prerequisites, then exec the unchanged legacy service entry."""
+"""Read-only local prerequisites, then exec the canonical service module."""
 import importlib
 import importlib.util
 import json
@@ -7,15 +7,9 @@ from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
-ENTRYPOINTS = {
-    'retrieval': 'knowledge_database_search_service/src/knowledge_database_search_es.py',
-    'off_task': 'control_service/off_task_control_service.py',
-    'crawler': 'knowledge_crawler_tool/server/server.py',
-    'files': 'file_service/file_access_service.py',
-    'multilingual': 'multi_language/multi_language_service.py',
-    'csat': 'single_service/csat_report_service.py',
-    'fastgpt_proxy': 'knowledge_database_search_service/src/knowledge_database_search.py',
-}
+ENTRYPOINTS = {name: 'kdb.services.' + name + '.app' for name in (
+    'retrieval', 'off_task', 'crawler', 'files', 'multilingual', 'csat', 'fastgpt_proxy',
+)}
 DEPENDENCIES = {
     'retrieval': ['fastapi', 'pydantic', 'uvicorn', 'httpx', 'requests', 'numpy', 'jieba', 'elasticsearch'],
     'off_task': ['flask', 'mysql.connector', 'psutil', 'fitz', 'boto3', 'botocore', 'docx', 'docx2pdf', 'PyPDF2', 'PIL', 'requests'],
@@ -86,7 +80,8 @@ def check(service, argv):
               'python_version': sys.version.split()[0], 'sys_prefix': sys.prefix,
               'sys_base_prefix': getattr(sys, 'base_prefix', sys.prefix),
               'interpreter_realpath': str(Path(sys.executable).resolve()), 'cwd': str(Path.cwd()),
-              'entrypoint': str(ROOT / ENTRYPOINTS[service]),
+              'entrypoint': ENTRYPOINTS[service],
+              'entrypoint_source': str(ROOT / 'src/kdb/services' / service / 'app.py'),
               'checks_are_local_only': True, 'dependencies': [], 'resources': [],
               'errors': [], 'warnings': ['Presence checks do not prove backend/auth/model validity.']}
     if sys.version_info < (3, 9):
@@ -122,8 +117,8 @@ def check(service, argv):
                         report['errors'].append('engine_config_index_name_and_vector_fields_required')
     elif service == 'off_task':
         script_root = Path(option(argv, '--script-dir', str(ROOT)))
-        if not (script_root / 'control_service').is_dir():
-            report['errors'].append('missing_script_dir:control_service')
+        if not (ROOT / 'src/kdb/mining/pipelines').is_dir():
+            report['errors'].append('missing_pipeline_source:kdb.mining.pipelines')
         read_config(script_root / 'config/mysql_conn_config.json', 'mysql_config', report, ['host', 'database', 'user', 'password'])
         resource = option(argv, '--resource-config')
         if resource is not None:
@@ -144,7 +139,7 @@ def check(service, argv):
         elif not auth:
             report['errors'].append('missing_csat_auth_entries')
     elif service == 'multilingual':
-        path = Path(option(argv, '--model_path', str(ROOT / 'model/lid.176.ftz')))
+        path = Path(option(argv, '--model_path', str(ROOT / 'resources/models/lid.176.ftz')))
         report['resources'].append({'role': 'fasttext_model', 'path': str(path), 'exists': path.is_file()})
         if not path.is_file() or path.stat().st_size == 0:
             report['errors'].append('missing_or_empty_fasttext_model')
@@ -173,7 +168,7 @@ def main(argv=None):
         return 78
     if check_only:
         return 0
-    os.execv(sys.executable, [sys.executable, str(ROOT / ENTRYPOINTS[service]), *legacy])
+    os.execv(sys.executable, [sys.executable, '-m', ENTRYPOINTS[service], *legacy])
     raise AssertionError('execv unexpectedly returned')
 
 

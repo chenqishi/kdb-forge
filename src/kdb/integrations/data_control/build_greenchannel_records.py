@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 """把绿通官网抓下来的板块直接转成 ES 知识记录 —— **不过 LLM**。
@@ -17,8 +18,6 @@
     「{平台}入驻要求是什么？」「{平台}回款周期多久？」…
 比 LLM 编的问句更贴合，也稳定可复现。
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('data_control_tools/build_greenchannel_records.py')
 import argparse
 import json
 import logging
@@ -98,8 +97,7 @@ def clean_text(text):
 def build_records(manifest_path, category_map):
     """manifest → ES 记录列表。每个板块一条。"""
     import sys
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__))))
-    from knowledge_crawler_tool.web_crawl.greenchannel_catalog_fetch import parse_detail
+    from kdb.mining.crawlers.web_crawl.greenchannel_catalog_fetch import parse_detail
 
     man = json.load(open(manifest_path, encoding='utf-8'))
     recs = []
@@ -147,8 +145,7 @@ def main():
                         format='%(asctime)s %(levelname)s %(message)s')
 
     import sys
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__))))
-    from data_control_tools.build_doc_mining_tasks import load_category_map
+    from kdb.integrations.data_control.build_doc_mining_tasks import load_category_map
     cm = load_category_map(args.client)
     # 平台名 → (category_id, category_name)：先精确、再去空格/大小写模糊
     norm = {k.lower().replace(' ', ''): (v, k) for k, v in cm.items()}

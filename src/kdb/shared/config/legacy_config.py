@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 ################################################################################
@@ -9,8 +10,6 @@
 Authors: qishichen(263436967@qq.com)
 Date: 2024-11-13
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('config_tools/config.py')
 from kdb.shared.config.private_values import private_value as _private_value
 import string
 import sys
@@ -58,9 +57,9 @@ def _load_global_config():
     优先从 ../config/global_config.json 加载，如果不存在则使用默认配置。
     """
     # 获取当前文件所在目录
-    current_dir = os.path.dirname(os.path.abspath(__legacy_source_file__))
+    current_dir = str(_PROJECT_ROOT)
     # 构建配置文件路径：相对于 config_tools 目录的 ../config/global_config.json
-    config_file = os.path.join(current_dir, '..', 'config', 'global_config.json')
+    config_file = os.path.join(str(_PROJECT_ROOT), 'config', 'global_config.json')
     config_file = os.path.normpath(config_file)
     
     # 先使用默认配置

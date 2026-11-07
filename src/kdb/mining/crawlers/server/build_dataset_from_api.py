@@ -28,7 +28,7 @@ from datetime import timedelta
 
 import requests
 #import document_segment
-from config_tools.config import GLOBAL_CONFIG
+from kdb.shared.config.legacy_config import GLOBAL_CONFIG
 
 def build_dataset(name, api_key=_private_value('9e33e55f6fb974e3d97c50d9')):
     """

@@ -5,9 +5,9 @@ from unittest.mock import Mock
 import numpy as np
 import pytest
 
-from kdb.crud import repository as repository_module
-from kdb.crud.repository import KnowledgeRepository
-from kdb.crud.service import KnowledgeService
+from kdb.services.forge_compat import repository as repository_module
+from kdb.services.forge_compat.repository import KnowledgeRepository
+from kdb.services.forge_compat.adapter import KnowledgeService
 from kdb.retrieval.application.search_index_data_interface import SearchDataInterface
 
 

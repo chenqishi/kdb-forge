@@ -23,8 +23,8 @@ import codecs
 from datetime import datetime
 from datetime import timedelta
 
-from static_report.robot_answer_static import get_message_info
-from commons.common_utils import is_contain_value
+from kdb.reporting.robot_answer_static import get_message_info
+from kdb.shared.text.common_utils import is_contain_value
 
 def gen_query_form_chat_history(data_file, filter_time=None, query_len_limit=5):
     """

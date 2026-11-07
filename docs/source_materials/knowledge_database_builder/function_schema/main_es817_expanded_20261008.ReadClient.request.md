@@ -1,3 +1,0 @@
-# ReadClient.request
-
-Inputs: GET /, HEAD exact approved index, or POST exact /_search with size<=5 and full OUTER source, no scripts/profile/scroll/writes. Nested inner_hits._source filtering is part of the actual native-KNN DSL and must be allowed; only top-level source pruning is prohibited by the exact query/size body key whitelist. Outputs: response plus sanitized metrics HTTP/parse time, bytes, took, shards, inner_hits vector presence; bounded16MiB, timeout15s. Stop all test workers on error/partial result; maximum650search reads and680totalreads with bounded stages. SQL/side effects: reads only, no retries from transport; failures record type/status without response text/credentials.

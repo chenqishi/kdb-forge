@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 """
@@ -26,8 +27,6 @@ Wayfair「答不上来」的 query 复检流程。
 
 注意：需用装了 elasticsearch==7.10 的解释器，见 config/python_env.sh。
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('query_understanding_analysis/wayfair_unanswered_review.py')
 
 import argparse
 import copy
@@ -41,11 +40,9 @@ from collections import Counter, OrderedDict
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+PROJECT_ROOT = str(_PROJECT_ROOT)
 
-from commons.mysql_connector import MySQLConnector
+from kdb.shared.clients.mysql_connector import MySQLConnector
 
 DEFAULT_MYSQL_CONFIG = os.path.join(PROJECT_ROOT, 'config', 'mysql_conn_config.json')
 DEFAULT_SEARCH_CONFIG = os.path.join(PROJECT_ROOT, 'config', 'config_for_search_index.json')
@@ -284,8 +281,8 @@ def dedup_queries(rows: List[dict]) -> "OrderedDict[str, dict]":
 
 def _ensure_llm():
     """加载 chat_qa_extract 的多渠道 LLM 客户端并注入凭证。"""
-    from chat_qa_extract import config as llm_config
-    from chat_qa_extract import llm_client
+    from kdb.mining.quality.chat_qa_extract import config as llm_config
+    from kdb.mining.quality.chat_qa_extract import llm_client
     llm_config.load_llm_config()
     return llm_client
 
@@ -460,7 +457,7 @@ def build_search_variants(query: str, rewrite: dict) -> List[str]:
 
 def build_search_interface(search_config_path: str = DEFAULT_SEARCH_CONFIG):
     """初始化线上同款检索接口。"""
-    from knowledge_interface_tools.search_index_data_interface import SearchDataInterface
+    from kdb.retrieval.application.search_index_data_interface import SearchDataInterface
     return SearchDataInterface(config_path=search_config_path)
 
 

@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 """为 payoneer_olive 各平台备候选资料源（只探测+盘点，不爬正文）。
@@ -12,8 +13,6 @@
 
 产出 `candidate_sources.json`，供后续按平台逐个爬取。
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('knowledge_crawler_tool/web_crawl/prep_platform_sources.py')
 
 import argparse
 import json
@@ -26,9 +25,7 @@ from typing import Dict, List, Optional
 
 import requests
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__))))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+PROJECT_ROOT = str(_PROJECT_ROOT)
 
 LOGGER = logging.getLogger(__name__)
 

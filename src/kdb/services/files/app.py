@@ -1,11 +1,10 @@
-from kdb.compat.layout import legacy_package_path as _legacy_package_path
+from kdb.shared.config.paths import source_path as _source_path
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 """
 文件访问服务：提供统一的 MinIO/S3 对象访问接口，供前置的 Nginx 反向代理调用。
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('file_service/file_access_service.py')
 
 import io
 import json
@@ -24,13 +23,13 @@ import requests
 from botocore.exceptions import ClientError
 from flask import Flask, Response, abort, make_response, request, stream_with_context
 
-from data_control_tools.minio_tools import MinioTools
+from kdb.integrations.data_control.minio_tools import MinioTools
 
 
 logger = logging.getLogger(__name__)
 
 
-BASE_DIR = Path(__legacy_source_file__).resolve().parents[1]
+BASE_DIR = _PROJECT_ROOT
 DEFAULT_CACHE_CONTROL = "public, max-age=31536000, immutable"
 CONFIG_PATH: Optional[Path] = None
 DEFAULT_CONFIG_CANDIDATES = [

@@ -1,0 +1,3063 @@
+{
+  "contract_count": 612,
+  "modules": [
+    {
+      "source_file": "scripts/scheduled/chat_mining.sh",
+      "contracts": [
+        {
+          "symbol": "alert_failure",
+          "schema_file": "function_schema/scripts.scheduled.chat_mining.sh.alert_failure.md"
+        }
+      ]
+    },
+    {
+      "source_file": "scripts/services/preflight.py",
+      "contracts": [
+        {
+          "symbol": "check",
+          "schema_file": "function_schema/scripts.services.preflight.check.md"
+        },
+        {
+          "symbol": "main",
+          "schema_file": "function_schema/scripts.services.preflight.main.md"
+        },
+        {
+          "symbol": "module",
+          "schema_file": "function_schema/scripts.services.preflight.module.md"
+        },
+        {
+          "symbol": "option",
+          "schema_file": "function_schema/scripts.services.preflight.option.md"
+        },
+        {
+          "symbol": "probe_module",
+          "schema_file": "function_schema/scripts.services.preflight.probe_module.md"
+        },
+        {
+          "symbol": "read_config",
+          "schema_file": "function_schema/scripts.services.preflight.read_config.md"
+        }
+      ]
+    },
+    {
+      "source_file": "scripts/testing/offline_guard.py",
+      "contracts": [
+        {
+          "symbol": "_audit",
+          "schema_file": "function_schema/scripts.testing.offline_guard._audit.md"
+        },
+        {
+          "symbol": "_inside",
+          "schema_file": "function_schema/scripts.testing.offline_guard._inside.md"
+        },
+        {
+          "symbol": "install",
+          "schema_file": "function_schema/scripts.testing.offline_guard.install.md"
+        },
+        {
+          "symbol": "prepare_paths",
+          "schema_file": "function_schema/scripts.testing.offline_guard.prepare_paths.md"
+        }
+      ]
+    },
+    {
+      "source_file": "scripts/testing/offline_runner.py",
+      "contracts": [
+        {
+          "symbol": "module",
+          "schema_file": "function_schema/scripts.testing.offline_runner.module.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/__init__.py",
+      "contracts": [
+        {
+          "symbol": "__getattr__",
+          "schema_file": "function_schema/kdb.__init__.__getattr__.md"
+        },
+        {
+          "symbol": "module",
+          "schema_file": "function_schema/kdb.__init__.module.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/integrations/data_control/audit_chat_auto_qa_by_llm.py",
+      "contracts": [
+        {
+          "symbol": "annotate_chat_history",
+          "schema_file": "function_schema/kdb.integrations.data_control.audit_chat_auto_qa_by_llm.annotate_chat_history.md"
+        },
+        {
+          "symbol": "build_judge_prompt",
+          "schema_file": "function_schema/kdb.integrations.data_control.audit_chat_auto_qa_by_llm.build_judge_prompt.md"
+        },
+        {
+          "symbol": "build_target_query",
+          "schema_file": "function_schema/kdb.integrations.data_control.audit_chat_auto_qa_by_llm.build_target_query.md"
+        },
+        {
+          "symbol": "judge_all",
+          "schema_file": "function_schema/kdb.integrations.data_control.audit_chat_auto_qa_by_llm.judge_all.md"
+        },
+        {
+          "symbol": "main",
+          "schema_file": "function_schema/kdb.integrations.data_control.audit_chat_auto_qa_by_llm.main.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/integrations/data_control/augment_segment_topics.py",
+      "contracts": [
+        {
+          "symbol": "augment_task_segments",
+          "schema_file": "function_schema/kdb.integrations.data_control.augment_segment_topics.augment_task_segments.md"
+        },
+        {
+          "symbol": "generate_similar_topics",
+          "schema_file": "function_schema/kdb.integrations.data_control.augment_segment_topics.generate_similar_topics.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/integrations/data_control/build_doc_mining_tasks.py",
+      "contracts": [
+        {
+          "symbol": "run",
+          "schema_file": "function_schema/kdb.integrations.data_control.build_doc_mining_tasks.run.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/integrations/data_control/build_greenchannel_records.py",
+      "contracts": [
+        {
+          "symbol": "build_records",
+          "schema_file": "function_schema/kdb.integrations.data_control.build_greenchannel_records.build_records.md"
+        },
+        {
+          "symbol": "main",
+          "schema_file": "function_schema/kdb.integrations.data_control.build_greenchannel_records.main.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/integrations/data_control/build_zhiqu_assistant_id_map.py",
+      "contracts": [
+        {
+          "symbol": "build_assistant_map",
+          "schema_file": "function_schema/kdb.integrations.data_control.build_zhiqu_assistant_id_map.build_assistant_map.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/integrations/data_control/build_zhiqu_external_id_map.py",
+      "contracts": [
+        {
+          "symbol": "main",
+          "schema_file": "function_schema/kdb.integrations.data_control.build_zhiqu_external_id_map.main.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/integrations/data_control/data_transfer_tools.py",
+      "contracts": [
+        {
+          "symbol": "_transfer_single_index",
+          "schema_file": "function_schema/kdb.integrations.data_control.data_transfer_tools._transfer_single_index.md"
+        },
+        {
+          "symbol": "get_all_indices",
+          "schema_file": "function_schema/kdb.integrations.data_control.data_transfer_tools.get_all_indices.md"
+        },
+        {
+          "symbol": "transfer_es_data",
+          "schema_file": "function_schema/kdb.integrations.data_control.data_transfer_tools.transfer_es_data.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/integrations/data_control/export_qa_to_excel.py",
+      "contracts": [
+        {
+          "symbol": "module",
+          "schema_file": "function_schema/kdb.integrations.data_control.export_qa_to_excel.module.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/integrations/data_control/prune_dead_raw_urls.py",
+      "contracts": [
+        {
+          "symbol": "run",
+          "schema_file": "function_schema/kdb.integrations.data_control.prune_dead_raw_urls.run.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/integrations/data_control/prune_page_mismatched_images.py",
+      "contracts": [
+        {
+          "symbol": "find_pointing_deictic",
+          "schema_file": "function_schema/kdb.integrations.data_control.prune_page_mismatched_images.find_pointing_deictic.md"
+        },
+        {
+          "symbol": "page_items_for_range",
+          "schema_file": "function_schema/kdb.integrations.data_control.prune_page_mismatched_images.page_items_for_range.md"
+        },
+        {
+          "symbol": "parse_page_range",
+          "schema_file": "function_schema/kdb.integrations.data_control.prune_page_mismatched_images.parse_page_range.md"
+        },
+        {
+          "symbol": "plan_row",
+          "schema_file": "function_schema/kdb.integrations.data_control.prune_page_mismatched_images.plan_row.md"
+        },
+        {
+          "symbol": "rollback",
+          "schema_file": "function_schema/kdb.integrations.data_control.prune_page_mismatched_images.rollback.md"
+        },
+        {
+          "symbol": "run",
+          "schema_file": "function_schema/kdb.integrations.data_control.prune_page_mismatched_images.run.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/integrations/data_control/refix_doc_images.py",
+      "contracts": [
+        {
+          "symbol": "build_image_md5_map",
+          "schema_file": "function_schema/kdb.integrations.data_control.refix_doc_images.build_image_md5_map.md"
+        },
+        {
+          "symbol": "refix_task_documents",
+          "schema_file": "function_schema/kdb.integrations.data_control.refix_doc_images.refix_task_documents.md"
+        },
+        {
+          "symbol": "remap_parsed_images",
+          "schema_file": "function_schema/kdb.integrations.data_control.refix_doc_images.remap_parsed_images.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/integrations/data_control/retire_superseded_knowledge.py",
+      "contracts": [
+        {
+          "symbol": "fetch_current_state",
+          "schema_file": "function_schema/kdb.integrations.data_control.retire_superseded_knowledge.fetch_current_state.md"
+        },
+        {
+          "symbol": "load_snapshot_ids",
+          "schema_file": "function_schema/kdb.integrations.data_control.retire_superseded_knowledge.load_snapshot_ids.md"
+        },
+        {
+          "symbol": "plan_retire",
+          "schema_file": "function_schema/kdb.integrations.data_control.retire_superseded_knowledge.plan_retire.md"
+        },
+        {
+          "symbol": "retire",
+          "schema_file": "function_schema/kdb.integrations.data_control.retire_superseded_knowledge.retire.md"
+        },
+        {
+          "symbol": "rollback",
+          "schema_file": "function_schema/kdb.integrations.data_control.retire_superseded_knowledge.rollback.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/integrations/data_control/rollback_mining_tasks.py",
+      "contracts": [
+        {
+          "symbol": "_client",
+          "schema_file": "function_schema/kdb.integrations.data_control.rollback_mining_tasks._client.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/integrations/data_control/skip_deleted_sources.py",
+      "contracts": [
+        {
+          "symbol": "fetch_source_file_status",
+          "schema_file": "function_schema/kdb.integrations.data_control.skip_deleted_sources.fetch_source_file_status.md"
+        },
+        {
+          "symbol": "split_by_source_status",
+          "schema_file": "function_schema/kdb.integrations.data_control.skip_deleted_sources.split_by_source_status.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/integrations/data_control/strip_nav_boilerplate.py",
+      "contracts": [
+        {
+          "symbol": "find_nav_prefix_end",
+          "schema_file": "function_schema/kdb.integrations.data_control.strip_nav_boilerplate.find_nav_prefix_end.md"
+        },
+        {
+          "symbol": "run",
+          "schema_file": "function_schema/kdb.integrations.data_control.strip_nav_boilerplate.run.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/integrations/data_control/wecom_name_matcher.py",
+      "contracts": [
+        {
+          "symbol": "load_account_map",
+          "schema_file": "function_schema/kdb.integrations.data_control.wecom_name_matcher.load_account_map.md"
+        },
+        {
+          "symbol": "load_scoped_index",
+          "schema_file": "function_schema/kdb.integrations.data_control.wecom_name_matcher.load_scoped_index.md"
+        },
+        {
+          "symbol": "match_within_scope",
+          "schema_file": "function_schema/kdb.integrations.data_control.wecom_name_matcher.match_within_scope.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/integrations/data_control/zhiqu_contact_fetcher.py",
+      "contracts": [
+        {
+          "symbol": "fetch_all_contacts",
+          "schema_file": "function_schema/kdb.integrations.data_control.zhiqu_contact_fetcher.fetch_all_contacts.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/integrations/wechat/stat_tools.py",
+      "contracts": [
+        {
+          "symbol": "get_all_room",
+          "schema_file": "function_schema/kdb.integrations.wechat.stat_tools.get_all_room.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/jobs/audit_reports.py",
+      "contracts": [
+        {
+          "symbol": "main",
+          "schema_file": "function_schema/kdb.jobs.audit_reports.main.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/jobs/auto_audit.py",
+      "contracts": [
+        {
+          "symbol": "AutoAuditProcessor.__init__",
+          "schema_file": "function_schema/kdb.jobs.auto_audit.AutoAuditProcessor.__init__.md"
+        },
+        {
+          "symbol": "AutoAuditProcessor._queries",
+          "schema_file": "function_schema/kdb.jobs.auto_audit.AutoAuditProcessor._queries.md"
+        },
+        {
+          "symbol": "AutoAuditProcessor._run_update_by_query",
+          "schema_file": "function_schema/kdb.jobs.auto_audit.AutoAuditProcessor._run_update_by_query.md"
+        },
+        {
+          "symbol": "AutoAuditProcessor.auto_audit_documents",
+          "schema_file": "function_schema/kdb.jobs.auto_audit.AutoAuditProcessor.auto_audit_documents.md"
+        },
+        {
+          "symbol": "AutoAuditProcessor.auto_audit_for_indexes",
+          "schema_file": "function_schema/kdb.jobs.auto_audit.AutoAuditProcessor.auto_audit_for_indexes.md"
+        },
+        {
+          "symbol": "AutoAuditProcessor.check_pending_audit_docs",
+          "schema_file": "function_schema/kdb.jobs.auto_audit.AutoAuditProcessor.check_pending_audit_docs.md"
+        },
+        {
+          "symbol": "AutoAuditProcessor.close",
+          "schema_file": "function_schema/kdb.jobs.auto_audit.AutoAuditProcessor.close.md"
+        },
+        {
+          "symbol": "AutoAuditProcessor.get_all_indexes",
+          "schema_file": "function_schema/kdb.jobs.auto_audit.AutoAuditProcessor.get_all_indexes.md"
+        },
+        {
+          "symbol": "format_time_window",
+          "schema_file": "function_schema/kdb.jobs.auto_audit.format_time_window.md"
+        },
+        {
+          "symbol": "load_engine_config_path",
+          "schema_file": "function_schema/kdb.jobs.auto_audit.load_engine_config_path.md"
+        },
+        {
+          "symbol": "main",
+          "schema_file": "function_schema/kdb.jobs.auto_audit.main.md"
+        },
+        {
+          "symbol": "resolve_time_threshold",
+          "schema_file": "function_schema/kdb.jobs.auto_audit.resolve_time_threshold.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/jobs/chat_mining.py",
+      "contracts": [
+        {
+          "symbol": "BatchChatQARequestRunner.__init__",
+          "schema_file": "function_schema/kdb.jobs.chat_mining.BatchChatQARequestRunner.__init__.md"
+        },
+        {
+          "symbol": "BatchChatQARequestRunner._normalize_scene_type",
+          "schema_file": "function_schema/kdb.jobs.chat_mining.BatchChatQARequestRunner._normalize_scene_type.md"
+        },
+        {
+          "symbol": "BatchChatQARequestRunner._positive_int_env",
+          "schema_file": "function_schema/kdb.jobs.chat_mining.BatchChatQARequestRunner._positive_int_env.md"
+        },
+        {
+          "symbol": "BatchChatQARequestRunner.check_task_status",
+          "schema_file": "function_schema/kdb.jobs.chat_mining.BatchChatQARequestRunner.check_task_status.md"
+        },
+        {
+          "symbol": "BatchChatQARequestRunner.create_task_request",
+          "schema_file": "function_schema/kdb.jobs.chat_mining.BatchChatQARequestRunner.create_task_request.md"
+        },
+        {
+          "symbol": "BatchChatQARequestRunner.get_default_start_time",
+          "schema_file": "function_schema/kdb.jobs.chat_mining.BatchChatQARequestRunner.get_default_start_time.md"
+        },
+        {
+          "symbol": "BatchChatQARequestRunner.get_enabled_appids",
+          "schema_file": "function_schema/kdb.jobs.chat_mining.BatchChatQARequestRunner.get_enabled_appids.md"
+        },
+        {
+          "symbol": "BatchChatQARequestRunner.get_end_time_formatted",
+          "schema_file": "function_schema/kdb.jobs.chat_mining.BatchChatQARequestRunner.get_end_time_formatted.md"
+        },
+        {
+          "symbol": "BatchChatQARequestRunner.load_appid_records",
+          "schema_file": "function_schema/kdb.jobs.chat_mining.BatchChatQARequestRunner.load_appid_records.md"
+        },
+        {
+          "symbol": "BatchChatQARequestRunner.run",
+          "schema_file": "function_schema/kdb.jobs.chat_mining.BatchChatQARequestRunner.run.md"
+        },
+        {
+          "symbol": "BatchChatQARequestRunner.send_task_request",
+          "schema_file": "function_schema/kdb.jobs.chat_mining.BatchChatQARequestRunner.send_task_request.md"
+        },
+        {
+          "symbol": "BatchChatQARequestRunner.update_appid_records",
+          "schema_file": "function_schema/kdb.jobs.chat_mining.BatchChatQARequestRunner.update_appid_records.md"
+        },
+        {
+          "symbol": "BatchChatQARequestRunner.wait_for_tasks_completion",
+          "schema_file": "function_schema/kdb.jobs.chat_mining.BatchChatQARequestRunner.wait_for_tasks_completion.md"
+        },
+        {
+          "symbol": "main",
+          "schema_file": "function_schema/kdb.jobs.chat_mining.main.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/jobs/reports.py",
+      "contracts": [
+        {
+          "symbol": "build_report",
+          "schema_file": "function_schema/kdb.jobs.reports.build_report.md"
+        },
+        {
+          "symbol": "format_dt",
+          "schema_file": "function_schema/kdb.jobs.reports.format_dt.md"
+        },
+        {
+          "symbol": "load_recipients",
+          "schema_file": "function_schema/kdb.jobs.reports.load_recipients.md"
+        },
+        {
+          "symbol": "main",
+          "schema_file": "function_schema/kdb.jobs.reports.main.md"
+        },
+        {
+          "symbol": "new_client_bucket",
+          "schema_file": "function_schema/kdb.jobs.reports.new_client_bucket.md"
+        },
+        {
+          "symbol": "parse_task_result",
+          "schema_file": "function_schema/kdb.jobs.reports.parse_task_result.md"
+        },
+        {
+          "symbol": "parse_time",
+          "schema_file": "function_schema/kdb.jobs.reports.parse_time.md"
+        },
+        {
+          "symbol": "query_tasks",
+          "schema_file": "function_schema/kdb.jobs.reports.query_tasks.md"
+        },
+        {
+          "symbol": "read_search_data",
+          "schema_file": "function_schema/kdb.jobs.reports.read_search_data.md"
+        },
+        {
+          "symbol": "send_report",
+          "schema_file": "function_schema/kdb.jobs.reports.send_report.md"
+        },
+        {
+          "symbol": "summarize_tasks",
+          "schema_file": "function_schema/kdb.jobs.reports.summarize_tasks.md"
+        },
+        {
+          "symbol": "write_report_file",
+          "schema_file": "function_schema/kdb.jobs.reports.write_report_file.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/crawlers/web_crawl/crawl_url_list.py",
+      "contracts": [
+        {
+          "symbol": "extract_sections",
+          "schema_file": "function_schema/kdb.mining.crawlers.web_crawl.crawl_url_list.extract_sections.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/crawlers/web_crawl/discover_links.py",
+      "contracts": [
+        {
+          "symbol": "discover",
+          "schema_file": "function_schema/kdb.mining.crawlers.web_crawl.discover_links.discover.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/crawlers/web_crawl/greenchannel_catalog_fetch.py",
+      "contracts": [
+        {
+          "symbol": "parse_detail",
+          "schema_file": "function_schema/kdb.mining.crawlers.web_crawl.greenchannel_catalog_fetch.parse_detail.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/crawlers/web_crawl/login_doc_crawler.py",
+      "contracts": [
+        {
+          "symbol": "copy_sheet_via_clipboard",
+          "schema_file": "function_schema/kdb.mining.crawlers.web_crawl.login_doc_crawler.copy_sheet_via_clipboard.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/crawlers/web_crawl/web_batch_crawler.py",
+      "contracts": [
+        {
+          "symbol": "WebBatchCrawler.__init__",
+          "schema_file": "function_schema/kdb.mining.crawlers.web_crawl.web_batch_crawler.WebBatchCrawler.__init__.md"
+        },
+        {
+          "symbol": "WebBatchCrawler.fetch_html_without_browser",
+          "schema_file": "function_schema/kdb.mining.crawlers.web_crawl.web_batch_crawler.WebBatchCrawler.fetch_html_without_browser.md"
+        },
+        {
+          "symbol": "WebBatchCrawler.process_crawl_url",
+          "schema_file": "function_schema/kdb.mining.crawlers.web_crawl.web_batch_crawler.WebBatchCrawler.process_crawl_url.md"
+        },
+        {
+          "symbol": "WebBatchCrawler.safe_get",
+          "schema_file": "function_schema/kdb.mining.crawlers.web_crawl.web_batch_crawler.WebBatchCrawler.safe_get.md"
+        },
+        {
+          "symbol": "WebBatchCrawler.setup_driver",
+          "schema_file": "function_schema/kdb.mining.crawlers.web_crawl.web_batch_crawler.WebBatchCrawler.setup_driver.md"
+        },
+        {
+          "symbol": "process_crawled_content_json_format",
+          "schema_file": "function_schema/kdb.mining.crawlers.web_crawl.web_batch_crawler.process_crawled_content_json_format.md"
+        },
+        {
+          "symbol": "run_crawl_task_info",
+          "schema_file": "function_schema/kdb.mining.crawlers.web_crawl.web_batch_crawler.run_crawl_task_info.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/generation/builders/knowlege_segment_builder_by_dify.py",
+      "contracts": [
+        {
+          "symbol": "fill_uncovered_segments_in_chunk",
+          "schema_file": "function_schema/kdb.mining.generation.builders.knowlege_segment_builder_by_dify.fill_uncovered_segments_in_chunk.md"
+        },
+        {
+          "symbol": "get_segment_knowledge_by_dify",
+          "schema_file": "function_schema/kdb.mining.generation.builders.knowlege_segment_builder_by_dify.get_segment_knowledge_by_dify.md"
+        },
+        {
+          "symbol": "get_segment_knowledge_by_local_llm",
+          "schema_file": "function_schema/kdb.mining.generation.builders.knowlege_segment_builder_by_dify.get_segment_knowledge_by_local_llm.md"
+        },
+        {
+          "symbol": "process_html_json_content",
+          "schema_file": "function_schema/kdb.mining.generation.builders.knowlege_segment_builder_by_dify.process_html_json_content.md"
+        },
+        {
+          "symbol": "run_batch_get_segment_knowledge",
+          "schema_file": "function_schema/kdb.mining.generation.builders.knowlege_segment_builder_by_dify.run_batch_get_segment_knowledge.md"
+        },
+        {
+          "symbol": "run_batch_get_segment_knowledge_html_json",
+          "schema_file": "function_schema/kdb.mining.generation.builders.knowlege_segment_builder_by_dify.run_batch_get_segment_knowledge_html_json.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/generation/chatknowledge/gen_knowledge_from_chat.py",
+      "contracts": [
+        {
+          "symbol": "get_chat_image_minio_runtime",
+          "schema_file": "function_schema/kdb.mining.generation.chatknowledge.gen_knowledge_from_chat.get_chat_image_minio_runtime.md"
+        },
+        {
+          "symbol": "load_contact_identity_lookup",
+          "schema_file": "function_schema/kdb.mining.generation.chatknowledge.gen_knowledge_from_chat.load_contact_identity_lookup.md"
+        },
+        {
+          "symbol": "process_normal_group_data",
+          "schema_file": "function_schema/kdb.mining.generation.chatknowledge.gen_knowledge_from_chat.process_normal_group_data.md"
+        },
+        {
+          "symbol": "process_one_robot_group_data",
+          "schema_file": "function_schema/kdb.mining.generation.chatknowledge.gen_knowledge_from_chat.process_one_robot_group_data.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/generation/processing/business_context_builder.py",
+      "contracts": [
+        {
+          "symbol": "build_business_context",
+          "schema_file": "function_schema/kdb.mining.generation.processing.business_context_builder.build_business_context.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/generation/processing/chat_query_context.py",
+      "contracts": [
+        {
+          "symbol": "_default_mysql_config_path",
+          "schema_file": "function_schema/kdb.mining.generation.processing.chat_query_context._default_mysql_config_path.md"
+        },
+        {
+          "symbol": "load_client_queries",
+          "schema_file": "function_schema/kdb.mining.generation.processing.chat_query_context.load_client_queries.md"
+        },
+        {
+          "symbol": "summarize_query_intents",
+          "schema_file": "function_schema/kdb.mining.generation.processing.chat_query_context.summarize_query_intents.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/generation/processing/generic_knowledge_quality.py",
+      "contracts": [
+        {
+          "symbol": "filter_business_quality_rows",
+          "schema_file": "function_schema/kdb.mining.generation.processing.generic_knowledge_quality.filter_business_quality_rows.md"
+        },
+        {
+          "symbol": "repair_self_contained_knowledge_rows",
+          "schema_file": "function_schema/kdb.mining.generation.processing.generic_knowledge_quality.repair_self_contained_knowledge_rows.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/generation/processing/knowledge_clear_by_dify_model_longcontent.py",
+      "contracts": [
+        {
+          "symbol": "build_page_chunks",
+          "schema_file": "function_schema/kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent.build_page_chunks.md"
+        },
+        {
+          "symbol": "clear_pdf_json_content",
+          "schema_file": "function_schema/kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent.clear_pdf_json_content.md"
+        },
+        {
+          "symbol": "clear_pdf_json_content_local",
+          "schema_file": "function_schema/kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent.clear_pdf_json_content_local.md"
+        },
+        {
+          "symbol": "fallback_page_segments",
+          "schema_file": "function_schema/kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent.fallback_page_segments.md"
+        },
+        {
+          "symbol": "normalize_segments_in_chunk",
+          "schema_file": "function_schema/kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent.normalize_segments_in_chunk.md"
+        },
+        {
+          "symbol": "parse_answer",
+          "schema_file": "function_schema/kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent.parse_answer.md"
+        },
+        {
+          "symbol": "parse_dify_segment",
+          "schema_file": "function_schema/kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent.parse_dify_segment.md"
+        },
+        {
+          "symbol": "run_batch_clear_pdf_json_content",
+          "schema_file": "function_schema/kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent.run_batch_clear_pdf_json_content.md"
+        },
+        {
+          "symbol": "split_segment_for_qa",
+          "schema_file": "function_schema/kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent.split_segment_for_qa.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/generation/processing/knowledge_html_clear_by_dify.py",
+      "contracts": [
+        {
+          "symbol": "_trim_context_text",
+          "schema_file": "function_schema/kdb.mining.generation.processing.knowledge_html_clear_by_dify._trim_context_text.md"
+        },
+        {
+          "symbol": "build_html_context_prefix",
+          "schema_file": "function_schema/kdb.mining.generation.processing.knowledge_html_clear_by_dify.build_html_context_prefix.md"
+        },
+        {
+          "symbol": "contextualize_html_text",
+          "schema_file": "function_schema/kdb.mining.generation.processing.knowledge_html_clear_by_dify.contextualize_html_text.md"
+        },
+        {
+          "symbol": "load_html_business_context",
+          "schema_file": "function_schema/kdb.mining.generation.processing.knowledge_html_clear_by_dify.load_html_business_context.md"
+        },
+        {
+          "symbol": "process_content",
+          "schema_file": "function_schema/kdb.mining.generation.processing.knowledge_html_clear_by_dify.process_content.md"
+        },
+        {
+          "symbol": "run_batch_clear_html_content",
+          "schema_file": "function_schema/kdb.mining.generation.processing.knowledge_html_clear_by_dify.run_batch_clear_html_content.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/generation/processing/web_business_context.py",
+      "contracts": [
+        {
+          "symbol": "build_web_business_context",
+          "schema_file": "function_schema/kdb.mining.generation.processing.web_business_context.build_web_business_context.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/generation/processing/wordtotext.py",
+      "contracts": [
+        {
+          "symbol": "_extract_pdf_resource_images",
+          "schema_file": "function_schema/kdb.mining.generation.processing.wordtotext._extract_pdf_resource_images.md"
+        },
+        {
+          "symbol": "_extract_rendered_pdf_images",
+          "schema_file": "function_schema/kdb.mining.generation.processing.wordtotext._extract_rendered_pdf_images.md"
+        },
+        {
+          "symbol": "_normalize_pdf_image_ext",
+          "schema_file": "function_schema/kdb.mining.generation.processing.wordtotext._normalize_pdf_image_ext.md"
+        },
+        {
+          "symbol": "_write_pdf_image_file",
+          "schema_file": "function_schema/kdb.mining.generation.processing.wordtotext._write_pdf_image_file.md"
+        },
+        {
+          "symbol": "parse_excel_to_json",
+          "schema_file": "function_schema/kdb.mining.generation.processing.wordtotext.parse_excel_to_json.md"
+        },
+        {
+          "symbol": "parse_pdf_to_json",
+          "schema_file": "function_schema/kdb.mining.generation.processing.wordtotext.parse_pdf_to_json.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/parsing/multimodal_process.py",
+      "contracts": [
+        {
+          "symbol": "MultimodalProcess.__init__",
+          "schema_file": "function_schema/kdb.mining.parsing.multimodal_process.MultimodalProcess.__init__.md"
+        },
+        {
+          "symbol": "MultimodalProcess._build_image_hash_blacklist",
+          "schema_file": "function_schema/kdb.mining.parsing.multimodal_process.MultimodalProcess._build_image_hash_blacklist.md"
+        },
+        {
+          "symbol": "MultimodalProcess._get_image_content_hash",
+          "schema_file": "function_schema/kdb.mining.parsing.multimodal_process.MultimodalProcess._get_image_content_hash.md"
+        },
+        {
+          "symbol": "MultimodalProcess.prepare_image_hash_blacklist",
+          "schema_file": "function_schema/kdb.mining.parsing.multimodal_process.MultimodalProcess.prepare_image_hash_blacklist.md"
+        },
+        {
+          "symbol": "MultimodalProcess.process_one_data",
+          "schema_file": "function_schema/kdb.mining.parsing.multimodal_process.MultimodalProcess.process_one_data.md"
+        },
+        {
+          "symbol": "_config_bool",
+          "schema_file": "function_schema/kdb.mining.parsing.multimodal_process._config_bool.md"
+        },
+        {
+          "symbol": "_config_int",
+          "schema_file": "function_schema/kdb.mining.parsing.multimodal_process._config_int.md"
+        },
+        {
+          "symbol": "process_multimodal_data_one_file",
+          "schema_file": "function_schema/kdb.mining.parsing.multimodal_process.process_multimodal_data_one_file.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/pipelines/chat_qa.py",
+      "contracts": [
+        {
+          "symbol": "ChatQAMiningTaskController._run_command",
+          "schema_file": "function_schema/kdb.mining.pipelines.chat_qa.ChatQAMiningTaskController._run_command.md"
+        },
+        {
+          "symbol": "ChatQAMiningTaskController.stage_2_generate_qa",
+          "schema_file": "function_schema/kdb.mining.pipelines.chat_qa.ChatQAMiningTaskController.stage_2_generate_qa.md"
+        },
+        {
+          "symbol": "ChatQAMiningTaskController.stage_3_qa_quality",
+          "schema_file": "function_schema/kdb.mining.pipelines.chat_qa.ChatQAMiningTaskController.stage_3_qa_quality.md"
+        },
+        {
+          "symbol": "ChatQAMiningTaskController.stage_4_schema_transform",
+          "schema_file": "function_schema/kdb.mining.pipelines.chat_qa.ChatQAMiningTaskController.stage_4_schema_transform.md"
+        },
+        {
+          "symbol": "ChatQAMiningTaskController.stage_5_insert_index",
+          "schema_file": "function_schema/kdb.mining.pipelines.chat_qa.ChatQAMiningTaskController.stage_5_insert_index.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/pipelines/document_qa.py",
+      "contracts": [
+        {
+          "symbol": "DocumentQAMiningTaskController._run_command",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa.DocumentQAMiningTaskController._run_command.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController.stage_2_parse_documents",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa.DocumentQAMiningTaskController.stage_2_parse_documents.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController.stage_3_translate_documents",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa.DocumentQAMiningTaskController.stage_3_translate_documents.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController.stage_4_generate_qa",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa.DocumentQAMiningTaskController.stage_4_generate_qa.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController.stage_5_qa_quality",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa.DocumentQAMiningTaskController.stage_5_qa_quality.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController.stage_6_schema_transform",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa.DocumentQAMiningTaskController.stage_6_schema_transform.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController.stage_7_insert_index",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa.DocumentQAMiningTaskController.stage_7_insert_index.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/pipelines/document_qa_segment.py",
+      "contracts": [
+        {
+          "symbol": "DocumentQAMiningTaskController.__init__",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa_segment.DocumentQAMiningTaskController.__init__.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController._run_command",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa_segment.DocumentQAMiningTaskController._run_command.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController.stage_10_segment_schema_transform",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa_segment.DocumentQAMiningTaskController.stage_10_segment_schema_transform.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController.stage_11_insert_segment_index",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa_segment.DocumentQAMiningTaskController.stage_11_insert_segment_index.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController.stage_2_parse_documents",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa_segment.DocumentQAMiningTaskController.stage_2_parse_documents.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController.stage_3_multimodal_process",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa_segment.DocumentQAMiningTaskController.stage_3_multimodal_process.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController.stage_4_5_build_business_context",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa_segment.DocumentQAMiningTaskController.stage_4_5_build_business_context.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController.stage_4_translate_documents",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa_segment.DocumentQAMiningTaskController.stage_4_translate_documents.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController.stage_5_generate_qa",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa_segment.DocumentQAMiningTaskController.stage_5_generate_qa.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController.stage_6_5_generic_quality",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa_segment.DocumentQAMiningTaskController.stage_6_5_generic_quality.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController.stage_6_qa_quality",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa_segment.DocumentQAMiningTaskController.stage_6_qa_quality.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController.stage_7_schema_transform",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa_segment.DocumentQAMiningTaskController.stage_7_schema_transform.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController.stage_8_insert_index",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa_segment.DocumentQAMiningTaskController.stage_8_insert_index.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController.stage_9_generate_segment",
+          "schema_file": "function_schema/kdb.mining.pipelines.document_qa_segment.DocumentQAMiningTaskController.stage_9_generate_segment.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/pipelines/excel_qa_segment_upload.py",
+      "contracts": [
+        {
+          "symbol": "ExcelQASegmentUploadController._run_command",
+          "schema_file": "function_schema/kdb.mining.pipelines.excel_qa_segment_upload.ExcelQASegmentUploadController._run_command.md"
+        },
+        {
+          "symbol": "ExcelQASegmentUploadController._run_unstructured_document_fallback",
+          "schema_file": "function_schema/kdb.mining.pipelines.excel_qa_segment_upload.ExcelQASegmentUploadController._run_unstructured_document_fallback.md"
+        },
+        {
+          "symbol": "ExcelQASegmentUploadController.stage_2_5_process_images",
+          "schema_file": "function_schema/kdb.mining.pipelines.excel_qa_segment_upload.ExcelQASegmentUploadController.stage_2_5_process_images.md"
+        },
+        {
+          "symbol": "ExcelQASegmentUploadController.stage_2_excel_to_json",
+          "schema_file": "function_schema/kdb.mining.pipelines.excel_qa_segment_upload.ExcelQASegmentUploadController.stage_2_excel_to_json.md"
+        },
+        {
+          "symbol": "ExcelQASegmentUploadController.stage_3_insert_index",
+          "schema_file": "function_schema/kdb.mining.pipelines.excel_qa_segment_upload.ExcelQASegmentUploadController.stage_3_insert_index.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/pipelines/html_qa_segment.py",
+      "contracts": [
+        {
+          "symbol": "HtmlKgGenTaskController.__init__",
+          "schema_file": "function_schema/kdb.mining.pipelines.html_qa_segment.HtmlKgGenTaskController.__init__.md"
+        },
+        {
+          "symbol": "HtmlKgGenTaskController._qa_context_cli_args",
+          "schema_file": "function_schema/kdb.mining.pipelines.html_qa_segment.HtmlKgGenTaskController._qa_context_cli_args.md"
+        },
+        {
+          "symbol": "HtmlKgGenTaskController._run_command",
+          "schema_file": "function_schema/kdb.mining.pipelines.html_qa_segment.HtmlKgGenTaskController._run_command.md"
+        },
+        {
+          "symbol": "HtmlKgGenTaskController.run_all_stages",
+          "schema_file": "function_schema/kdb.mining.pipelines.html_qa_segment.HtmlKgGenTaskController.run_all_stages.md"
+        },
+        {
+          "symbol": "HtmlKgGenTaskController.stage_10_segment_schema_transform",
+          "schema_file": "function_schema/kdb.mining.pipelines.html_qa_segment.HtmlKgGenTaskController.stage_10_segment_schema_transform.md"
+        },
+        {
+          "symbol": "HtmlKgGenTaskController.stage_11_insert_segment_index",
+          "schema_file": "function_schema/kdb.mining.pipelines.html_qa_segment.HtmlKgGenTaskController.stage_11_insert_segment_index.md"
+        },
+        {
+          "symbol": "HtmlKgGenTaskController.stage_1_crawl_urls",
+          "schema_file": "function_schema/kdb.mining.pipelines.html_qa_segment.HtmlKgGenTaskController.stage_1_crawl_urls.md"
+        },
+        {
+          "symbol": "HtmlKgGenTaskController.stage_2_process_crawled_content",
+          "schema_file": "function_schema/kdb.mining.pipelines.html_qa_segment.HtmlKgGenTaskController.stage_2_process_crawled_content.md"
+        },
+        {
+          "symbol": "HtmlKgGenTaskController.stage_3_multimodal_process",
+          "schema_file": "function_schema/kdb.mining.pipelines.html_qa_segment.HtmlKgGenTaskController.stage_3_multimodal_process.md"
+        },
+        {
+          "symbol": "HtmlKgGenTaskController.stage_4_5_build_business_context",
+          "schema_file": "function_schema/kdb.mining.pipelines.html_qa_segment.HtmlKgGenTaskController.stage_4_5_build_business_context.md"
+        },
+        {
+          "symbol": "HtmlKgGenTaskController.stage_4_translate_documents",
+          "schema_file": "function_schema/kdb.mining.pipelines.html_qa_segment.HtmlKgGenTaskController.stage_4_translate_documents.md"
+        },
+        {
+          "symbol": "HtmlKgGenTaskController.stage_5_generate_qa",
+          "schema_file": "function_schema/kdb.mining.pipelines.html_qa_segment.HtmlKgGenTaskController.stage_5_generate_qa.md"
+        },
+        {
+          "symbol": "HtmlKgGenTaskController.stage_6_5_generic_quality",
+          "schema_file": "function_schema/kdb.mining.pipelines.html_qa_segment.HtmlKgGenTaskController.stage_6_5_generic_quality.md"
+        },
+        {
+          "symbol": "HtmlKgGenTaskController.stage_6_qa_quality",
+          "schema_file": "function_schema/kdb.mining.pipelines.html_qa_segment.HtmlKgGenTaskController.stage_6_qa_quality.md"
+        },
+        {
+          "symbol": "HtmlKgGenTaskController.stage_7_schema_transform",
+          "schema_file": "function_schema/kdb.mining.pipelines.html_qa_segment.HtmlKgGenTaskController.stage_7_schema_transform.md"
+        },
+        {
+          "symbol": "HtmlKgGenTaskController.stage_8_insert_index",
+          "schema_file": "function_schema/kdb.mining.pipelines.html_qa_segment.HtmlKgGenTaskController.stage_8_insert_index.md"
+        },
+        {
+          "symbol": "HtmlKgGenTaskController.stage_9_generate_segment",
+          "schema_file": "function_schema/kdb.mining.pipelines.html_qa_segment.HtmlKgGenTaskController.stage_9_generate_segment.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/pipelines/run_local_mining.py",
+      "contracts": [
+        {
+          "symbol": "gen_task_id",
+          "schema_file": "function_schema/kdb.mining.pipelines.run_local_mining.gen_task_id.md"
+        },
+        {
+          "symbol": "main",
+          "schema_file": "function_schema/kdb.mining.pipelines.run_local_mining.main.md"
+        },
+        {
+          "symbol": "make_env",
+          "schema_file": "function_schema/kdb.mining.pipelines.run_local_mining.make_env.md"
+        },
+        {
+          "symbol": "run_one",
+          "schema_file": "function_schema/kdb.mining.pipelines.run_local_mining.run_one.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/quality/chat_qa_extract/qa_extractor.py",
+      "contracts": [
+        {
+          "symbol": "ChatQAExtractor",
+          "schema_file": "function_schema/kdb.mining.quality.chat_qa_extract.qa_extractor.ChatQAExtractor.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/quality/chat_qa_extract/quality_filter.py",
+      "contracts": [
+        {
+          "symbol": "QaQualityFilter",
+          "schema_file": "function_schema/kdb.mining.quality.chat_qa_extract.quality_filter.QaQualityFilter.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/quality/qa_quality_tools.py",
+      "contracts": [
+        {
+          "symbol": "build_qa_filter",
+          "schema_file": "function_schema/kdb.mining.quality.qa_quality_tools.build_qa_filter.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/query_analysis/align_gap_queries.py",
+      "contracts": [
+        {
+          "symbol": "main",
+          "schema_file": "function_schema/kdb.mining.query_analysis.align_gap_queries.main.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/query_analysis/category_mining.py",
+      "contracts": [
+        {
+          "symbol": "gen_category_from_chat_history",
+          "schema_file": "function_schema/kdb.mining.query_analysis.category_mining.gen_category_from_chat_history.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/query_analysis/ecommerce_query_mining.py",
+      "contracts": [
+        {
+          "symbol": "_guess_platform",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining._guess_platform.md"
+        },
+        {
+          "symbol": "_guess_theme",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining._guess_theme.md"
+        },
+        {
+          "symbol": "_questionize",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining._questionize.md"
+        },
+        {
+          "symbol": "_split_csv",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining._split_csv.md"
+        },
+        {
+          "symbol": "build_candidate_stats_from_rows",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.build_candidate_stats_from_rows.md"
+        },
+        {
+          "symbol": "build_platform_queries",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.build_platform_queries.md"
+        },
+        {
+          "symbol": "build_where_clause",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.build_where_clause.md"
+        },
+        {
+          "symbol": "create_mysql_connector",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.create_mysql_connector.md"
+        },
+        {
+          "symbol": "download_random_sample",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.download_random_sample.md"
+        },
+        {
+          "symbol": "extract_mercado_site_platforms",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.extract_mercado_site_platforms.md"
+        },
+        {
+          "symbol": "extract_platform_names_for_query",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.extract_platform_names_for_query.md"
+        },
+        {
+          "symbol": "fallback_generalize_batch",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.fallback_generalize_batch.md"
+        },
+        {
+          "symbol": "fetch_candidate_stats",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.fetch_candidate_stats.md"
+        },
+        {
+          "symbol": "fetch_random_chat_sample",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.fetch_random_chat_sample.md"
+        },
+        {
+          "symbol": "fetch_samples_for_queries",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.fetch_samples_for_queries.md"
+        },
+        {
+          "symbol": "is_alert_noise_query",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.is_alert_noise_query.md"
+        },
+        {
+          "symbol": "is_business_query",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.is_business_query.md"
+        },
+        {
+          "symbol": "is_meaningful_query",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.is_meaningful_query.md"
+        },
+        {
+          "symbol": "is_noise_text",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.is_noise_text.md"
+        },
+        {
+          "symbol": "llm_generalize_batch",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.llm_generalize_batch.md"
+        },
+        {
+          "symbol": "load_local_sample_rows",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.load_local_sample_rows.md"
+        },
+        {
+          "symbol": "main",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.main.md"
+        },
+        {
+          "symbol": "merge_candidate_stats",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.merge_candidate_stats.md"
+        },
+        {
+          "symbol": "merge_records",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.merge_records.md"
+        },
+        {
+          "symbol": "mine_queries",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.mine_queries.md"
+        },
+        {
+          "symbol": "mine_queries_from_sample",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.mine_queries_from_sample.md"
+        },
+        {
+          "symbol": "normalize_platform_specific_query",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.normalize_platform_specific_query.md"
+        },
+        {
+          "symbol": "normalize_query_key",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.normalize_query_key.md"
+        },
+        {
+          "symbol": "normalize_text",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.normalize_text.md"
+        },
+        {
+          "symbol": "parse_time_arg",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.parse_time_arg.md"
+        },
+        {
+          "symbol": "sanitize_query_text",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.sanitize_query_text.md"
+        },
+        {
+          "symbol": "write_jsonl_rows",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.write_jsonl_rows.md"
+        },
+        {
+          "symbol": "write_outputs",
+          "schema_file": "function_schema/kdb.mining.query_analysis.ecommerce_query_mining.write_outputs.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/query_analysis/gap_material_coverage.py",
+      "contracts": [
+        {
+          "symbol": "_ensure_llm",
+          "schema_file": "function_schema/kdb.mining.query_analysis.gap_material_coverage._ensure_llm.md"
+        },
+        {
+          "symbol": "_get_embedder",
+          "schema_file": "function_schema/kdb.mining.query_analysis.gap_material_coverage._get_embedder.md"
+        },
+        {
+          "symbol": "main",
+          "schema_file": "function_schema/kdb.mining.query_analysis.gap_material_coverage.main.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/query_analysis/wayfair_unanswered_review.py",
+      "contracts": [
+        {
+          "symbol": "_ensure_llm",
+          "schema_file": "function_schema/kdb.mining.query_analysis.wayfair_unanswered_review._ensure_llm.md"
+        },
+        {
+          "symbol": "build_search_interface",
+          "schema_file": "function_schema/kdb.mining.query_analysis.wayfair_unanswered_review.build_search_interface.md"
+        },
+        {
+          "symbol": "clean_query_text",
+          "schema_file": "function_schema/kdb.mining.query_analysis.wayfair_unanswered_review.clean_query_text.md"
+        },
+        {
+          "symbol": "fetch_unanswered_chats",
+          "schema_file": "function_schema/kdb.mining.query_analysis.wayfair_unanswered_review.fetch_unanswered_chats.md"
+        },
+        {
+          "symbol": "judge_coverage",
+          "schema_file": "function_schema/kdb.mining.query_analysis.wayfair_unanswered_review.judge_coverage.md"
+        },
+        {
+          "symbol": "rewrite_queries",
+          "schema_file": "function_schema/kdb.mining.query_analysis.wayfair_unanswered_review.rewrite_queries.md"
+        },
+        {
+          "symbol": "search_knowledge",
+          "schema_file": "function_schema/kdb.mining.query_analysis.wayfair_unanswered_review.search_knowledge.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/tasks/task_status_updater.py",
+      "contracts": [
+        {
+          "symbol": "TaskStatusUpdater._update_task_status",
+          "schema_file": "function_schema/kdb.mining.tasks.task_status_updater.TaskStatusUpdater._update_task_status.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/transformations/schema_trans.py",
+      "contracts": [
+        {
+          "symbol": "classify_excel_upload",
+          "schema_file": "function_schema/kdb.mining.transformations.schema_trans.classify_excel_upload.md"
+        },
+        {
+          "symbol": "trans_es_data_to_excel",
+          "schema_file": "function_schema/kdb.mining.transformations.schema_trans.trans_es_data_to_excel.md"
+        },
+        {
+          "symbol": "trans_web_excel_to_json_file",
+          "schema_file": "function_schema/kdb.mining.transformations.schema_trans.trans_web_excel_to_json_file.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/reporting/csat/csat_data_query.py",
+      "contracts": [
+        {
+          "symbol": "query_csat_sessions",
+          "schema_file": "function_schema/kdb.reporting.csat.csat_data_query.query_csat_sessions.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/reporting/csat/user_id_map_query.py",
+      "contracts": [
+        {
+          "symbol": "query_user_id_map",
+          "schema_file": "function_schema/kdb.reporting.csat.user_id_map_query.query_user_id_map.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/retrieval/application/knowledge_tools.py",
+      "contracts": [
+        {
+          "symbol": "build_default_category_infos",
+          "schema_file": "function_schema/kdb.retrieval.application.knowledge_tools.build_default_category_infos.md"
+        },
+        {
+          "symbol": "build_default_primary_category",
+          "schema_file": "function_schema/kdb.retrieval.application.knowledge_tools.build_default_primary_category.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/retrieval/application/search_index_data_interface.py",
+      "contracts": [
+        {
+          "symbol": "SearchDataInterface.batch_insert_data",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.batch_insert_data.md"
+        },
+        {
+          "symbol": "SearchDataInterface.delete_by_file",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.delete_by_file.md"
+        },
+        {
+          "symbol": "SearchDataInterface.delete_data",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.delete_data.md"
+        },
+        {
+          "symbol": "SearchDataInterface.dice_similarity",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.dice_similarity.md"
+        },
+        {
+          "symbol": "SearchDataInterface.find_duplicates",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.find_duplicates.md"
+        },
+        {
+          "symbol": "SearchDataInterface.get_category_parent_chain",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.get_category_parent_chain.md"
+        },
+        {
+          "symbol": "SearchDataInterface.get_data_by_id",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.get_data_by_id.md"
+        },
+        {
+          "symbol": "SearchDataInterface.get_from_type_count",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.get_from_type_count.md"
+        },
+        {
+          "symbol": "SearchDataInterface.get_unique_values",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.get_unique_values.md"
+        },
+        {
+          "symbol": "SearchDataInterface.infer_payoneer_olive_category",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.infer_payoneer_olive_category.md"
+        },
+        {
+          "symbol": "SearchDataInterface.insert_data",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.insert_data.md"
+        },
+        {
+          "symbol": "SearchDataInterface.join_multimodal_contents",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.join_multimodal_contents.md"
+        },
+        {
+          "symbol": "SearchDataInterface.list_file_names",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.list_file_names.md"
+        },
+        {
+          "symbol": "SearchDataInterface.load_category_map_dict",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.load_category_map_dict.md"
+        },
+        {
+          "symbol": "SearchDataInterface.load_search_engine",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.load_search_engine.md"
+        },
+        {
+          "symbol": "SearchDataInterface.map_cate_name_to_id",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.map_cate_name_to_id.md"
+        },
+        {
+          "symbol": "SearchDataInterface.preview_delete_by_file",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.preview_delete_by_file.md"
+        },
+        {
+          "symbol": "SearchDataInterface.process_one_data",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.process_one_data.md"
+        },
+        {
+          "symbol": "SearchDataInterface.render_multimodal_urls",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.render_multimodal_urls.md"
+        },
+        {
+          "symbol": "SearchDataInterface.resolve_file_name",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.resolve_file_name.md"
+        },
+        {
+          "symbol": "SearchDataInterface.search_data",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.search_data.md"
+        },
+        {
+          "symbol": "SearchDataInterface.search_data_by_multi_query",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.search_data_by_multi_query.md"
+        },
+        {
+          "symbol": "SearchDataInterface.search_data_by_query",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.search_data_by_query.md"
+        },
+        {
+          "symbol": "SearchDataInterface.update_data",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.update_data.md"
+        },
+        {
+          "symbol": "SearchDataInterface.update_data_value",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.update_data_value.md"
+        },
+        {
+          "symbol": "SearchDataInterface.web_search_data",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.web_search_data.md"
+        },
+        {
+          "symbol": "SearchEngine.count_by_query",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchEngine.count_by_query.md"
+        },
+        {
+          "symbol": "gen_data_id",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.gen_data_id.md"
+        },
+        {
+          "symbol": "insert_data_to_search_index",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.insert_data_to_search_index.md"
+        },
+        {
+          "symbol": "test_insert_letian_excel",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.test_insert_letian_excel.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/retrieval/engines/es8_client_router.py",
+      "contracts": [
+        {
+          "symbol": "IndexClientRouter",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_client_router.IndexClientRouter.md"
+        },
+        {
+          "symbol": "IndexClientRouter.__init__",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_client_router.IndexClientRouter.__init__.md"
+        },
+        {
+          "symbol": "IndexClientRouter._create_client",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_client_router.IndexClientRouter._create_client.md"
+        },
+        {
+          "symbol": "IndexClientRouter._parse_providers",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_client_router.IndexClientRouter._parse_providers.md"
+        },
+        {
+          "symbol": "IndexClientRouter._parse_routes",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_client_router.IndexClientRouter._parse_routes.md"
+        },
+        {
+          "symbol": "IndexClientRouter._resolve_default_provider",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_client_router.IndexClientRouter._resolve_default_provider.md"
+        },
+        {
+          "symbol": "IndexClientRouter.close",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_client_router.IndexClientRouter.close.md"
+        },
+        {
+          "symbol": "IndexClientRouter.get_client_by_index",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_client_router.IndexClientRouter.get_client_by_index.md"
+        },
+        {
+          "symbol": "IndexClientRouter.get_client_by_provider",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_client_router.IndexClientRouter.get_client_by_provider.md"
+        },
+        {
+          "symbol": "IndexClientRouter.providers",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_client_router.IndexClientRouter.providers.md"
+        },
+        {
+          "symbol": "IndexClientRouter.resolve_provider",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_client_router.IndexClientRouter.resolve_provider.md"
+        },
+        {
+          "symbol": "_normalise_hosts",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_client_router._normalise_hosts.md"
+        },
+        {
+          "symbol": "_normalise_provider_name",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_client_router._normalise_provider_name.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/retrieval/engines/es8_search_interface.py",
+      "contracts": [
+        {
+          "symbol": "EsSearchInterfaceES8.__init__",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.__init__.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._apply_source_assignments",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._apply_source_assignments.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._assign_dotted",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._assign_dotted.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._attribute_clauses",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._attribute_clauses.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._build_es_query",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._build_es_query.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._build_knn_clause",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._build_knn_clause.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._build_mapping",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._build_mapping.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._build_search_query",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._build_search_query.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._canonical_vector_field",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._canonical_vector_field.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._checked_update_response",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._checked_update_response.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._conditional_update_responses",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._conditional_update_responses.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._ensure_index",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._ensure_index.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._existing_vector_mapping",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._existing_vector_mapping.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._fields_query",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._fields_query.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._filter_clauses",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._filter_clauses.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._filter_query",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._filter_query.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._get_index_name",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._get_index_name.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._group_indexes",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._group_indexes.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._hits",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._hits.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._impl_for",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._impl_for.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._map_attribute_field",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._map_attribute_field.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._merge_index_embeddings",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._merge_index_embeddings.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._msearch_with_shard_check",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._msearch_with_shard_check.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._native_msearch_with_retry",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._native_msearch_with_retry.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._painless_assignment",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._painless_assignment.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._require_full_update_source",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._require_full_update_source.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._restore_inner_embeddings",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._restore_inner_embeddings.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._scroll_request",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._scroll_request.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._search_multi_group",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._search_multi_group.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._search_once_with_retry",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._search_once_with_retry.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._search_request",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._search_request.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._search_with_shard_check",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._search_with_shard_check.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._single_search_with_retry",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._single_search_with_retry.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._text_clauses",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._text_clauses.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._total",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._total.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._update_without_script",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._update_without_script.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._validate_query_vectors",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._validate_query_vectors.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._validate_vector",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._validate_vector.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8._vector_dimension",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8._vector_dimension.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.agg_terms",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.agg_terms.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.close",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.close.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.count_by_query",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.count_by_query.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.delete",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.delete.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.es",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.es.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.get",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.get.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.get_client_by_index",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.get_client_by_index.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.get_field_statistics",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.get_field_statistics.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.get_unique_values",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.get_unique_values.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.insert",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.insert.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.insert_with_vectors",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.insert_with_vectors.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.sample_by_query",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.sample_by_query.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.scroll_search",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.scroll_search.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.search",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.search.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.search_after",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.search_after.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.search_by_vector",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.search_by_vector.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.search_multi",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.search_multi.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.search_multi_by_page",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.search_multi_by_page.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.update",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.update.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.update_by_query",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.update_by_query.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.update_index_map",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.update_index_map.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceES8.update_value",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface.EsSearchInterfaceES8.update_value.md"
+        },
+        {
+          "symbol": "_as_dict",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface._as_dict.md"
+        },
+        {
+          "symbol": "_response_value",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface._response_value.md"
+        },
+        {
+          "symbol": "_split_index_names",
+          "schema_file": "function_schema/kdb.retrieval.engines.es8_search_interface._split_index_names.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/retrieval/engines/es_count_utils.py",
+      "contracts": [
+        {
+          "symbol": "complete_count",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_count_utils.complete_count.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/retrieval/engines/es_maintenance.py",
+      "contracts": [
+        {
+          "symbol": "EngineMaintenanceMixin",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_maintenance.EngineMaintenanceMixin.md"
+        },
+        {
+          "symbol": "EngineMaintenanceMixin._maintenance_client",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_maintenance.EngineMaintenanceMixin._maintenance_client.md"
+        },
+        {
+          "symbol": "EngineMaintenanceMixin.close",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_maintenance.EngineMaintenanceMixin.close.md"
+        },
+        {
+          "symbol": "EngineMaintenanceMixin.configure_maintenance_updates",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_maintenance.EngineMaintenanceMixin.configure_maintenance_updates.md"
+        },
+        {
+          "symbol": "EngineMaintenanceMixin.field_value_counts",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_maintenance.EngineMaintenanceMixin.field_value_counts.md"
+        },
+        {
+          "symbol": "EngineMaintenanceMixin.get_all_indexes",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_maintenance.EngineMaintenanceMixin.get_all_indexes.md"
+        },
+        {
+          "symbol": "EngineMaintenanceMixin.get_index_provider",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_maintenance.EngineMaintenanceMixin.get_index_provider.md"
+        },
+        {
+          "symbol": "EngineMaintenanceMixin.index_exists",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_maintenance.EngineMaintenanceMixin.index_exists.md"
+        },
+        {
+          "symbol": "MaintenanceUpdateError.__init__",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_maintenance.MaintenanceUpdateError.__init__.md"
+        },
+        {
+          "symbol": "exact_index",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_maintenance.exact_index.md"
+        },
+        {
+          "symbol": "is_write_size_error",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_maintenance.is_write_size_error.md"
+        },
+        {
+          "symbol": "response_body",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_maintenance.response_body.md"
+        },
+        {
+          "symbol": "run_native_update",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_maintenance.run_native_update.md"
+        },
+        {
+          "symbol": "wait_for_update_task",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_maintenance.wait_for_update_task.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/retrieval/engines/es_search_interface.py",
+      "contracts": [
+        {
+          "symbol": "EsSearchInterface.__init__",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_search_interface.EsSearchInterface.__init__.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceOpen.__init__",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_search_interface.EsSearchInterfaceOpen.__init__.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceOpen.count_by_query",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_search_interface.EsSearchInterfaceOpen.count_by_query.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceOpen.update_by_query",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_search_interface.EsSearchInterfaceOpen.update_by_query.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceOri.__init__",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_search_interface.EsSearchInterfaceOri.__init__.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceOri.count_by_query",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_search_interface.EsSearchInterfaceOri.count_by_query.md"
+        },
+        {
+          "symbol": "EsSearchInterfaceOri.update_by_query",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_search_interface.EsSearchInterfaceOri.update_by_query.md"
+        },
+        {
+          "symbol": "_mapping_config_equal",
+          "schema_file": "function_schema/kdb.retrieval.engines.es_search_interface._mapping_config_equal.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/services/fastgpt_proxy/app.py",
+      "contracts": [
+        {
+          "symbol": "module",
+          "schema_file": "function_schema/kdb.services.fastgpt_proxy.app.module.md"
+        },
+        {
+          "symbol": "query_remote_service",
+          "schema_file": "function_schema/kdb.services.fastgpt_proxy.app.query_remote_service.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/services/forge_compat/adapter.py",
+      "contracts": [
+        {
+          "symbol": "KnowledgeService",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.md"
+        },
+        {
+          "symbol": "KnowledgeService.__getattr__",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.__getattr__.md"
+        },
+        {
+          "symbol": "KnowledgeService.__init__",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.__init__.md"
+        },
+        {
+          "symbol": "KnowledgeService.__setattr__",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.__setattr__.md"
+        },
+        {
+          "symbol": "KnowledgeService._bind_category_protocol",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService._bind_category_protocol.md"
+        },
+        {
+          "symbol": "KnowledgeService._from_interface",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService._from_interface.md"
+        },
+        {
+          "symbol": "KnowledgeService._init_legacy_compat",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService._init_legacy_compat.md"
+        },
+        {
+          "symbol": "KnowledgeService._join_index_names",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService._join_index_names.md"
+        },
+        {
+          "symbol": "KnowledgeService._load_legacy_search_cfg",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService._load_legacy_search_cfg.md"
+        },
+        {
+          "symbol": "KnowledgeService._regenerate_embeddings",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService._regenerate_embeddings.md"
+        },
+        {
+          "symbol": "KnowledgeService._search_index_names",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService._search_index_names.md"
+        },
+        {
+          "symbol": "KnowledgeService._sync_retrieval_indexes",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService._sync_retrieval_indexes.md"
+        },
+        {
+          "symbol": "KnowledgeService.batch_insert",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.batch_insert.md"
+        },
+        {
+          "symbol": "KnowledgeService.delete",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.delete.md"
+        },
+        {
+          "symbol": "KnowledgeService.from_config",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.from_config.md"
+        },
+        {
+          "symbol": "KnowledgeService.from_count_config",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.from_count_config.md"
+        },
+        {
+          "symbol": "KnowledgeService.get",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.get.md"
+        },
+        {
+          "symbol": "KnowledgeService.get_from_type_count",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.get_from_type_count.md"
+        },
+        {
+          "symbol": "KnowledgeService.insert_data",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.insert_data.md"
+        },
+        {
+          "symbol": "KnowledgeService.insert_text",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.insert_text.md"
+        },
+        {
+          "symbol": "KnowledgeService.search_data_by_multi_query",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.search_data_by_multi_query.md"
+        },
+        {
+          "symbol": "KnowledgeService.search_data_by_query",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.search_data_by_query.md"
+        },
+        {
+          "symbol": "KnowledgeService.search_text",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.search_text.md"
+        },
+        {
+          "symbol": "KnowledgeService.search_text_multi",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.search_text_multi.md"
+        },
+        {
+          "symbol": "KnowledgeService.update",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.update.md"
+        },
+        {
+          "symbol": "KnowledgeService.web_search",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.web_search.md"
+        },
+        {
+          "symbol": "KnowledgeService.web_search_data",
+          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.web_search_data.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/services/forge_compat/api/knowledge_routes.py",
+      "contracts": [
+        {
+          "symbol": "_get_service",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.knowledge_routes._get_service.md"
+        },
+        {
+          "symbol": "delete_doc",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.knowledge_routes.delete_doc.md"
+        },
+        {
+          "symbol": "insert_doc",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.knowledge_routes.insert_doc.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/services/forge_compat/api/legacy_routes.py",
+      "contracts": [
+        {
+          "symbol": "InsertRequest._id",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.InsertRequest._id.md"
+        },
+        {
+          "symbol": "InsertRequest.get_ext_info_with_extra_fields",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.InsertRequest.get_ext_info_with_extra_fields.md"
+        },
+        {
+          "symbol": "_call_modifier",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes._call_modifier.md"
+        },
+        {
+          "symbol": "_category_infos",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes._category_infos.md"
+        },
+        {
+          "symbol": "_get_modifier",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes._get_modifier.md"
+        },
+        {
+          "symbol": "_get_service",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes._get_service.md"
+        },
+        {
+          "symbol": "_insert_document",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes._insert_document.md"
+        },
+        {
+          "symbol": "_unsupported_modifier_message",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes._unsupported_modifier_message.md"
+        },
+        {
+          "symbol": "delete",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.delete.md"
+        },
+        {
+          "symbol": "delete_by_file",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.delete_by_file.md"
+        },
+        {
+          "symbol": "get_value_collection",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.get_value_collection.md"
+        },
+        {
+          "symbol": "insert",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.insert.md"
+        },
+        {
+          "symbol": "list_file_names",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.list_file_names.md"
+        },
+        {
+          "symbol": "modify_knowledge",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.modify_knowledge.md"
+        },
+        {
+          "symbol": "modify_knowledge_direct_update",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.modify_knowledge_direct_update.md"
+        },
+        {
+          "symbol": "preview_delete_by_file",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.preview_delete_by_file.md"
+        },
+        {
+          "symbol": "update_by_condition",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.update_by_condition.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/services/forge_compat/api/retrieval_app.py",
+      "contracts": [
+        {
+          "symbol": "app",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.retrieval_app.app.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/services/forge_compat/api/search_routes.py",
+      "contracts": [
+        {
+          "symbol": "_get_count_service",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.search_routes._get_count_service.md"
+        },
+        {
+          "symbol": "_get_service",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.search_routes._get_service.md"
+        },
+        {
+          "symbol": "_require_search_auth",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.search_routes._require_search_auth.md"
+        },
+        {
+          "symbol": "search",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.search_routes.search.md"
+        },
+        {
+          "symbol": "web_search",
+          "schema_file": "function_schema/kdb.services.forge_compat.api.search_routes.web_search.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/services/forge_compat/bootstrap.py",
+      "contracts": [
+        {
+          "symbol": "build_legacy_engine",
+          "schema_file": "function_schema/kdb.services.forge_compat.bootstrap.build_legacy_engine.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/services/forge_compat/counting.py",
+      "contracts": [
+        {
+          "symbol": "build_from_type_count_query",
+          "schema_file": "function_schema/kdb.services.forge_compat.counting.build_from_type_count_query.md"
+        },
+        {
+          "symbol": "validate_count_from_type",
+          "schema_file": "function_schema/kdb.services.forge_compat.counting.validate_count_from_type.md"
+        },
+        {
+          "symbol": "validate_count_index",
+          "schema_file": "function_schema/kdb.services.forge_compat.counting.validate_count_index.md"
+        },
+        {
+          "symbol": "validate_count_time",
+          "schema_file": "function_schema/kdb.services.forge_compat.counting.validate_count_time.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/services/forge_compat/engine.py",
+      "contracts": [
+        {
+          "symbol": "RoutedLegacyEngine",
+          "schema_file": "function_schema/kdb.services.forge_compat.engine.RoutedLegacyEngine.md"
+        },
+        {
+          "symbol": "RoutedLegacyEngine.count_by_query",
+          "schema_file": "function_schema/kdb.services.forge_compat.engine.RoutedLegacyEngine.count_by_query.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/services/forge_compat/modify/service.py",
+      "contracts": [
+        {
+          "symbol": "apply_modify_plan",
+          "schema_file": "function_schema/kdb.services.forge_compat.modify.service.apply_modify_plan.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/services/forge_compat/repository.py",
+      "contracts": [
+        {
+          "symbol": "KnowledgeRepository",
+          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.md"
+        },
+        {
+          "symbol": "KnowledgeRepository.__init__",
+          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.__init__.md"
+        },
+        {
+          "symbol": "KnowledgeRepository._force_refresh",
+          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository._force_refresh.md"
+        },
+        {
+          "symbol": "KnowledgeRepository._idx",
+          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository._idx.md"
+        },
+        {
+          "symbol": "KnowledgeRepository.count_by_query",
+          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.count_by_query.md"
+        },
+        {
+          "symbol": "KnowledgeRepository.delete",
+          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.delete.md"
+        },
+        {
+          "symbol": "KnowledgeRepository.ensure_index",
+          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.ensure_index.md"
+        },
+        {
+          "symbol": "KnowledgeRepository.get",
+          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.get.md"
+        },
+        {
+          "symbol": "KnowledgeRepository.get_client_by_index",
+          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.get_client_by_index.md"
+        },
+        {
+          "symbol": "KnowledgeRepository.get_unique_values",
+          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.get_unique_values.md"
+        },
+        {
+          "symbol": "KnowledgeRepository.insert",
+          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.insert.md"
+        },
+        {
+          "symbol": "KnowledgeRepository.search",
+          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.search.md"
+        },
+        {
+          "symbol": "KnowledgeRepository.search_by_page",
+          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.search_by_page.md"
+        },
+        {
+          "symbol": "KnowledgeRepository.search_multi",
+          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.search_multi.md"
+        },
+        {
+          "symbol": "KnowledgeRepository.update_by_condition",
+          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.update_by_condition.md"
+        },
+        {
+          "symbol": "KnowledgeRepository.update_by_id",
+          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.update_by_id.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/services/off_task/app.py",
+      "contracts": [
+        {
+          "symbol": "get_task_full_info",
+          "schema_file": "function_schema/kdb.services.off_task.app.get_task_full_info.md"
+        },
+        {
+          "symbol": "get_task_info",
+          "schema_file": "function_schema/kdb.services.off_task.app.get_task_info.md"
+        },
+        {
+          "symbol": "init_script_base_dir",
+          "schema_file": "function_schema/kdb.services.off_task.app.init_script_base_dir.md"
+        },
+        {
+          "symbol": "insert_task_record",
+          "schema_file": "function_schema/kdb.services.off_task.app.insert_task_record.md"
+        },
+        {
+          "symbol": "parse_args",
+          "schema_file": "function_schema/kdb.services.off_task.app.parse_args.md"
+        },
+        {
+          "symbol": "reset_task_status",
+          "schema_file": "function_schema/kdb.services.off_task.app.reset_task_status.md"
+        },
+        {
+          "symbol": "start_mining_task",
+          "schema_file": "function_schema/kdb.services.off_task.app.start_mining_task.md"
+        },
+        {
+          "symbol": "update_task_status",
+          "schema_file": "function_schema/kdb.services.off_task.app.update_task_status.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/services/retrieval/app.py",
+      "contracts": [
+        {
+          "symbol": "FromTypeCountRequest.normalize_index_name",
+          "schema_file": "function_schema/kdb.services.retrieval.app.FromTypeCountRequest.normalize_index_name.md"
+        },
+        {
+          "symbol": "FromTypeCountRequest.validate_index_name",
+          "schema_file": "function_schema/kdb.services.retrieval.app.FromTypeCountRequest.validate_index_name.md"
+        },
+        {
+          "symbol": "FromTypeCountRequest.validate_local_time",
+          "schema_file": "function_schema/kdb.services.retrieval.app.FromTypeCountRequest.validate_local_time.md"
+        },
+        {
+          "symbol": "InsertRequest.get_ext_info_with_extra_fields",
+          "schema_file": "function_schema/kdb.services.retrieval.app.InsertRequest.get_ext_info_with_extra_fields.md"
+        },
+        {
+          "symbol": "get_from_type_count",
+          "schema_file": "function_schema/kdb.services.retrieval.app.get_from_type_count.md"
+        },
+        {
+          "symbol": "insert",
+          "schema_file": "function_schema/kdb.services.retrieval.app.insert.md"
+        },
+        {
+          "symbol": "list_file_names",
+          "schema_file": "function_schema/kdb.services.retrieval.app.list_file_names.md"
+        },
+        {
+          "symbol": "module",
+          "schema_file": "function_schema/kdb.services.retrieval.app.module.md"
+        },
+        {
+          "symbol": "search",
+          "schema_file": "function_schema/kdb.services.retrieval.app.search.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/shared/categories/client.py",
+      "contracts": [
+        {
+          "symbol": "CategoryClient",
+          "schema_file": "function_schema/kdb.shared.categories.client.CategoryClient.md"
+        },
+        {
+          "symbol": "CategoryClient.__init__",
+          "schema_file": "function_schema/kdb.shared.categories.client.CategoryClient.__init__.md"
+        },
+        {
+          "symbol": "CategoryClient.all_client_category_dict",
+          "schema_file": "function_schema/kdb.shared.categories.client.CategoryClient.all_client_category_dict.md"
+        },
+        {
+          "symbol": "CategoryClient.category_update_time_dict",
+          "schema_file": "function_schema/kdb.shared.categories.client.CategoryClient.category_update_time_dict.md"
+        },
+        {
+          "symbol": "CategoryClient.get_category_parent_chain",
+          "schema_file": "function_schema/kdb.shared.categories.client.CategoryClient.get_category_parent_chain.md"
+        },
+        {
+          "symbol": "CategoryClient.load_category_map_dict",
+          "schema_file": "function_schema/kdb.shared.categories.client.CategoryClient.load_category_map_dict.md"
+        },
+        {
+          "symbol": "CategoryClient.map_cate_name_to_id",
+          "schema_file": "function_schema/kdb.shared.categories.client.CategoryClient.map_cate_name_to_id.md"
+        },
+        {
+          "symbol": "CategoryClient.service_url",
+          "schema_file": "function_schema/kdb.shared.categories.client.CategoryClient.service_url.md"
+        },
+        {
+          "symbol": "CategoryClient.update_interval",
+          "schema_file": "function_schema/kdb.shared.categories.client.CategoryClient.update_interval.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/shared/clients/app_role_config.py",
+      "contracts": [
+        {
+          "symbol": "extract_colleague_names",
+          "schema_file": "function_schema/kdb.shared.clients.app_role_config.extract_colleague_names.md"
+        },
+        {
+          "symbol": "fetch_role_config",
+          "schema_file": "function_schema/kdb.shared.clients.app_role_config.fetch_role_config.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/shared/clients/dify_tools.py",
+      "contracts": [
+        {
+          "symbol": "DifyWorkFlowRequest.__init__",
+          "schema_file": "function_schema/kdb.shared.clients.dify_tools.DifyWorkFlowRequest.__init__.md"
+        },
+        {
+          "symbol": "DifyWorkFlowRequest.request_dify",
+          "schema_file": "function_schema/kdb.shared.clients.dify_tools.DifyWorkFlowRequest.request_dify.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/shared/clients/embedding.py",
+      "contracts": [
+        {
+          "symbol": "EmbeddingClient.text2embedding",
+          "schema_file": "function_schema/kdb.shared.clients.embedding.EmbeddingClient.text2embedding.md"
+        },
+        {
+          "symbol": "build_embedding_client",
+          "schema_file": "function_schema/kdb.shared.clients.embedding.build_embedding_client.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/shared/clients/es_http_client.py",
+      "contracts": [
+        {
+          "symbol": "EsHttpClient",
+          "schema_file": "function_schema/kdb.shared.clients.es_http_client.EsHttpClient.md"
+        },
+        {
+          "symbol": "EsHttpClient.bulk_update_doc",
+          "schema_file": "function_schema/kdb.shared.clients.es_http_client.EsHttpClient.bulk_update_doc.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/shared/clients/firecrawl_tools.py",
+      "contracts": [
+        {
+          "symbol": "FirecrawlScraper",
+          "schema_file": "function_schema/kdb.shared.clients.firecrawl_tools.FirecrawlScraper.md"
+        },
+        {
+          "symbol": "build_cookie_headers",
+          "schema_file": "function_schema/kdb.shared.clients.firecrawl_tools.build_cookie_headers.md"
+        },
+        {
+          "symbol": "fetch_firecrawl_content",
+          "schema_file": "function_schema/kdb.shared.clients.firecrawl_tools.fetch_firecrawl_content.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/shared/clients/local_llm_adapter.py",
+      "contracts": [
+        {
+          "symbol": "_ensure_llm_client",
+          "schema_file": "function_schema/kdb.shared.clients.local_llm_adapter._ensure_llm_client.md"
+        },
+        {
+          "symbol": "_load_agents_llm_client",
+          "schema_file": "function_schema/kdb.shared.clients.local_llm_adapter._load_agents_llm_client.md"
+        },
+        {
+          "symbol": "is_available",
+          "schema_file": "function_schema/kdb.shared.clients.local_llm_adapter.is_available.md"
+        },
+        {
+          "symbol": "request_knowledge_llm",
+          "schema_file": "function_schema/kdb.shared.clients.local_llm_adapter.request_knowledge_llm.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/shared/config/legacy_config.py",
+      "contracts": [
+        {
+          "symbol": "_load_global_config",
+          "schema_file": "function_schema/kdb.shared.config.legacy_config._load_global_config.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/shared/config/loader.py",
+      "contracts": [
+        {
+          "symbol": "load_config",
+          "schema_file": "function_schema/kdb.shared.config.loader.load_config.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/shared/config/paths.py",
+      "contracts": [
+        {
+          "symbol": "module",
+          "schema_file": "function_schema/kdb.shared.config.paths.module.md"
+        },
+        {
+          "symbol": "project_path",
+          "schema_file": "function_schema/kdb.shared.config.paths.project_path.md"
+        },
+        {
+          "symbol": "resource_path",
+          "schema_file": "function_schema/kdb.shared.config.paths.resource_path.md"
+        },
+        {
+          "symbol": "source_path",
+          "schema_file": "function_schema/kdb.shared.config.paths.source_path.md"
+        },
+        {
+          "symbol": "subprocess_env",
+          "schema_file": "function_schema/kdb.shared.config.paths.subprocess_env.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/shared/config/private_values.py",
+      "contracts": [
+        {
+          "symbol": "private_value",
+          "schema_file": "function_schema/kdb.shared.config.private_values.private_value.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/conftest.py",
+      "contracts": [
+        {
+          "symbol": "module",
+          "schema_file": "function_schema/tests.conftest.module.md"
+        },
+        {
+          "symbol": "pytest_collection_modifyitems",
+          "schema_file": "function_schema/tests.conftest.pytest_collection_modifyitems.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/entry_smoke/test_launcher_startup.py",
+      "contracts": [
+        {
+          "symbol": "load_preflight",
+          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.load_preflight.md"
+        },
+        {
+          "symbol": "record_flask",
+          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.record_flask.md"
+        },
+        {
+          "symbol": "run_service",
+          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.run_service.md"
+        },
+        {
+          "symbol": "test_crawler_module_main_constructs_processor_and_serves",
+          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.test_crawler_module_main_constructs_processor_and_serves.md"
+        },
+        {
+          "symbol": "test_csat_module_main_reads_auth_and_constructs_sql_pool",
+          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.test_csat_module_main_reads_auth_and_constructs_sql_pool.md"
+        },
+        {
+          "symbol": "test_fastgpt_module_main_keeps_uvicorn_contract",
+          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.test_fastgpt_module_main_keeps_uvicorn_contract.md"
+        },
+        {
+          "symbol": "test_files_module_main_loads_cli_config_before_serve",
+          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.test_files_module_main_loads_cli_config_before_serve.md"
+        },
+        {
+          "symbol": "test_multilingual_module_main_loads_model_dependency_then_serve",
+          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.test_multilingual_module_main_loads_model_dependency_then_serve.md"
+        },
+        {
+          "symbol": "test_multilingual_module_main_missing_model_fails_without_serve",
+          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.test_multilingual_module_main_missing_model_fails_without_serve.md"
+        },
+        {
+          "symbol": "test_off_task_module_main_registers_workers_without_running_them",
+          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.test_off_task_module_main_registers_workers_without_running_them.md"
+        },
+        {
+          "symbol": "test_preflight_check_only_never_executes",
+          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.test_preflight_check_only_never_executes.md"
+        },
+        {
+          "symbol": "test_preflight_missing_auth_and_model_are_not_created",
+          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.test_preflight_missing_auth_and_model_are_not_created.md"
+        },
+        {
+          "symbol": "test_preflight_preserves_exact_argv_and_cwd",
+          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.test_preflight_preserves_exact_argv_and_cwd.md"
+        },
+        {
+          "symbol": "test_preflight_preserves_original_config_fallbacks",
+          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.test_preflight_preserves_original_config_fallbacks.md"
+        },
+        {
+          "symbol": "test_preflight_rejects_wrong_sdk_without_execution",
+          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.test_preflight_rejects_wrong_sdk_without_execution.md"
+        },
+        {
+          "symbol": "test_retrieval_module_main_initializes_then_worker_lifespan_once",
+          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.test_retrieval_module_main_initializes_then_worker_lifespan_once.md"
+        },
+        {
+          "symbol": "test_shell_launchers_require_explicit_interpreter",
+          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.test_shell_launchers_require_explicit_interpreter.md"
+        },
+        {
+          "symbol": "write_json",
+          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.write_json.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/entry_smoke/test_service_contracts.py",
+      "contracts": [
+        {
+          "symbol": "test_forge_plain_update_preserves_default_without_embedding",
+          "schema_file": "function_schema/tests.entry_smoke.test_service_contracts.test_forge_plain_update_preserves_default_without_embedding.md"
+        },
+        {
+          "symbol": "test_public_application_export_keeps_category_behavior",
+          "schema_file": "function_schema/tests.entry_smoke.test_service_contracts.test_public_application_export_keeps_category_behavior.md"
+        },
+        {
+          "symbol": "test_retrieval_keeps_all_twelve_post_routes",
+          "schema_file": "function_schema/tests.entry_smoke.test_service_contracts.test_retrieval_keeps_all_twelve_post_routes.md"
+        },
+        {
+          "symbol": "test_service_lifespan_constructs_both_real_factory_roles",
+          "schema_file": "function_schema/tests.entry_smoke.test_service_contracts.test_service_lifespan_constructs_both_real_factory_roles.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/integrations/test_augment_segment_topics.py",
+      "contracts": [
+        {
+          "symbol": "test_verb_swap_does_not_truncate_longer_pattern",
+          "schema_file": "function_schema/tests.integrations.test_augment_segment_topics.test_verb_swap_does_not_truncate_longer_pattern.md"
+        },
+        {
+          "symbol": "test_verb_swap_matches_only_one_pattern",
+          "schema_file": "function_schema/tests.integrations.test_augment_segment_topics.test_verb_swap_matches_only_one_pattern.md"
+        },
+        {
+          "symbol": "test_verb_swap_no_match_returns_empty",
+          "schema_file": "function_schema/tests.integrations.test_augment_segment_topics.test_verb_swap_no_match_returns_empty.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/integrations/test_prune_dead_raw_urls.py",
+      "contracts": [
+        {
+          "symbol": "test_就地删_不动正文文字",
+          "schema_file": "function_schema/tests.integrations.test_prune_dead_raw_urls.test_就地删_不动正文文字.md"
+        },
+        {
+          "symbol": "test_就地删_只删指定的保留其他url",
+          "schema_file": "function_schema/tests.integrations.test_prune_dead_raw_urls.test_就地删_只删指定的保留其他url.md"
+        },
+        {
+          "symbol": "test_就地删_正常情况",
+          "schema_file": "function_schema/tests.integrations.test_prune_dead_raw_urls.test_就地删_正常情况.md"
+        },
+        {
+          "symbol": "test_就地删_粘连的url",
+          "schema_file": "function_schema/tests.integrations.test_prune_dead_raw_urls.test_就地删_粘连的url.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/jobs/test_auto_audit_time_threshold.py",
+      "contracts": [
+        {
+          "symbol": "test_process_one_data_keeps_machine_approved_audit_result",
+          "schema_file": "function_schema/tests.jobs.test_auto_audit_time_threshold.test_process_one_data_keeps_machine_approved_audit_result.md"
+        },
+        {
+          "symbol": "test_update_by_query_uses_scroll_size_without_max_docs",
+          "schema_file": "function_schema/tests.jobs.test_auto_audit_time_threshold.test_update_by_query_uses_scroll_size_without_max_docs.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/jobs/test_auto_audit_unified.py",
+      "contracts": [
+        {
+          "symbol": "no_network",
+          "schema_file": "function_schema/tests.jobs.test_auto_audit_unified.no_network.md"
+        },
+        {
+          "symbol": "test_shell_wrapper_preserves_status_logs_and_lock",
+          "schema_file": "function_schema/tests.jobs.test_auto_audit_unified.test_shell_wrapper_preserves_status_logs_and_lock.md"
+        },
+        {
+          "symbol": "test_task_timeout_is_not_completion",
+          "schema_file": "function_schema/tests.jobs.test_auto_audit_unified.test_task_timeout_is_not_completion.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/jobs/test_auto_audit_update_by_query.py",
+      "contracts": [
+        {
+          "symbol": "_processor",
+          "schema_file": "function_schema/tests.jobs.test_auto_audit_update_by_query._processor.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/jobs/test_chat_mining_scene_type.py",
+      "contracts": [
+        {
+          "symbol": "normalize",
+          "schema_file": "function_schema/tests.jobs.test_chat_mining_scene_type.normalize.md"
+        },
+        {
+          "symbol": "test_enabled_apps_keep_inner_join_support_explicit_disabled_app_override_and_skip_missing_owner",
+          "schema_file": "function_schema/tests.jobs.test_chat_mining_scene_type.test_enabled_apps_keep_inner_join_support_explicit_disabled_app_override_and_skip_missing_owner.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/mining/test_chat_controller_answer_source_restore.py",
+      "contracts": [
+        {
+          "symbol": "test_quality_stage_runs_independent_review_model",
+          "schema_file": "function_schema/tests.mining.test_chat_controller_answer_source_restore.test_quality_stage_runs_independent_review_model.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/mining/test_chat_qa_prompt_routing.py",
+      "contracts": [
+        {
+          "symbol": "test_every_scheduled_client_has_extract_and_review_delta",
+          "schema_file": "function_schema/tests.mining.test_chat_qa_prompt_routing.test_every_scheduled_client_has_extract_and_review_delta.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/mining/test_excel_qa_segment_upload_control.py",
+      "contracts": [
+        {
+          "symbol": "_make_controller",
+          "schema_file": "function_schema/tests.mining.test_excel_qa_segment_upload_control._make_controller.md"
+        },
+        {
+          "symbol": "test_run_command_list_preserves_space_containing_argument",
+          "schema_file": "function_schema/tests.mining.test_excel_qa_segment_upload_control.test_run_command_list_preserves_space_containing_argument.md"
+        },
+        {
+          "symbol": "test_stage_2_5_image_process_writes_processed_output",
+          "schema_file": "function_schema/tests.mining.test_excel_qa_segment_upload_control.test_stage_2_5_image_process_writes_processed_output.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/mining/test_generic_mining_context.py",
+      "contracts": [
+        {
+          "symbol": "test_context_query_exclude_terms_filter_and_cache_key",
+          "schema_file": "function_schema/tests.mining.test_generic_mining_context.test_context_query_exclude_terms_filter_and_cache_key.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/mining/test_html_text_only_pipeline.py",
+      "contracts": [
+        {
+          "symbol": "_StatusUpdater.__init__",
+          "schema_file": "function_schema/tests.mining.test_html_text_only_pipeline._StatusUpdater.__init__.md"
+        },
+        {
+          "symbol": "_StatusUpdater.update_task_stage",
+          "schema_file": "function_schema/tests.mining.test_html_text_only_pipeline._StatusUpdater.update_task_stage.md"
+        },
+        {
+          "symbol": "test_skip_multimodal_keeps_firecrawl_mapping",
+          "schema_file": "function_schema/tests.mining.test_html_text_only_pipeline.test_skip_multimodal_keeps_firecrawl_mapping.md"
+        },
+        {
+          "symbol": "test_text_only_stages_read_firecrawl_content_when_untranslated",
+          "schema_file": "function_schema/tests.mining.test_html_text_only_pipeline.test_text_only_stages_read_firecrawl_content_when_untranslated.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/mining/test_pdf_rendered_image_extraction.py",
+      "contracts": [
+        {
+          "symbol": "test_image_only_pdf_renders_pages_omitted_by_image_blocks",
+          "schema_file": "function_schema/tests.mining.test_pdf_rendered_image_extraction.test_image_only_pdf_renders_pages_omitted_by_image_blocks.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/mining/test_segment_builder_robustness.py",
+      "contracts": [
+        {
+          "symbol": "_stub_deps",
+          "schema_file": "function_schema/tests.mining.test_segment_builder_robustness._stub_deps.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/mining/test_segment_generation_chunking.py",
+      "contracts": [
+        {
+          "symbol": "test_image_ocr_is_used_in_chunk_boundaries",
+          "schema_file": "function_schema/tests.mining.test_segment_generation_chunking.test_image_ocr_is_used_in_chunk_boundaries.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/mining/test_wayfair_unanswered_review.py",
+      "contracts": [
+        {
+          "symbol": "test_deepseek_models_route_to_official_provider",
+          "schema_file": "function_schema/tests.mining.test_wayfair_unanswered_review.test_deepseek_models_route_to_official_provider.md"
+        },
+        {
+          "symbol": "test_no_warning_for_normal_stop_with_empty_content",
+          "schema_file": "function_schema/tests.mining.test_wayfair_unanswered_review.test_no_warning_for_normal_stop_with_empty_content.md"
+        },
+        {
+          "symbol": "test_no_warning_when_content_present",
+          "schema_file": "function_schema/tests.mining.test_wayfair_unanswered_review.test_no_warning_when_content_present.md"
+        },
+        {
+          "symbol": "test_shipped_config_matches_the_production_fallback_reply",
+          "schema_file": "function_schema/tests.mining.test_wayfair_unanswered_review.test_shipped_config_matches_the_production_fallback_reply.md"
+        },
+        {
+          "symbol": "test_shipped_multi_config_patterns_are_platform_specific",
+          "schema_file": "function_schema/tests.mining.test_wayfair_unanswered_review.test_shipped_multi_config_patterns_are_platform_specific.md"
+        },
+        {
+          "symbol": "test_warn_when_reasoning_exhausts_max_tokens",
+          "schema_file": "function_schema/tests.mining.test_wayfair_unanswered_review.test_warn_when_reasoning_exhausts_max_tokens.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/mining/test_web_batch_crawler_firecrawl_only.py",
+      "contracts": [
+        {
+          "symbol": "test_firecrawl_only_crawls_without_browser",
+          "schema_file": "function_schema/tests.mining.test_web_batch_crawler_firecrawl_only.test_firecrawl_only_crawls_without_browser.md"
+        },
+        {
+          "symbol": "test_run_task_firecrawl_only_validates_depth_and_writes_manifest",
+          "schema_file": "function_schema/tests.mining.test_web_batch_crawler_firecrawl_only.test_run_task_firecrawl_only_validates_depth_and_writes_manifest.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/offline/test_offline_boundary.py",
+      "contracts": [
+        {
+          "symbol": "test_connect_is_denied_before_network",
+          "schema_file": "function_schema/tests.offline.test_offline_boundary.test_connect_is_denied_before_network.md"
+        },
+        {
+          "symbol": "test_dns_is_denied_before_lookup",
+          "schema_file": "function_schema/tests.offline.test_offline_boundary.test_dns_is_denied_before_lookup.md"
+        },
+        {
+          "symbol": "test_listen_bind_is_denied",
+          "schema_file": "function_schema/tests.offline.test_offline_boundary.test_listen_bind_is_denied.md"
+        },
+        {
+          "symbol": "test_only_candidate_and_temporary_writes_are_allowed",
+          "schema_file": "function_schema/tests.offline.test_offline_boundary.test_only_candidate_and_temporary_writes_are_allowed.md"
+        },
+        {
+          "symbol": "test_selected_sdk_is_explicit_test_dependency",
+          "schema_file": "function_schema/tests.offline.test_offline_boundary.test_selected_sdk_is_explicit_test_dependency.md"
+        },
+        {
+          "symbol": "test_subprocess_never_creates_marker",
+          "schema_file": "function_schema/tests.offline.test_offline_boundary.test_subprocess_never_creates_marker.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/retrieval/test_delete_by_file.py",
+      "contracts": [
+        {
+          "symbol": "test_list_file_names_applies_scope_and_keyword",
+          "schema_file": "function_schema/tests.retrieval.test_delete_by_file.test_list_file_names_applies_scope_and_keyword.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/retrieval/test_es8_autocreate.py",
+      "contracts": [
+        {
+          "symbol": "fixture_service",
+          "schema_file": "function_schema/tests.retrieval.test_es8_autocreate.fixture_service.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/retrieval/test_es8_interface.py",
+      "contracts": [
+        {
+          "symbol": "FakeClient.msearch",
+          "schema_file": "function_schema/tests.retrieval.test_es8_interface.FakeClient.msearch.md"
+        },
+        {
+          "symbol": "test_crud_uses_es8_named_parameters_and_nested_update_script",
+          "schema_file": "function_schema/tests.retrieval.test_es8_interface.test_crud_uses_es8_named_parameters_and_nested_update_script.md"
+        },
+        {
+          "symbol": "test_dual_budget_and_cross_provider_index_are_preserved",
+          "schema_file": "function_schema/tests.retrieval.test_es8_interface.test_dual_budget_and_cross_provider_index_are_preserved.md"
+        },
+        {
+          "symbol": "test_factory_selects_es8_without_auto_detect",
+          "schema_file": "function_schema/tests.retrieval.test_es8_interface.test_factory_selects_es8_without_auto_detect.md"
+        },
+        {
+          "symbol": "test_partial_shards_are_retried_then_fail",
+          "schema_file": "function_schema/tests.retrieval.test_es8_interface.test_partial_shards_are_retried_then_fail.md"
+        },
+        {
+          "symbol": "test_same_provider_indexes_each_get_the_route_budget",
+          "schema_file": "function_schema/tests.retrieval.test_es8_interface.test_same_provider_indexes_each_get_the_route_budget.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/retrieval/test_es8_native_batch.py",
+      "contracts": [
+        {
+          "symbol": "test_partial_retry_retains_success_and_final_hits",
+          "schema_file": "function_schema/tests.retrieval.test_es8_native_batch.test_partial_retry_retains_success_and_final_hits.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/retrieval/test_from_type_count_api.py",
+      "contracts": [
+        {
+          "symbol": "test_count_retry_recovers_complete_response",
+          "schema_file": "function_schema/tests.retrieval.test_from_type_count_api.test_count_retry_recovers_complete_response.md"
+        },
+        {
+          "symbol": "test_native_count_failures",
+          "schema_file": "function_schema/tests.retrieval.test_from_type_count_api.test_native_count_failures.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/retrieval/test_insert_check_duplicate_arg.py",
+      "contracts": [
+        {
+          "symbol": "captured",
+          "schema_file": "function_schema/tests.retrieval.test_insert_check_duplicate_arg.captured.md"
+        },
+        {
+          "symbol": "test_chat_review_gate_only_attempts_accepted_high",
+          "schema_file": "function_schema/tests.retrieval.test_insert_check_duplicate_arg.test_chat_review_gate_only_attempts_accepted_high.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/retrieval/test_insert_ext_info.py",
+      "contracts": [
+        {
+          "symbol": "fixture_service",
+          "schema_file": "function_schema/tests.retrieval.test_insert_ext_info.fixture_service.md"
+        },
+        {
+          "symbol": "test_request_models_remain_unchanged",
+          "schema_file": "function_schema/tests.retrieval.test_insert_ext_info.test_request_models_remain_unchanged.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/retrieval/test_list_file_names_source.py",
+      "contracts": [
+        {
+          "symbol": "test_http_source_filter",
+          "schema_file": "function_schema/tests.retrieval.test_list_file_names_source.test_http_source_filter.md"
+        },
+        {
+          "symbol": "test_invalid_source_type",
+          "schema_file": "function_schema/tests.retrieval.test_list_file_names_source.test_invalid_source_type.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/retrieval/test_search_response_ids.py",
+      "contracts": [
+        {
+          "symbol": "_install_import_stubs",
+          "schema_file": "function_schema/tests.retrieval.test_search_response_ids._install_import_stubs.md"
+        },
+        {
+          "symbol": "test_search_response_preserves_trace_ids",
+          "schema_file": "function_schema/tests.retrieval.test_search_response_ids.test_search_response_preserves_trace_ids.md"
+        },
+        {
+          "symbol": "test_search_result_carries_primary_category",
+          "schema_file": "function_schema/tests.retrieval.test_search_response_ids.test_search_result_carries_primary_category.md"
+        },
+        {
+          "symbol": "test_search_result_tolerates_missing_primary_category",
+          "schema_file": "function_schema/tests.retrieval.test_search_response_ids.test_search_result_tolerates_missing_primary_category.md"
+        },
+        {
+          "symbol": "test_search_top_k_default_is_safe",
+          "schema_file": "function_schema/tests.retrieval.test_search_response_ids.test_search_top_k_default_is_safe.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/shared/test_es_http_client_shards.py",
+      "contracts": [
+        {
+          "symbol": "_client",
+          "schema_file": "function_schema/tests.shared.test_es_http_client_shards._client.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/support/forge_transport.py",
+      "contracts": [
+        {
+          "symbol": "embed_text",
+          "schema_file": "function_schema/tests.support.forge_transport.embed_text.md"
+        },
+        {
+          "symbol": "es8_stack",
+          "schema_file": "function_schema/tests.support.forge_transport.es8_stack.md"
+        },
+        {
+          "symbol": "test_duplicate_config_is_rejected",
+          "schema_file": "function_schema/tests.support.forge_transport.test_duplicate_config_is_rejected.md"
+        },
+        {
+          "symbol": "test_positional_service_config_survives_merge",
+          "schema_file": "function_schema/tests.support.forge_transport.test_positional_service_config_survives_merge.md"
+        },
+        {
+          "symbol": "test_title_update_without_stored_document_does_not_write",
+          "schema_file": "function_schema/tests.support.forge_transport.test_title_update_without_stored_document_does_not_write.md"
+        },
+        {
+          "symbol": "test_update_preserves_unrelated_indexes",
+          "schema_file": "function_schema/tests.support.forge_transport.test_update_preserves_unrelated_indexes.md"
+        }
+      ]
+    }
+  ]
+}

@@ -43,7 +43,7 @@ def install(root):
 
 def prepare_paths(root):
     root=Path(root).resolve()
-    paths=[root/'src',root,root/'scripts/testing',root/'tests/baseline_legacy',root/'tests']
+    paths=[root/'src',root,root/'scripts/testing']
     sdk=root/'private/test_dependencies'
     if (sdk/'elasticsearch').is_dir():paths.insert(0,sdk)
     for path in reversed(paths):

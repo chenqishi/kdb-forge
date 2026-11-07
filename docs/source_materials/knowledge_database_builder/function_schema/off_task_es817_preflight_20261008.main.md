@@ -1,3 +1,0 @@
-# main
-
-Inputs: sg workspace and existing SSH main(shenzhen-120), fixed readonly production paths. Outputs: sanitized config pointer/version/vector/provider/hash metadata, actual off-task executable/PATH-selected python/client versions, source file presence/hash, service PID/startticks and script-base-dir, retrieval-only ES8 venv dependency availability. Save fresh preflight.json under off_task review folder. SQL/side effects: filesystem and /proc reads and harmless dependency-version interpreter subprocess only; no ES/model/SQL/service requests, package install, git, runtime config change or restart. Never emit credentials/hosts/user task-info/env beyond PATH entries.

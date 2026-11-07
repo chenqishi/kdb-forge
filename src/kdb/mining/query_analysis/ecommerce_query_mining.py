@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 """
@@ -9,8 +10,6 @@
 3. 小批量调用低成本 LLM，把聊天式问题泛化为自包含测评 query。
 4. 跨批次去重、按主题限额采样，输出 CSV/JSONL/报告。
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('query_understanding_analysis/ecommerce_query_mining.py')
 
 import argparse
 import csv
@@ -25,11 +24,9 @@ from collections import defaultdict
 from datetime import datetime
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+PROJECT_ROOT = str(_PROJECT_ROOT)
 
-from commons.mysql_connector import MySQLConnector
+from kdb.shared.clients.mysql_connector import MySQLConnector
 
 
 _URL_OR_IMAGE_RE = re.compile(r"https?://|www\.|\.((jpg)|(jpeg)|(png)|(gif)|(webp)|(bmp)|(pdf))\b", re.I)
@@ -866,7 +863,7 @@ def llm_generalize_batch(
     if skip_llm:
         return fallback_generalize_batch(candidates)
     try:
-        from commons.local_llm_adapter import request_knowledge_llm
+        from kdb.shared.clients.local_llm_adapter import request_knowledge_llm
     except Exception as exc:
         logging.warning("无法导入 local_llm_adapter，使用规则泛化: %s", exc)
         return fallback_generalize_batch(candidates)

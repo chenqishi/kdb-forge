@@ -1,8 +1,8 @@
-from commons import common_utils
-from commons.common_utils import load_attr_map_dict as load_3file_dict
-from commons import dify_tools
-from commons import qa_text_tools
-from config_tools.config import GLOBAL_CONFIG as config
+from kdb.shared.text import common_utils
+from kdb.shared.text.common_utils import load_attr_map_dict as load_3file_dict
+from kdb.shared.clients import dify_tools
+from kdb.shared.text import qa_text_tools
+from kdb.shared.config.legacy_config import GLOBAL_CONFIG as config
 import json
 import logging
 import sys

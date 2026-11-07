@@ -25,10 +25,10 @@ from datetime import timedelta
 
 
 
-from mp_http_source_util import AtomFeedParser
-import crawler_url
-import clear_util
-import build_dataset_from_api
+from kdb.mining.crawlers.server.mp_http_source_util import AtomFeedParser
+import kdb.mining.crawlers.server.crawler_url as crawler_url
+import kdb.mining.crawlers.server.clear_util as clear_util
+import kdb.mining.crawlers.server.build_dataset_from_api as build_dataset_from_api
 
 class ProcessLogitic(object):
     """

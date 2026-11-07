@@ -4,7 +4,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from kdb.crud.repository import KnowledgeRepository
+from kdb.services.forge_compat.repository import KnowledgeRepository
 
 
 @pytest.mark.parametrize("method,args,kwargs,backend,expected_args,expected_kwargs,result", [

@@ -25,7 +25,7 @@ from urllib.parse import urlparse
 import fire
 import openpyxl
 
-from knowledge_crawler_tool.web_crawl.web_batch_crawler import WebBatchCrawler
+from kdb.mining.crawlers.web_crawl.web_batch_crawler import WebBatchCrawler
 
 # 内容 BFF。同域的 public/ 与 v1/ 端点分别返回 403 / 401，只有 content/ 开放且免鉴权。
 CONTENT_BFF_URL = 'https://api.wayfair.io/content/v1/developer-portal-bff/graphql'

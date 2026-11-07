@@ -1,9 +1,9 @@
 import logging
 import os
 import fitz
-from off_task_tools.minio_downloader import MinioDownloader
-from config_tools.config import GLOBAL_CONFIG
-from knowledge_clear_tool.wordtotext import parse_pdf_to_json, convert_docx_to_pdf
+from kdb.mining.tasks.minio_downloader import MinioDownloader
+from kdb.shared.config.legacy_config import GLOBAL_CONFIG
+from kdb.mining.generation.processing.wordtotext import parse_pdf_to_json, convert_docx_to_pdf
 
 
 S3_DOWNLOADER = MinioDownloader(GLOBAL_CONFIG.get('minio_config_path'))

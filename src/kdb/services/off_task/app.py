@@ -1,4 +1,5 @@
-from kdb.compat.layout import legacy_package_path as _legacy_package_path
+from kdb.shared.config.paths import source_path as _source_path, subprocess_env
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 ################################################################################
@@ -10,8 +11,6 @@ from kdb.compat.layout import legacy_package_path as _legacy_package_path
 Authors: qishichen(263436967@qq.com)
 Date: 2024-01-01
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('control_service/off_task_control_service.py')
 import sys
 import os
 import json
@@ -30,11 +29,10 @@ from mysql.connector import Error
 import traceback
 
 # 添加项目根目录到sys.path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__))))
-from commons.mysql_connector import MySQLConnector
-from data_preprocess.document_clear_price_access import asscess_document_clear_price
+from kdb.shared.clients.mysql_connector import MySQLConnector
+from kdb.mining.parsing.document_clear_price_access import asscess_document_clear_price
 
-app = Flask(__name__, root_path=_legacy_package_path('control_service/off_task_control_service.py'))
+app = Flask(__name__, root_path=str(_source_path('kdb', 'services', 'off_task')))
 
 # 配置日志
 logging.basicConfig(
@@ -67,12 +65,12 @@ def init_script_base_dir(provided_dir=None):
         script_base_dir = os.path.abspath(provided_dir)
     else:
         # 默认使用当前服务脚本的上级目录
-        script_base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
+        script_base_dir = str(_PROJECT_ROOT)
     
     logging.info(f"脚本基础目录设置为: {script_base_dir}")
     
     # 检查脚本目录是否存在
-    script_dir = os.path.join(script_base_dir, 'control_service')
+    script_dir = str(_source_path('kdb', 'mining', 'pipelines'))
     if not os.path.exists(script_dir):
         logging.warning(f"脚本目录不存在: {script_dir}")
     else:
@@ -430,7 +428,8 @@ def start_mining_task(task_type, task_info, task_id):
     """启动挖掘任务"""
     if task_type == "document_qa_mining":
         # 构建启动命令 - 使用配置的脚本基础目录
-        script_path = os.path.join(script_base_dir, 'control_service', 'document_qa_mining_task_control.py')
+        script_path = str(_source_path('kdb', 'mining', 'pipelines', 'document_qa.py'))
+        module_name = 'kdb.mining.pipelines.document_qa'
         task_info_json = json.dumps(task_info, ensure_ascii=False)
         
         try:
@@ -448,7 +447,7 @@ def start_mining_task(task_type, task_info, task_id):
             
             # 构建正确的命令行参数
             cmd = [
-                sys.executable, script_path,
+                sys.executable, '-m', module_name,
                 '--script-dir', script_base_dir,
                 '--task-id', task_id,
                 '--task-info', task_info_json
@@ -474,7 +473,8 @@ def start_mining_task(task_type, task_info, task_id):
                 cmd,
                 stdout=log_file,
                 stderr=subprocess.STDOUT,  # 将stderr合并到stdout
-                cwd=script_base_dir,  # 设置工作目录为脚本基础目录
+                cwd=script_base_dir,
+                env=subprocess_env(),  # 设置工作目录为脚本基础目录
                 text=True,
                 bufsize=1  # 行缓冲，确保日志及时写入
             )
@@ -496,7 +496,8 @@ def start_mining_task(task_type, task_info, task_id):
             return None
     
     elif task_type == "document_qa_segment_mining":
-        script_path = os.path.join(script_base_dir, 'control_service', 'document_qa_segment_mining.py')
+        script_path = str(_source_path('kdb', 'mining', 'pipelines', 'document_qa_segment.py'))
+        module_name = 'kdb.mining.pipelines.document_qa_segment'
         task_info_json = json.dumps(task_info, ensure_ascii=False)
 
         try:
@@ -510,7 +511,7 @@ def start_mining_task(task_type, task_info, task_id):
             task_log_file = os.path.join(task_log_dir, f'{task_id}.log')
 
             cmd = [
-                sys.executable, script_path,
+                sys.executable, '-m', module_name,
                 '--script-dir', script_base_dir,
                 '--task-id', task_id,
                 '--task-info', task_info_json
@@ -533,6 +534,7 @@ def start_mining_task(task_type, task_info, task_id):
                 stdout=log_file,
                 stderr=subprocess.STDOUT,
                 cwd=script_base_dir,
+                env=subprocess_env(),
                 text=True,
                 bufsize=1
             )
@@ -554,7 +556,8 @@ def start_mining_task(task_type, task_info, task_id):
 
     elif task_type == "chat_qa_mining":
         # 构建启动命令 - 使用配置的脚本基础目录
-        script_path = os.path.join(script_base_dir, 'control_service', 'chat_qa_mining_task_control.py')
+        script_path = str(_source_path('kdb', 'mining', 'pipelines', 'chat_qa.py'))
+        module_name = 'kdb.mining.pipelines.chat_qa'
         task_info_json = json.dumps(task_info, ensure_ascii=False)
         
         try:
@@ -572,7 +575,7 @@ def start_mining_task(task_type, task_info, task_id):
             
             # 构建正确的命令行参数
             cmd = [
-                sys.executable, script_path,
+                sys.executable, '-m', module_name,
                 '--script-dir', script_base_dir,
                 '--task-id', task_id,
                 '--task-info', task_info_json
@@ -599,7 +602,8 @@ def start_mining_task(task_type, task_info, task_id):
                 cmd,
                 stdout=log_file,
                 stderr=subprocess.STDOUT,  # 将stderr合并到stdout
-                cwd=script_base_dir,  # 设置工作目录为脚本基础目录
+                cwd=script_base_dir,
+                env=subprocess_env(),  # 设置工作目录为脚本基础目录
                 text=True,
                 bufsize=1  # 行缓冲，确保日志及时写入
             )
@@ -622,7 +626,8 @@ def start_mining_task(task_type, task_info, task_id):
     
     elif task_type == "html_qa_segment_mining":
         # 构建启动命令 - 使用配置的脚本基础目录
-        script_path = os.path.join(script_base_dir, 'control_service', 'html_kg_gen_task_control.py')
+        script_path = str(_source_path('kdb', 'mining', 'pipelines', 'html_qa_segment.py'))
+        module_name = 'kdb.mining.pipelines.html_qa_segment'
         task_info_json = json.dumps(task_info, ensure_ascii=False)
         
         try:
@@ -640,7 +645,7 @@ def start_mining_task(task_type, task_info, task_id):
             
             # 构建正确的命令行参数
             cmd = [
-                sys.executable, script_path,
+                sys.executable, '-m', module_name,
                 '--script-dir', script_base_dir,
                 '--task-id', task_id,
                 '--task-info', task_info_json
@@ -669,7 +674,8 @@ def start_mining_task(task_type, task_info, task_id):
                 cmd,
                 stdout=log_file,
                 stderr=subprocess.STDOUT,  # 将stderr合并到stdout
-                cwd=script_base_dir,  # 设置工作目录为脚本基础目录
+                cwd=script_base_dir,
+                env=subprocess_env(),  # 设置工作目录为脚本基础目录
                 text=True,
                 bufsize=1  # 行缓冲，确保日志及时写入
             )
@@ -694,7 +700,8 @@ def start_mining_task(task_type, task_info, task_id):
     
     elif task_type == "excel_qa_segment_upload":
         # 构建启动命令 - 使用配置的脚本基础目录
-        script_path = os.path.join(script_base_dir, 'control_service', 'excel_qa_segment_upload_control.py')
+        script_path = str(_source_path('kdb', 'mining', 'pipelines', 'excel_qa_segment_upload.py'))
+        module_name = 'kdb.mining.pipelines.excel_qa_segment_upload'
         task_info_json = json.dumps(task_info, ensure_ascii=False)
         
         try:
@@ -712,7 +719,7 @@ def start_mining_task(task_type, task_info, task_id):
             
             # 构建正确的命令行参数
             cmd = [
-                sys.executable, script_path,
+                sys.executable, '-m', module_name,
                 '--script-dir', script_base_dir,
                 '--task-id', task_id,
                 '--task-info', task_info_json
@@ -740,7 +747,8 @@ def start_mining_task(task_type, task_info, task_id):
                 cmd,
                 stdout=log_file,
                 stderr=subprocess.STDOUT,  # 将stderr合并到stdout
-                cwd=script_base_dir,  # 设置工作目录为脚本基础目录
+                cwd=script_base_dir,
+                env=subprocess_env(),  # 设置工作目录为脚本基础目录
                 text=True,
                 bufsize=1  # 行缓冲，确保日志及时写入
             )
@@ -1212,7 +1220,7 @@ def parse_args():
     import argparse
     parser = argparse.ArgumentParser(description='任务控制服务')
     parser.add_argument('--script-dir', 
-                       help='脚本基础目录路径（不指定则使用服务脚本所在目录的上级目录）',
+                       help='运行配置、数据和日志根目录（不指定则使用当前项目根目录）',
                        default=None)
     parser.add_argument('--port', 
                        type=int,

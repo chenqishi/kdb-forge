@@ -4,8 +4,8 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 import pytest
 from kdb.services.forge_compat import adapter
-from kdb.crud.repository import KnowledgeRepository
-from kdb.crud.service import KnowledgeService
+from kdb.services.forge_compat.repository import KnowledgeRepository
+from kdb.services.forge_compat.adapter import KnowledgeService
 
 
 @pytest.mark.parametrize('explicit,default,test_index,expected', [('explicit','default','test','explicit'),(None,'default','test','default'),(None,None,'test','test'),(None,None,None,None)])
@@ -33,7 +33,7 @@ def test_original_legacy_config_aliases(tmp_path,field):
 
 
 def test_original_count_factory_disables_all_ensure(monkeypatch):
-    import kdb.es.engine as engine_module
+    import kdb.services.forge_compat.engine as engine_module
     cfg={'engine_config_path':'engine.json','default_index_name':'chosen','embedding_config_path':'must-not-read'}
     monkeypatch.setattr(adapter,'load_config',Mock(return_value=cfg))
     engine=SimpleNamespace(index_name='chosen',_impl=None)

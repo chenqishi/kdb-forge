@@ -1,4 +1,5 @@
-from kdb.compat.layout import legacy_package_path as _legacy_package_path
+from kdb.shared.config.paths import source_path as _source_path
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 """
@@ -18,8 +19,6 @@ CSAT 满意度报告服务
                  "signature":  "<md5(secret+timestamp)>",
                  "timestamp":  <unix秒级时间戳> }
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('single_service/csat_report_service.py')
 import argparse
 import hashlib
 import json
@@ -31,13 +30,12 @@ import time
 from flask import Flask, request, Response
 
 # 将项目根目录加入 sys.path，以便引用 commons 等包
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__))))
 
-from commons.mysql_connector import MySQLConnector
-from single_service.csat_data_query import query_csat_sessions
-from single_service.user_id_map_query import query_user_id_map
+from kdb.shared.clients.mysql_connector import MySQLConnector
+from kdb.reporting.csat.csat_data_query import query_csat_sessions
+from kdb.reporting.csat.user_id_map_query import query_user_id_map
 
-app = Flask(__name__, root_path=_legacy_package_path('single_service/csat_report_service.py'))
+app = Flask(__name__, root_path=str(_source_path('kdb', 'services', 'csat')))
 
 logging.basicConfig(
     level=logging.INFO,

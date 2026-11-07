@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 """
@@ -9,8 +10,6 @@
 
 API 详情：docs 见 knowledge_database_builder/zhiqu_contact_list_api.md。
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('data_control_tools/zhiqu_contact_fetcher.py')
 import json
 import logging
 import os
@@ -26,7 +25,7 @@ TOKEN_PATH = '/api/get-access-token'
 CONTACT_LIST_PATH = '/mochat/open-api/contact/list'
 
 DEFAULT_CRED_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__))),
+    str(_PROJECT_ROOT),
     'config', 'zhiqu_credentials.json',
 )
 # 留出 60s 余量提前刷新

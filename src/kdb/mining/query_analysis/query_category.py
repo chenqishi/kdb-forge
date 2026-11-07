@@ -1,6 +1,6 @@
 import os
-from commons.dify_tools import DifyWorkFlowRequest
-from commons.mysql_connector import MySQLConnector
+from kdb.shared.clients.dify_tools import DifyWorkFlowRequest
+from kdb.shared.clients.mysql_connector import MySQLConnector
 import traceback
 import logging
 

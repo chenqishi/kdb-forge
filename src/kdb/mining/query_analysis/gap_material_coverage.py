@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 """
@@ -18,8 +19,6 @@
 
 输出 CSV/JSONL/Markdown，missing 那部分正是「要不要继续找材料」的依据。
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('query_understanding_analysis/gap_material_coverage.py')
 
 import argparse
 import csv
@@ -32,9 +31,7 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from typing import Dict, List, Optional, Sequence, Tuple
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+PROJECT_ROOT = str(_PROJECT_ROOT)
 
 DEFAULT_JUDGE_MODEL = 'deepseek-v4-pro'
 
@@ -168,7 +165,7 @@ def _get_embedder():
     """复用项目里的阿里 embedding（与线上检索同一套配置）。"""
     global _EMB
     if _EMB is None:
-        from commons.embedding_tools import AliEmbedding
+        from kdb.shared.clients.embedding_tools import AliEmbedding
         _EMB = AliEmbedding(os.path.join(PROJECT_ROOT, 'config', 'config_ali_embedding.json'))
     return _EMB
 
@@ -309,8 +306,8 @@ _JUDGE_SYSTEM = """你在评估「一批平台官方material能不能回答卖�
 
 
 def _ensure_llm():
-    from chat_qa_extract import config as llm_config
-    from chat_qa_extract import llm_client
+    from kdb.mining.quality.chat_qa_extract import config as llm_config
+    from kdb.mining.quality.chat_qa_extract import llm_client
     llm_config.load_llm_config()
     return llm_client
 
@@ -415,8 +412,9 @@ def load_gap_queries(csv_path: str, platform: Optional[str]) -> List[dict]:
 
 def main():
     ap = argparse.ArgumentParser(description='缺口 query ↔ 已爬材料 覆盖对照')
-    ap.add_argument('--gap-csv',
-                    default='/root/sell_agents/docs/payoneer_olive_v6_data/知识库缺口_按平台主题_348条.csv')
+    ap.add_argument('--gap-csv', default=os.environ.get('KDB_GAP_CSV'),
+                    required=not bool(os.environ.get('KDB_GAP_CSV')),
+                    help='缺口CSV路径；也可通过KDB_GAP_CSV配置')
     ap.add_argument('--platform', default='Bol')
     ap.add_argument('--material-dir', default=os.path.join(PROJECT_ROOT, 'data', 'payoneer_olive', 'Bol'))
     ap.add_argument('--out-dir', default=os.path.join(PROJECT_ROOT, 'output', 'payoneer_olive_gap'))

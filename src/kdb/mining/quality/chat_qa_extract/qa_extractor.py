@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import resource_path as _resource_path
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 
@@ -14,8 +15,6 @@
 本地实现保持同样的分支和输出格式，并在此基础上支持按 client 追加增强规则
 （prompts/extract.<client>.md），用于收紧特定客户的抽取口径。
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('chat_qa_extract/qa_extractor.py')
 
 import logging
 import os
@@ -25,7 +24,7 @@ from typing import Optional
 from . import config as cqe_config
 from . import llm_client
 
-PROMPT_DIR = os.path.join(os.path.dirname(os.path.abspath(__legacy_source_file__)), 'prompts')
+PROMPT_DIR = str(_resource_path('prompts', 'mining', 'chat_qa_extract'))
 
 _THINK_RE = re.compile(r'<think>[\s\S]*?</think>')
 

@@ -1,13 +1,13 @@
 from kdb.shared.config.private_values import private_value as _private_value
 import logging
-from commons.mysql_connector import MySQLConnector
-from query_understanding_analysis.query_category import QueryCategoryDify
-from query_understanding_analysis import query_norm
+from kdb.shared.clients.mysql_connector import MySQLConnector
+from kdb.mining.query_analysis.query_category import QueryCategoryDify
+from kdb.mining.query_analysis import query_norm
 from datetime import datetime, timedelta
-from query_understanding_analysis import category_mining
+from kdb.mining.query_analysis import category_mining
 import json
 import sys
-from config_tools.config import GLOBAL_CONFIG
+from kdb.shared.config.legacy_config import GLOBAL_CONFIG
 
 
 def _ensure_logging():

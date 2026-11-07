@@ -6,7 +6,7 @@ import json
 from typing import Dict, List, Optional, Set
 import time
 
-from category_sys_util import get_category_tree, build_category_path_map
+from kdb.shared.categories.category_sys_util import get_category_tree, build_category_path_map
 
 
 def insert_category(client: str, userId: str, category_name: str, parent_id: Optional[str] = None) -> Optional[str]:

@@ -9,10 +9,7 @@ from elastic_transport import Transport
 from elastic_transport._transport import TransportApiResponse
 import pytest
 
-_path = Path(__file__).resolve().parents[1] / "baseline_forge/tests/test_es8_merge_regressions.py"
-_spec = importlib.util.spec_from_file_location("_forge_native_transport_reference", _path)
-_reference = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(_reference)
+from tests.support import forge_transport as _reference
 
 
 @pytest.fixture

@@ -5,8 +5,6 @@ Excel QA数据上传任务控制脚本
 基于原始的insert_audit_excel.sh脚本改造
 支持从远程文件系统（MinIO等）下载Excel文件并上传QA数据
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('control_service/excel_qa_segment_upload_control.py')
 from kdb.shared.config.private_values import private_value as _private_value
 import os
 import sys
@@ -18,14 +16,12 @@ import subprocess
 import traceback
 from pathlib import Path
 
-# 添加项目根目录到sys.path
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
-sys.path.append(project_root)
+from kdb.shared.config.paths import SOURCE_ROOT, subprocess_env
 
-from off_task_tools.minio_downloader import MinioDownloader
-from off_task_tools.task_status_updater import TaskStatusUpdater
-from commons.schema_trans import classify_excel_upload
-from config_tools.config import GLOBAL_CONFIG
+from kdb.mining.tasks.minio_downloader import MinioDownloader
+from kdb.mining.tasks.task_status_updater import TaskStatusUpdater
+from kdb.mining.transformations.schema_trans import classify_excel_upload
+from kdb.shared.config.legacy_config import GLOBAL_CONFIG
 
 class ExcelQASegmentUploadController:
     """Excel QA数据上传任务控制器"""
@@ -134,13 +130,14 @@ class ExcelQASegmentUploadController:
                     stdout=f, 
                     stderr=subprocess.STDOUT,
                     text=True,
-                    cwd=self.script_dir
+                    cwd=self.script_dir,
+                    env=subprocess_env(),
                 )
             
             # 读取命令输出日志，打印一些关键信息
             if os.path.exists(log_file):
                 with open(log_file, 'r', encoding='utf-8') as f:
-                    log_content = f.read()
+                    log_content = f.read(500)
                     if log_content.strip():
                         logging.info(f"阶段 {stage_name} 命令输出（前500字符）:")
                         logging.info(log_content[:500])
@@ -154,8 +151,9 @@ class ExcelQASegmentUploadController:
                 logging.error(f"阶段 {stage_name} 执行失败，返回码: {result.returncode}")
                 # 如果有错误日志，显示更多信息
                 if os.path.exists(log_file):
-                    with open(log_file, 'r', encoding='utf-8') as f:
-                        error_content = f.read()
+                    with open(log_file, 'rb') as f:
+                        f.seek(max(os.path.getsize(log_file) - 4000, 0))
+                        error_content = f.read(4000).decode('utf-8', errors='replace')
                         if error_content.strip():
                             logging.error(f"错误详情: {error_content[-1000:]}")  # 显示最后1000字符
                 return False
@@ -248,7 +246,7 @@ class ExcelQASegmentUploadController:
             # 使用参数列表执行，避免文件名里的空格被 shell 拆分。
             cmd = [
                 sys.executable,
-                os.path.join(self.script_dir, "commons/schema_trans.py"),
+                '-m', 'kdb.mining.transformations.schema_trans',
                 "trans_web_excel_to_json_file",
                 f"--excel_file={self.downloaded_excel_path}",
                 f"--output_file={self.json_file_path}",
@@ -320,7 +318,7 @@ class ExcelQASegmentUploadController:
         )
         cmd = [
             sys.executable,
-            os.path.join(self.script_dir, "commons/image_data_tools.py"),
+            '-m', 'kdb.shared.files.image_data',
             "process_search_data_image_file",
             self.json_file_path,
             image_api_key,
@@ -338,6 +336,7 @@ class ExcelQASegmentUploadController:
                     stderr=log_f,
                     text=True,
                     cwd=self.script_dir,
+                    env=subprocess_env(),
                 )
             if result.returncode == 0 and os.path.exists(self.image_processed_json_file_path):
                 self.index_input_file_path = self.image_processed_json_file_path
@@ -353,7 +352,7 @@ class ExcelQASegmentUploadController:
     def _run_unstructured_document_fallback(self):
         """复用document_qa_segment_mining完整流程处理不可映射Excel。"""
         try:
-            from control_service.document_qa_segment_mining import DocumentQAMiningTaskController
+            from kdb.mining.pipelines.document_qa_segment import DocumentQAMiningTaskController
 
             document_controller = DocumentQAMiningTaskController(
                 self.script_dir,
@@ -401,7 +400,7 @@ class ExcelQASegmentUploadController:
             # 构建命令。使用argv list，避免路径空格被shell拆分。
             cmd = [
                 sys.executable,
-                os.path.join(self.script_dir, "knowledge_interface_tools/search_index_data_interface.py"),
+                '-m', 'kdb.retrieval.application.search_index_data_interface',
                 "insert_data_to_search_index",
                 f"--data_file={self.index_input_file_path}",
                 f"--config_path={index_config_path}",

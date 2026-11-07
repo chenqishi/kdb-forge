@@ -1,29 +1,25 @@
 {
-    "es_version": "8.17",
-    "index_name": "test_case",
-    "vector_fields": {
-        "indexes_embedding": 1024
-    },
-    "default_provider": "serverless",
-    "providers": {
-        "serverless": {
-            "hosts": ["https://your-serverless-endpoint:9200"],
-            "username": "your-username",
-            "password": "your-password",
-            "verify_certs": false
-        },
-        "paas": {
-            "hosts": ["https://your-paas-endpoint:9200"],
-            "username": "your-username",
-            "password": "your-password",
-            "verify_certs": false
-        }
-    },
-    "index_routes": {
-        "*payoneer*": "paas"
-    },
-    "extra_params": {
-        "recall_mode": "dual",
-        "auto_update_mapping": false
+  "es_version": "8.17",
+  "index_name": "test_index",
+  "vector_fields": {
+    "indexes_embedding": 1024
+  },
+  "default_provider": "default",
+  "providers": {
+    "default": {
+      "hosts": [
+        "https://elasticsearch.example.invalid:9200"
+      ],
+      "username": "SET_CURRENT_USERNAME",
+      "password": "SET_CURRENT_PASSWORD",
+      "verify_certs": true,
+      "request_timeout": 30
     }
+  },
+  "index_routes": {},
+  "extra_params": {
+    "recall_mode": "dual",
+    "auto_update_mapping": false,
+    "ensure_index_on_init": false
+  }
 }

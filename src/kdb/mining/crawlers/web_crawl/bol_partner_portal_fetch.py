@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 """
@@ -20,8 +21,6 @@ Bol 卖家帮助中心（partnerplatform.bol.com）正文抓取。
 
 产出：`data/payoneer_olive/Bol/<slug>.txt`（首行标题 + 正文）+ `manifest.json`。
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('knowledge_crawler_tool/web_crawl/bol_partner_portal_fetch.py')
 
 import argparse
 import html
@@ -36,9 +35,7 @@ from typing import Dict, List, Optional, Tuple
 
 import requests
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__))))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+PROJECT_ROOT = str(_PROJECT_ROOT)
 
 BASE = 'https://partnerplatform.bol.com'
 DEFAULT_OUT_DIR = os.path.join(PROJECT_ROOT, 'data', 'payoneer_olive', 'Bol')

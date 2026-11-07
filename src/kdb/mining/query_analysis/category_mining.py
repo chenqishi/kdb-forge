@@ -5,11 +5,11 @@ import logging
 from datetime import datetime
 from collections import defaultdict
 
-from commons.mysql_connector import MySQLConnector
-from commons import dify_tools
-from query_understanding_analysis import category_manage
+from kdb.shared.clients.mysql_connector import MySQLConnector
+from kdb.shared.clients import dify_tools
+from kdb.mining.query_analysis import category_manage
 import random
-from config_tools.config import GLOBAL_CONFIG
+from kdb.shared.config.legacy_config import GLOBAL_CONFIG
 def gen_category_from_chat_history(sql_config, client_name, start_time, end_time):
     """
     从chat_history表中读取指定客户、时间范围内的send_content，生成类目。
@@ -81,7 +81,7 @@ def gen_category_from_chat_history(sql_config, client_name, start_time, end_time
     finally:
         connector.close_connection(conn, cursor)
     # 4. 请求dify workflow，直接用dify_tools.DifyWorkFlowRequest
-    from commons.dify_tools import DifyWorkFlowRequest
+    from kdb.shared.clients.dify_tools import DifyWorkFlowRequest
     dify = DifyWorkFlowRequest(api_base=dify_base_url, api_key=dify_api_key, system_prompt=system_prompt)
     result = []
     all_category_set = category_set.copy()

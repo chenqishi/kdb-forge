@@ -1,38 +1,54 @@
-# 已实施候选架构（2026-11-06复核）
+# 项目架构
 
-候选 `/root/kdb-forge-refactor-dev-20261105-restart`；尚未切换运行服务。来源为发布f6a78084和四个SHA核验dirty挖掘修复，逐文件见本轮assembly.json。
+`src/kdb` 是业务代码的唯一入口。七个 HTTP 服务、五条挖掘管道和定时任务直接引用包内模块；启动器使用 `python -m kdb.…`。
 
 ```mermaid
 flowchart TB
-  L[scripts/services 显式KDB_PYTHON] --> P[本地preflight 资源和SDK检查]
-  P --> W
-  W[原路径 import/CLI wrappers] --> S[services 独立HTTP入口]
-  W --> M[mining 五管道与任务]
-  J[jobs 定时入口] --> M
-  S --> R[retrieval/application SearchDataInterface 整体]
-  S --> M
-  M --> R
-  R --> E[唯一发布引擎工厂 ES8 Router maintenance]
-  F[services/forge_compat 独立原协议] --> R
-  F --> A[严格count参数薄适配]
-  A --> E
-  M --> C[shared clients/config/text/files/categories]
-  R --> C
-  I[integrations / reporting] --> C
-  T[run_offline_tests / 默认pytest] --> G[导入前禁网络 进程 外部写]
-  G --> V[入口及离线测试]
+  CLI[scripts/services · 显式 KDB_PYTHON] --> CHECK[本地依赖与资源预检]
+  CHECK --> S[七个 HTTP 服务]
+  S --> RET[retrieval · 检索服务]
+  S --> OFF[off_task · 任务队列]
+  S --> CRAWL[crawler · 网页处理]
+  S --> FILE[files · 文件访问]
+  S --> LANG[multilingual · 语言识别]
+  S --> CSAT[csat · 满意度报表]
+  S --> FAST[fastgpt_proxy · 上游代理]
+  OFF --> PIPE[mining/pipelines · 五条管道]
+  JOB[jobs · 定时任务] --> PIPE
+  PIPE --> STAGE[mining · 抽取、清洗、审核、入库]
+  RET --> APP[retrieval/application · SearchDataInterface]
+  STAGE --> APP
+  COMP[services/forge_compat · 独立协议适配] --> APP
+  APP --> ENG[retrieval/engines · ES8.17 与索引路由]
+  APP --> SHARED[shared · 配置、客户端、文本、文件、类目]
+  STAGE --> SHARED
+  CRAWL --> STAGE
+  FILE --> SHARED
+  CSAT --> REPORT[reporting / integrations]
+  REPORT --> SHARED
+  FAST --> UP[FastGPT 上游]
+  LANG --> MODEL[fastText 与真实语言模型]
+  ENG --> ES[Elasticsearch 8.17]
+  SHARED --> EXT[SQL / LLM / MinIO / 类目接口]
 ```
 
-正式服务位于services/retrieval、off_task、crawler、files、multilingual、csat、fastgpt_proxy；旧12业务POST协议原样搬入retrieval/app.py，不与独立forge协议合并。五controller留原subprocess、解释器、shell、cwd、env、信号/超时机制。
+| 目录 | 职责 |
+|---|---|
+| `services/` | HTTP 参数、响应、服务生命周期；`forge_compat` 保留独立调用协议 |
+| `retrieval/application/` | 检索、文档处理及通用业务兼容行为；SearchDataInterface 是唯一业务实现 |
+| `retrieval/engines/` | Elasticsearch 8.17 请求、索引路由、计数与维护接口 |
+| `mining/` | 五条管道及可组合的抽取、清洗、质量审核、任务阶段 |
+| `jobs/` | 定时批次入口与调度所需逻辑 |
+| `shared/` | 配置路径、外部客户端、类目、文件、文本等共用模块 |
+| `integrations/`、`reporting/` | 外部系统适配与统计报表 |
+| `resources/` | Prompt 等随代码发布的静态资源 |
+| `function_schema/` | 当前函数输入输出、SQL 字段及来源契约 |
+| `scripts/`、`tests/` | 运维入口与离线验证 |
 
-客户类目推断及缓存保持在SearchDataInterface，不从类中抽走。shared中的通用客户端、文件和纯文本模块按已有独立模块搬移。旧import路径委托同一正式模块；__file__计算使用本候选中的原逻辑路径；Flask资源根保留原目录语义。
+包内依赖使用 `kdb.*`，不依赖仓库根下的旧业务包。共享路径由 `kdb.shared.config.paths` 解析；静态资源从 `resources/` 读取，运行配置、日志、任务产物与缓存独立管理。
 
-forge原重复核心位于archive/forge_pre_refactor，正式import不使用archive。原Repository保持完整纯委托文件；KnowledgeService构造、更新、配置工厂与计数公开协议承接至薄适配。严格count只补forge原SDK参数并复用发布完整性校验；已发布ES8/Router原文件字节不变。
+五条管道按各自控制器执行生成、质量处理、格式转换和入库阶段，使用任务目录中的文件交接。具体开关和失败处理依各管道实现；直接检索/入库 API 保留各自默认参数与索引选择行为，详见对应函数契约。
 
-config旧名使用受忽略本地链接，私有有效值在private/runtime_config；Prompt位于resources并保留旧名链接。运行data/output/log、migration_runs不搬，不自动执行手工queue/drain/迁移工具。
+`forge_compat` 保留工厂、构造、Repository 委托与严格计数协议，不建立第二套检索核心。count-only 初始化不创建 embedding 或索引；协议细节见当前函数契约。
 
-图中业务箭头表示最终委托关系，不能理解为已经完成全部import重写：253条正式模块仍经旧命名空间薄wrapper进入canonical模块，是过渡混合依赖图；残留路径与目标目录偏差见docs/runbooks/refactor_residuals_20261106.md。
-
-服务launcher新增本地预检，显式解释器、SDK版本和资源检查通过后才exec原wrapper；--check不启动业务。实际原__main__/worker lifespan接线已在禁外部操作、替换外部边界的测试中检查；五项本地预检通过，语言模型/fasttext与CSAT真实认证缺失仍明确失败。配置指针仅在候选私有副本重绑。
-
-检索另有真实ES同PIT视图验证：30重点样本、两轮60对原SDK计划与响应相同，不包含真实知识生成；五挖掘任务的完整生命周期、全部LLM/SQL/MinIO行为及生产切换仍未验收。默认测试入口只收集受保护的entry_smoke/offline，历史套件显式选择；具体边界见docs/runbooks/offline_testing.md。
+服务启动预检仅验证本地依赖、配置格式与资源存在。语言服务仍缺真实 fastText 依赖/模型，CSAT 仍缺真实认证配置；离线测试通过不能证明这些资源已就绪，也不代表真实后端或生产运行已经验收。

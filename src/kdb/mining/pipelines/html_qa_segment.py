@@ -5,8 +5,6 @@ HTML知识生成任务控制脚本
 基于原始的platform_knowledge_generate_from_html.sh脚本改造
 支持从task_info生成HTML知识
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('control_service/html_kg_gen_task_control.py')
 import os
 import sys
 import json
@@ -17,13 +15,11 @@ import traceback
 import shlex
 from pathlib import Path
 
-# 添加项目根目录到sys.path
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
-sys.path.append(project_root)
+from kdb.shared.config.paths import SOURCE_ROOT, subprocess_env
 
-from off_task_tools.minio_downloader import MinioDownloader
-from off_task_tools.task_status_updater import TaskStatusUpdater
-from category_sys_manager.category_sys_util import (
+from kdb.mining.tasks.minio_downloader import MinioDownloader
+from kdb.mining.tasks.task_status_updater import TaskStatusUpdater
+from kdb.shared.categories.category_sys_util import (
     get_category_tree, 
     build_category_path_map, 
     build_category_id_to_path_map
@@ -258,13 +254,14 @@ class HtmlKgGenTaskController:
                     stdout=f, 
                     stderr=subprocess.STDOUT,
                     text=True,
-                    cwd=self.script_dir
+                    cwd=self.script_dir,
+                    env=subprocess_env(),
                 )
             
             # 读取命令输出日志，打印一些关键信息
             if os.path.exists(log_file):
                 with open(log_file, 'r', encoding='utf-8') as f:
-                    log_content = f.read()
+                    log_content = f.read(500)
                     if log_content.strip():
                         logging.info(f"阶段 {stage_name} 命令输出（前500字符）:")
                         logging.info(log_content[:500])
@@ -278,8 +275,9 @@ class HtmlKgGenTaskController:
                 logging.error(f"阶段 {stage_name} 执行失败，返回码: {result.returncode}")
                 # 如果有错误日志，显示更多信息
                 if os.path.exists(log_file):
-                    with open(log_file, 'r', encoding='utf-8') as f:
-                        error_content = f.read()
+                    with open(log_file, 'rb') as f:
+                        f.seek(max(os.path.getsize(log_file) - 4000, 0))
+                        error_content = f.read(4000).decode('utf-8', errors='replace')
                         if error_content.strip():
                             logging.error(f"错误详情: {error_content[-1000:]}")  # 显示最后1000字符
                 return False
@@ -299,7 +297,7 @@ class HtmlKgGenTaskController:
 
             # 构建命令
             cmd = (
-                f"python {self.script_dir}/knowledge_crawler_tool/web_crawl/web_batch_crawler.py "
+                f"{shlex.quote(sys.executable)} -m kdb.mining.crawlers.web_crawl.web_batch_crawler "
                 f"run_crawl_task_info "
                 f"--task_id={self.task_id} "
                 f"--task_info='{task_info_json}' "
@@ -337,7 +335,7 @@ class HtmlKgGenTaskController:
         try:
             # 构建命令
             cmd = (
-                f"python {self.script_dir}/knowledge_crawler_tool/web_crawl/web_batch_crawler.py "
+                f"{shlex.quote(sys.executable)} -m kdb.mining.crawlers.web_crawl.web_batch_crawler "
                 f"process_crawled_content_json_format "
                 f"--input_file={self.crawler_result_file} "
                 f"--output_dir={self.data_dir} "
@@ -389,7 +387,7 @@ class HtmlKgGenTaskController:
         process_key = 'firecrawl_content' if self.is_use_firecrawl else 'formatted_text'
 
         cmd = (
-            f"python {self.script_dir}/data_preprocess/multimodal_process.py "
+            f"{shlex.quote(sys.executable)} -m kdb.mining.parsing.multimodal_process "
             f"batch_process_html_file "
             f"--config_path={self.multimodal_config_path} "
             f"--data_map_file={self.processed_result_file} "
@@ -436,7 +434,7 @@ class HtmlKgGenTaskController:
             else 'content_with_multimodal_unsderstanding'
         )
         cmd = (
-            f"python {self.script_dir}/knowledge_clear_tool/knowledge_translate_by_dify.py "
+            f"{shlex.quote(sys.executable)} -m kdb.mining.generation.processing.knowledge_translate_by_dify "
             f"run_batch_translate_html_json_content "
             f"--input_file={self.processed_result_file} "
             f"--output_file={self.translated_result_file} "
@@ -464,8 +462,7 @@ class HtmlKgGenTaskController:
         self.status_updater.update_task_stage(self.task_id, "build_business_context")
         logging.info("开始阶段4.5：构建业务上下文")
         try:
-            sys.path.insert(0, self.script_dir)
-            from knowledge_clear_tool.business_context_builder import build_business_context
+            from kdb.mining.generation.processing.business_context_builder import build_business_context
 
             ctx = build_business_context(
                 client=self.client,
@@ -523,7 +520,7 @@ class HtmlKgGenTaskController:
         )
         
         cmd = (
-            f"python {self.script_dir}/knowledge_clear_tool/knowledge_html_clear_by_dify.py "
+            f"{shlex.quote(sys.executable)} -m kdb.mining.generation.processing.knowledge_html_clear_by_dify "
             f"run_batch_clear_html_content "
             f"--input_file={input_file} "
             f"--output_file={self.qa_result_file} "
@@ -549,7 +546,7 @@ class HtmlKgGenTaskController:
         logging.info("开始阶段6：QA质量处理")
         
         cmd = (
-            f"python {self.script_dir}/quality_tools/qa_quality_tools.py "
+            f"{shlex.quote(sys.executable)} -m kdb.mining.quality.qa_quality_tools "
             f"run_batch_re_clear_qa_info "
             f"--input_file={self.qa_result_file} "
             f"--output_file={self.reclear_qa_file_path} "
@@ -575,8 +572,7 @@ class HtmlKgGenTaskController:
         self.status_updater.update_task_stage(self.task_id, "generic_quality")
         logging.info("开始阶段6.5：通用质量后处理")
         try:
-            sys.path.insert(0, self.script_dir)
-            from knowledge_clear_tool.generic_knowledge_quality import (
+            from kdb.mining.generation.processing.generic_knowledge_quality import (
                 repair_self_contained_knowledge_rows, filter_business_quality_rows,
             )
 
@@ -646,7 +642,7 @@ class HtmlKgGenTaskController:
         logging.info("开始阶段7：ES Schema转换")
         
         cmd = (
-            f"python {self.script_dir}/commons/schema_trans.py "
+            f"{shlex.quote(sys.executable)} -m kdb.mining.transformations.schema_trans "
             f"batch_trans_qa_to_search_data "
             f"--batch_file={self.reclear_qa_file_path} "
             f"--output_file={self.search_data_file_path} "
@@ -690,7 +686,7 @@ class HtmlKgGenTaskController:
             return False
         
         cmd = (
-            f"python {self.script_dir}/knowledge_interface_tools/search_index_data_interface.py "
+            f"{shlex.quote(sys.executable)} -m kdb.retrieval.application.search_index_data_interface "
             f"insert_data_to_search_index "
             f"--data_file={self.search_data_file_path} "
             f"--config_path={index_config_path} "
@@ -729,7 +725,7 @@ class HtmlKgGenTaskController:
         segment_log = os.path.join(self.log_dir, "segment_generation.log")
         
         cmd = (
-            f"python {self.script_dir}/knowledge_generate/knowlege_segment_builder_by_dify.py "
+            f"{shlex.quote(sys.executable)} -m kdb.mining.generation.builders.knowlege_segment_builder_by_dify "
             f"run_batch_get_segment_knowledge_html_json "
             f"--html_json_batch_file={segment_input} "
             f"--flag={self.task_id} "
@@ -760,7 +756,7 @@ class HtmlKgGenTaskController:
             return False
 
         cmd = (
-            f"python {self.script_dir}/commons/schema_trans.py "
+            f"{shlex.quote(sys.executable)} -m kdb.mining.transformations.schema_trans "
             f"trans_html_segment_to_search_data_for_file "
             f"--input_file={self.segment_knowledge_file_path} "
             f"--output_file={self.segment_search_data_file_path} "
@@ -808,7 +804,7 @@ class HtmlKgGenTaskController:
             return False
 
         cmd = (
-            f"python {self.script_dir}/knowledge_interface_tools/search_index_data_interface.py "
+            f"{shlex.quote(sys.executable)} -m kdb.retrieval.application.search_index_data_interface "
             f"insert_data_to_search_index --data_file={self.segment_search_data_file_path} "
             f"--index_name_assign={self.index_name} "
             f"--config_path={index_config_path}"

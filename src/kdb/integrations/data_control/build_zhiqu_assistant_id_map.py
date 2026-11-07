@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 """
@@ -22,19 +23,16 @@ Usage:
         [--out config/zhiqu_assistant_id_map.json] \
         [--dry-run]
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('data_control_tools/build_zhiqu_assistant_id_map.py')
 import argparse
 import json
 import logging
 import os
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__))))
-from commons.mysql_connector import MySQLConnector
-from data_control_tools.zhiqu_contact_fetcher import ZhiquClient, build_clients
+from kdb.shared.clients.mysql_connector import MySQLConnector
+from kdb.integrations.data_control.zhiqu_contact_fetcher import ZhiquClient, build_clients
 
-BASE = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
+BASE = str(_PROJECT_ROOT)
 DEFAULT_MYSQL = os.path.join(BASE, 'config', 'mysql_conn_config.json')
 DEFAULT_CRED = os.path.join(BASE, 'config', 'zhiqu_credentials.json')
 DEFAULT_OUT = os.path.join(BASE, 'config', 'zhiqu_assistant_id_map.json')

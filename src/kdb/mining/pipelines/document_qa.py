@@ -5,24 +5,21 @@
 基于原始的platform_knowledge_generate_from_raw_document.sh脚本改造
 支持从远程文件系统（MinIO等）下载文件并生成QA
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('control_service/document_qa_mining_task_control.py')
 import os
 import sys
 import json
 import argparse
 import logging
 import subprocess
+import shlex
 import traceback
 from pathlib import Path
 
-# 添加项目根目录到sys.path
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
-sys.path.append(project_root)
+from kdb.shared.config.paths import SOURCE_ROOT, subprocess_env
 
-from off_task_tools.minio_downloader import MinioDownloader
-from off_task_tools.task_status_updater import TaskStatusUpdater
-from data_preprocess.document_clear_price_access import access_document_clear_price
+from kdb.mining.tasks.minio_downloader import MinioDownloader
+from kdb.mining.tasks.task_status_updater import TaskStatusUpdater
+from kdb.mining.parsing.document_clear_price_access import access_document_clear_price
 
 class DocumentQAMiningTaskController:
     """文档QA挖掘任务控制器"""
@@ -106,13 +103,14 @@ class DocumentQAMiningTaskController:
                     stdout=f,
                     stderr=subprocess.STDOUT,
                     text=True,
-                    cwd=self.script_dir
+                    cwd=self.script_dir,
+                    env=subprocess_env(),
                 )
             
             # 读取命令输出日志，打印一些关键信息
             if os.path.exists(log_file):
                 with open(log_file, 'r', encoding='utf-8') as f:
-                    log_content = f.read()
+                    log_content = f.read(500)
                     if log_content.strip():
                         logging.info(f"阶段 {stage_name} 命令输出（前500字符）:")
                         logging.info(log_content[:500])
@@ -126,8 +124,9 @@ class DocumentQAMiningTaskController:
                 logging.error(f"阶段 {stage_name} 执行失败，返回码: {result.returncode}")
                 # 如果有错误日志，显示更多信息
                 if os.path.exists(log_file):
-                    with open(log_file, 'r', encoding='utf-8') as f:
-                        error_content = f.read()
+                    with open(log_file, 'rb') as f:
+                        f.seek(max(os.path.getsize(log_file) - 4000, 0))
+                        error_content = f.read(4000).decode('utf-8', errors='replace')
                         if error_content.strip():
                             logging.error(f"错误详情: {error_content[-1000:]}")  # 显示最后1000字符
                 return False
@@ -200,7 +199,7 @@ class DocumentQAMiningTaskController:
             file_path_field = 3
             cmd = [
                 sys.executable,
-                os.path.join(self.script_dir, 'knowledge_clear_tool', 'wordtotext.py'),
+                '-m', 'kdb.mining.generation.processing.wordtotext',
                 'batch_map_files_trans',
                 f'--wait_process_file={self.file_mapping_path}',
                 f'--output_file={self.content_mapping_path}',
@@ -240,7 +239,7 @@ class DocumentQAMiningTaskController:
         self.status_updater.update_task_stage(self.task_id, "document_translate")
         logging.info("开始阶段3：文本翻译")
         
-        cmd = f"python {self.script_dir}/knowledge_clear_tool/knowledge_translate_by_dify.py run_batch_translate_pdf_json_content {self.content_mapping_path}"
+        cmd = f"{shlex.quote(sys.executable)} -m kdb.mining.generation.processing.knowledge_translate_by_dify run_batch_translate_pdf_json_content {self.content_mapping_path}"
         
         if self._run_command(cmd, "translate"):
             # 翻译成功，检查可能的输出文件位置
@@ -285,7 +284,7 @@ class DocumentQAMiningTaskController:
         file_name_field_num = 1
         data_file = self.qa_file_path
         log_file = self.log_dir + '/qa_generation.log'
-        cmd = f"python {self.script_dir}/knowledge_clear_tool/knowledge_clear_by_dify_model_longcontent.py run_batch_clear_pdf_json_content {input_file} {self.task_id} {file_name_field_num} 1>{data_file} 2>{log_file}"
+        cmd = f"{shlex.quote(sys.executable)} -m kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent run_batch_clear_pdf_json_content {input_file} {self.task_id} {file_name_field_num} 1>{data_file} 2>{log_file}"
         
         if self._run_command(cmd, "qa_generation"):
             # 检查可能的输出文件位置
@@ -319,7 +318,7 @@ class DocumentQAMiningTaskController:
         self.status_updater.update_task_stage(self.task_id, "qa_quality")
         logging.info("开始阶段5：QA质量处理")
         
-        cmd = f"python {self.script_dir}/quality_tools/qa_quality_tools.py run_batch_re_clear_qa_info --input_file={self.qa_file_path} --output_file={self.reclear_qa_file_path} --process_field_num=-1"
+        cmd = f"{shlex.quote(sys.executable)} -m kdb.mining.quality.qa_quality_tools run_batch_re_clear_qa_info --input_file={self.qa_file_path} --output_file={self.reclear_qa_file_path} --process_field_num=-1"
         
         if self._run_command(cmd, "qa_quality"):
             logging.info("QA质量处理阶段完成")
@@ -333,7 +332,7 @@ class DocumentQAMiningTaskController:
         self.status_updater.update_task_stage(self.task_id, "schema_transform")
         logging.info("开始阶段6：ES Schema转换")
         
-        cmd = f"python {self.script_dir}/commons/schema_trans.py batch_trans_qa_to_search_data --batch_file={self.reclear_qa_file_path} --output_file={self.search_data_file_path} --field_num=9 --platform_field_num=0"
+        cmd = f"{shlex.quote(sys.executable)} -m kdb.mining.transformations.schema_trans batch_trans_qa_to_search_data --batch_file={self.reclear_qa_file_path} --output_file={self.search_data_file_path} --field_num=9 --platform_field_num=0"
         
         # 添加task_id参数
         if self.task_id:
@@ -374,7 +373,7 @@ class DocumentQAMiningTaskController:
                 logging.error("找不到可用的索引配置文件")
                 return False
         
-        cmd = f"python {self.script_dir}/knowledge_interface_tools/search_index_data_interface.py insert_data_to_search_index --data_file={self.search_data_file_path} --config_path={index_config_path} --index_name_assign={self.index_name}"
+        cmd = f"{shlex.quote(sys.executable)} -m kdb.retrieval.application.search_index_data_interface insert_data_to_search_index --data_file={self.search_data_file_path} --config_path={index_config_path} --index_name_assign={self.index_name}"
         
         if self._run_command(cmd, "index_insert"):
             logging.info("ES插入索引阶段完成")

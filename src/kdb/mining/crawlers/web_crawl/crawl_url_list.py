@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 """按 URL 清单抓正文（通用版，供 payoneer_olive 各平台复用）。
@@ -15,8 +16,6 @@
 产出 `<slug>.txt`（首行标题 + `## 小节` 正文）+ `manifest.json`，
 可直接喂给 `build_crawl_manifest_from_text.py` → `run_local_mining.py`。
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('knowledge_crawler_tool/web_crawl/crawl_url_list.py')
 
 import argparse
 import html
@@ -31,9 +30,7 @@ from typing import Dict, List, Optional, Tuple
 
 import requests
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__))))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+PROJECT_ROOT = str(_PROJECT_ROOT)
 
 LOGGER = logging.getLogger(__name__)
 _SPACE_RE = re.compile(r'\s+')

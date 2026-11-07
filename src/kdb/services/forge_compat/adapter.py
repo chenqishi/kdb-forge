@@ -14,9 +14,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
 
 from kdb.services.forge_compat.repository import KnowledgeRepository
-from kdb.embedding.client import EmbeddingClient, build_embedding_client
-from kdb.config.loader import load_config
-from kdb.counting import build_from_type_count_query, validate_count_index
+from kdb.shared.clients.embedding import EmbeddingClient, build_embedding_client
+from kdb.shared.config.loader import load_config
+from kdb.services.forge_compat.counting import build_from_type_count_query, validate_count_index
 from kdb.services.forge_compat.schemas import SCHEMA_FIELDS
 
 
@@ -134,7 +134,7 @@ class KnowledgeService:
     @classmethod
     def from_count_config(cls, config_path: str) -> "KnowledgeService":
         """Build a count-only service with no ensure, embedding or legacy config I/O."""
-        from kdb.es.engine import RoutedLegacyEngine
+        from kdb.services.forge_compat.engine import RoutedLegacyEngine
 
         cfg = load_config(config_path)
         default_index = cfg.get("default_index_name") or cfg.get("test_index_name")

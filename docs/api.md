@@ -1,151 +1,53 @@
-# CSAT 满意度报告 API
+# HTTP API
 
-**接口地址**：`POST https://api.marsmind.cc/csat_report`
+七服务按各自端口运行。以下接口以 `src/kdb/services/` 的实际请求模型和路由为准；FastAPI 服务可通过自身 `/docs`、`/openapi.json` 查看完整模型。启动方式见[运行配置](runtime_configuration.md)。
 
----
+## 知识检索服务
 
-## 请求参数
+入口 `kdb.services.retrieval.app`，默认端口 8003。
 
-**Headers**
-```
-Content-Type: application/json
-```
-
-**Body**
-
-| 字段 | 类型 | 必填 | 说明 |
-|---|---|---|---|
-| start_time | string | 是 | 查询起始时间，格式 `YYYY-MM-DD HH:MM:SS` |
-| end_time | string | 是 | 查询结束时间，格式 `YYYY-MM-DD HH:MM:SS` |
-| channel_type | string | 是 | 渠道类型，如 `wechatcom_service_substitute` |
-| client | string | 是 | 租户标识，由服务方提供 |
-| timestamp | int | 是 | 当前 Unix 时间戳（秒级），与服务器时差须在 5 分钟内 |
-| signature | string | 是 | 签名，计算方式见下方「签名算法」 |
-| include_chat_detail | bool | 否 | 是否返回对话明细，默认 `false` |
-
-### 签名算法
-
-```
-signature = md5(secret + timestamp)
-```
-
-- `secret`：服务方为该 client 分配的密钥
-- `timestamp`：请求中携带的 Unix 时间戳（整数）
-- md5 结果取 **32 位小写 hex 字符串**
-
-**Python 示例**
-
-```python
-import hashlib, time
-
-secret = 'your_secret_key'
-ts = int(time.time())
-signature = hashlib.md5(f'{secret}{ts}'.encode('utf-8')).hexdigest()
-```
-
-### 请求示例
-
-```json
-{
-  "start_time": "2026-03-19 00:00:00",
-  "end_time": "2026-03-20 23:59:59",
-  "channel_type": "wechatcom_service_substitute",
-  "client": "mercado",
-  "timestamp": 1774151247,
-  "signature": "02faf99ffe354ab8aecb5130020df023",
-  "include_chat_detail": false
-}
-```
-
----
-
-## 响应
-
-### 成功（HTTP 200）
-
-```json
-{
-  "code": 0,
-  "message": "success",
-  "data": [ ... ]
-}
-```
-
-### 鉴权失败（HTTP 401）
-
-| message | 原因 |
-|---|---|
-| `timestamp expired` | timestamp 与服务器时差超过 5 分钟 |
-| `unknown client` | client 不在授权列表中 |
-| `invalid signature` | 签名校验不通过 |
-
-```json
-{
-  "code": 401,
-  "message": "invalid signature"
-}
-```
-
-### 参数缺失（HTTP 400）
-
-```json
-{
-  "code": 1,
-  "message": "client, signature, timestamp 均为必填项"
-}
-```
-
----
-
-## 响应数据结构
-
-`data` 数组每个元素字段如下：
-
-| 字段 | 类型 | 说明 |
+| 方法与路径 | 主要输入 | 输出与行为 |
 |---|---|---|
-| survey_instance_id | string | 问卷实例 ID |
-| query_session_id | string | 会话 ID |
-| account_id | string \| null | 客服账号 ID |
-| session_create_datetime | string \| null | 本次会话第一条消息时间，`YYYY-MM-DD HH:MM:SS` |
-| escalated | string | 是否转人工：`Yes` / `No` |
-| escalation_datetime | string \| null | 转人工时间，未转人工时为 `null` |
-| satisfaction | string | 满意度：`satisfied` / `neutral` / `unsatisfied`，未回复时为空字符串 |
-| chat_detail | array | 对话明细，仅 `include_chat_detail=true` 时返回 |
+| `POST /search` | `text`；可选 `top_k=100`、`index_names`、`condition_dicts`、`search_type=qa`、`data_type=text`、`use_synonyms=false` | `{results:[{id,q,a,score,…}]}` |
+| `POST /web_search` | `text`、`index_names`、`client`、`page_num=1`、`page_size=10000`、条件与阈值 | `results`、`total_count`、`current_count` |
+| `POST /insert` | `index_names`；标题、正文、类型、客户、类目、来源、审核及扩展字段；可选 `_id` | 写入，返回 `success`、`message` |
+| `POST /delete` | `index_names`、`id`，可选 `refresh_imm` | 按 ID 删除 |
+| `POST /get_value_collection` | `index_name`、`field_name`；可选 `size`、`include_doc_count`、`extra_query` | 字段聚合值与数量 |
+| `POST /get_from_type_count` | 单个 `index_name`（兼容 `indexName`）、`from_type=chat_auto`、可选 `start/end` | `{success,count,message}`，严格原物理索引计数 |
+| `POST /list_file_names` | `index_name`；可选 `keyword`、`size=200`、`from_type_norm` | 文件名列表、类型统计及数量 |
+| `POST /preview_delete_by_file` | `index_name`、`file_names`，可选 `match_mode`、`data_types`、`audit_results`、`sample_size` | 只读，返回总数、文件分布、类型、样例与告警 |
+| `POST /delete_by_file` | 与预览一致，去掉 `sample_size` | 写 JSONL 快照并软删，返回实际数量及 `snapshot_path` |
+| `POST /update_by_condition` | `index_name`、`update_fields`、`conditions` | 条件 AND 更新；以实际 `success/message` 与后端结果判断 |
+| `POST /modify_knowledge_direct_update` | `es_index`、`new_query_info`；可选旧知识、检索问题、`allow_insert` | 模型修改流程，返回是否有纠错及修改条目 |
+| `POST /modify_knowledge` | 同上，需 `old_query_info`，可选 `write_db_id` | 模型召回/修改流程 |
 
-**chat_detail 元素**
-
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| sender_name | string \| null | 发送方名称 |
-| sender_id | string \| null | 发送方 ID |
-| content | string | 消息内容 |
-| mess_type | string | 消息类型：`user` / `assistant` |
-| create_time | string | 消息时间，`YYYY-MM-DD HH:MM:SS` |
-
-### 响应示例
+检索示例：
 
 ```json
-{
-  "code": 0,
-  "message": "success",
-  "data": [
-    {
-      "survey_instance_id": "04ef1c44d89be1aa94b3bcf95319d4a8",
-      "query_session_id": "wm4bsROwAAK1Deq9CID3eNLqa3ksz9Wg",
-      "session_create_datetime": "2026-03-19 10:06:41",
-      "escalated": "Yes",
-      "escalation_datetime": "2026-03-19 10:06:41",
-      "satisfaction": "satisfied",
-      "chat_detail": [
-        {
-          "sender_name": "企业微信客服",
-          "sender_id": null,
-          "content": "好的呢，正在帮您转人工，请耐心等待哈～",
-          "mess_type": "assistant",
-          "create_time": "2026-03-19 10:06:41"
-        }
-      ]
-    }
-  ]
-}
+{"text":"如何查找帮助文档","index_names":"dedicated_test_index","top_k":10,"data_type":"qa"}
 ```
+
+按文件删除的 `match_mode` 仅接受 `exact` 或 `fuzzy`，默认 exact，不回退到另一模式；默认覆盖 QA 与 segment，审核状态不限制。`sample_size` 为 0–50；先核对预览中的目标、类型及告警，再按明确范围执行真实软删。软删与 ID 硬删除语义不同。
+
+计数的空索引返回 0；不接收通配符、多索引表达式或非法物理名。时间格式为不带时区的 `yyyy-MM-dd HH:mm:ss`，仅同时提供 start/end 时增加闭区间条件，不隐式添加审核或软删筛选。完整字段和异常语义见模型及函数契约。
+
+## 独立 Forge 协议
+
+`kdb.services.forge_compat.api.app:app` 保留独立的检索/CRUD 路由与认证协议，通过适配器委托同一检索应用核心。它与上面的 8003 服务是独立入口，不能混用请求模型或假定认证一致。
+
+配置由 `KDB_FORGE_CONFIG` 指定；检索路由使用独立 HTTP Basic 环境凭据。模型修改依赖显式 modifier 注入，缺少时返回失败，不伪造模型结果。count-only 工厂不加载 embedding 或创建索引。构造参数、工厂、更新与 Repository 委托细节见 `function_schema/current_index.md`。
+
+## 配套服务
+
+| 服务 | 接口 | 主要语义 |
+|---|---|---|
+| off_task | `/start_task`、`/task_info`、`/stop_task`、`/restart_task`、`/health`、`/task_access` | 排队、查询、停止、重启及成本估计，见[管道说明](pipelines.md) |
+| crawler | `POST /process_params` | 接收抓取/处理参数，进入真实网页知识处理流程 |
+| files | `GET|HEAD /<bucket>/<object_path>`、`POST /upload`、`POST /upload_from_url`、`GET /health` | 对象读取与上传；upload 为表单，upload_from_url 为 URL 拉取上传 |
+| multilingual | `POST /lang_predict`、`GET /health` | fastText 与语言规则识别，需真实模型 |
+| csat | `POST /csat_report`、`POST /inner_csat_report`、`POST /inner_external_user_id_map` | 满意度及用户映射查询 |
+| fastgpt_proxy | `POST /search` | 请求 FastGPT chat/completions 上游，非 ES 检索入口 |
+
+CSAT `/csat_report` 请求包含 `start_time`、`end_time`、`channel_type`、`client`、`timestamp`、`signature`；时间戳为 Unix 秒，签名为 `md5(secret + timestamp)`，允许时差 300 秒，可选 `include_chat_detail`。内部两个查询接口沿现有无签名协议，仅应置于相应的内部网络边界。用户映射请求含 `client/start_time/end_time`，可选 `user_id`。
+
+SQL/LLM/ES/MinIO 失败与实际写入数量必须按具体接口和当前契约处理；离线返回示例不证明真实凭据、模型与后端已可用。

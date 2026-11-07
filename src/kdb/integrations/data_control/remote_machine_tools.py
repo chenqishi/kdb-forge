@@ -27,7 +27,7 @@ from typing import Optional
 import shutil
 import socket
 
-from commons.file_utils import get_index_file_name
+from kdb.shared.files.file_utils import get_index_file_name
 
 def is_local_host(host: str) -> bool:
     """

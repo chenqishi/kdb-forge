@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 """从入口页发现同站链接（给没有 sitemap 的平台用）。
@@ -10,8 +11,6 @@ Allegro / Wayfair / Kaufland / Joom / Temu / Trendyol / OnBuy / ManoMano / Chewy
 避免把整站商品页拉进来 —— Bol 那次教训是漏页（只找到 102/752），
 这里相反，要防的是**收进无关页面把语料稀释掉**。
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('knowledge_crawler_tool/web_crawl/discover_links.py')
 import argparse
 import html
 import logging
@@ -21,11 +20,9 @@ import sys
 from typing import List, Set
 from urllib.parse import urljoin, urlparse
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__))))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+PROJECT_ROOT = str(_PROJECT_ROOT)
 
-from knowledge_crawler_tool.web_crawl.crawl_url_list import fetch  # noqa: E402
+from kdb.mining.crawlers.web_crawl.crawl_url_list import fetch  # noqa: E402
 
 LOGGER = logging.getLogger(__name__)
 

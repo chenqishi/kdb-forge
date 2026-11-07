@@ -8,12 +8,12 @@ import time
 from typing import Dict, Any, List, Tuple, Optional, Union, Protocol
 
 from pydantic import InstanceOf
-from commons.embedding_tools import AliEmbedding as EmbeddingTools
-from knowledge_interface_tools.es_search_interface import EsSearchInterface
-from commons import simility_tools
-from commons.simility_tools import cosine_similarity
-from commons.keywords_tools import gen_keyword_by_title_content
-from knowledge_interface_tools.knowledge_tools import (get_from_norm_type,
+from kdb.shared.clients.embedding_tools import AliEmbedding as EmbeddingTools
+from kdb.retrieval.engines.es_search_interface import EsSearchInterface
+from kdb.shared.clients import similarity as simility_tools
+from kdb.shared.clients.similarity import cosine_similarity
+from kdb.shared.text.keywords_tools import gen_keyword_by_title_content
+from kdb.retrieval.application.knowledge_tools import (get_from_norm_type,
                                                        build_default_category_infos,
                                                        build_default_primary_category)
 import logging
@@ -21,7 +21,7 @@ from datetime import datetime
 import traceback
 import requests
 from urllib.parse import quote
-from commons.common_utils import clear_none_value
+from kdb.shared.text.common_utils import clear_none_value
 logger = logging.getLogger(__name__)
 
 
@@ -1439,7 +1439,7 @@ def test_insert_letian_excel(data_file: str, config_path: str):
     import json
     import logging
     from datetime import datetime
-    from knowledge_interface_tools.rawdata_interface import LocalRawDataInterface
+    from kdb.retrieval.application.rawdata_interface import LocalRawDataInterface
     logging.info(f'process data file: {data_file}')
     # 初始化SearchDataInterface
     logging.info(f"初始化SearchDataInterface, index_name: letian, config_path: {config_path}")
@@ -1514,7 +1514,7 @@ def insert_data_to_search_index(data_file: str, config_path: str, use_platform_i
     import json
     import logging
     from datetime import datetime
-    from knowledge_interface_tools.rawdata_interface import LocalRawDataInterface
+    from kdb.retrieval.application.rawdata_interface import LocalRawDataInterface
     logging.info(f'process data file: {data_file}')
     # 初始化SearchDataInterface
     logging.info(f"初始化SearchDataInterface, index_name: letian, config_path: {config_path}")

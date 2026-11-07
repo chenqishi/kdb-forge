@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
-# Manual entry; starts real mining. Preserve caller cwd, argv, PATH and PYTHONPATH.
-kdb_candidate_root="$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)"
-exec "${KDB_PYTHON:-python}" "$kdb_candidate_root/run_local_mining.py" "$@"
+#!/bin/sh
+set -eu
+kdb_project_root=$(CDPATH= cd "$(dirname "$0")/../.." && pwd)
+export PYTHONPATH="$kdb_project_root/src:${PYTHONPATH:-}"
+exec "${KDB_PYTHON:-python}" -m kdb.mining.pipelines.run_local_mining "$@"

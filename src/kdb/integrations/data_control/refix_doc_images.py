@@ -22,7 +22,7 @@ from datetime import datetime
 
 import fire
 
-from knowledge_clear_tool.wordtotext import convert_docx_to_pdf, parse_pdf_to_json
+from kdb.mining.generation.processing.wordtotext import convert_docx_to_pdf, parse_pdf_to_json
 
 IMAGE_EXTS = ('.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp')
 

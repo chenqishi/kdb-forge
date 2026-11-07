@@ -1,6 +1,6 @@
-from commons import common_utils
-from chatknowledge.gen_knowledge_from_chat import load_and_reorg_one_robot_data
-from chatknowledge.gen_knowledge_from_chat import get_normal_group_bigmodel_prompt
+from kdb.shared.text import common_utils
+from kdb.mining.generation.chatknowledge.gen_knowledge_from_chat import load_and_reorg_one_robot_data
+from kdb.mining.generation.chatknowledge.gen_knowledge_from_chat import get_normal_group_bigmodel_prompt
 import json
 import logging
 import sys

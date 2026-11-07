@@ -1,5 +1,5 @@
 from collections import namedtuple, OrderedDict
-from commons.mysql_connector import MySQLConnector
+from kdb.shared.clients.mysql_connector import MySQLConnector
 
 class ChatContextControl(object):
     """

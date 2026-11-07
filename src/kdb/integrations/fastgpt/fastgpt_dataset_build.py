@@ -1,8 +1,8 @@
 from kdb.shared.config.private_values import private_value as _private_value
-from knowledge_generate.knowlege_segment_builder_by_dify import gen_segment_dataset_info
-from build_dataset_from_api_fastgpt import get_documents_name_set, build_documents, add_segment
-from build_dataset_from_api_fastgpt import add_one_segment_and_add_indexes
-from commons.common_utils import load_map_file
+from kdb.mining.generation.builders.knowlege_segment_builder_by_dify import gen_segment_dataset_info
+from kdb.integrations.fastgpt.build_dataset_from_api_fastgpt import get_documents_name_set, build_documents, add_segment
+from kdb.integrations.fastgpt.build_dataset_from_api_fastgpt import add_one_segment_and_add_indexes
+from kdb.shared.text.common_utils import load_map_file
 import json
 import logging
 import sys

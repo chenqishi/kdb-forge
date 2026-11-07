@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 """一次性拉取致趣全量外部联系人原始数据，落 JSON + Excel 供检查。
@@ -6,16 +7,13 @@ Usage:
     python data_control_tools/dump_zhiqu_contacts_raw.py [--client mercado] \
         [--page-size 100] [--out-dir data/zhiqu]
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('data_control_tools/dump_zhiqu_contacts_raw.py')
 import argparse
 import json
 import os
 import sys
 import time
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__))))
-from data_control_tools.zhiqu_contact_fetcher import build_clients
+from kdb.integrations.data_control.zhiqu_contact_fetcher import build_clients
 
 
 def main():

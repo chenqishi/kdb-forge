@@ -1,11 +1,39 @@
-# KDB Forge — 整项目结构重构候选
+# KDB Forge
 
-本候选从已发布f6a78084与四个有效dirty修复重新组装；正式模块位于src/kdb/services、jobs、mining、retrieval、shared、integrations、reporting。旧脚本/import路径保留薄wrapper，旧forge重复核心归档。
+知识库检索、知识挖掘和配套 HTTP 服务。正式代码集中在 `src/kdb`，检索后端为 Elasticsearch 8.17.x。
 
-候选尚未部署；不直接启动离线任务或维护工具。运行命令、解释器和缺失资源见[启动说明](docs/runbooks/restart_runtime.md)，默认安全测试见[离线测试说明](docs/runbooks/offline_testing.md)，forge独立协议见[兼容协议](docs/runbooks/forge_compat_restart_protocol.md)，当前结构见[架构图](docs/Architecture_Overview_Diagram.md)。
+```text
+src/kdb/
+  services/       七个 HTTP 服务与独立协议适配
+  retrieval/      应用接口、ES8 引擎和索引路由
+  mining/         五条挖掘管道与处理阶段
+  jobs/           定时任务
+  shared/         配置、客户端、类目、文本和文件
+  integrations/   外部系统适配
+  reporting/      统计报表
+scripts/          服务、任务、测试入口
+resources/        Prompt 等静态资源
+config/           可提交的配置示例
+function_schema/  当前函数和 SQL 契约
+tests/            离线测试
+docs/             架构、接口和运行说明
+```
 
-ES检索已完成同一PIT视图的新旧对比：30个重点样本、两轮共60对，响应与原SDK请求计划均完全一致；不能将此结论扩展成1000条全量快照复验或七服务全部可上线。语言模型和CSAT认证仍缺真实资源。默认`./run_offline_tests.sh -q`或`./run_tests.sh -q`只运行受禁网络/进程边界保护的入口与离线测试；历史测试须显式选择。
+在独立 Python 环境安装包，然后运行默认离线检查：
 
-来源及初次组装证据保留在`/root/kdb-forge/artifacts/whole_project_refactor_restart_20261105/`。2026-11-06复核整改、最新候选清单与完整性复查见`/root/kdb-forge/artifacts/refactor_review_remediation_20261106/REPORT.md`，旧清单不能代表当前现场。遗留import、绝对路径与目标目录的未完成项见[结构处置清单](docs/runbooks/refactor_residuals_20261106.md)。
+```bash
+python -m pip install -e .
+./run_offline_tests.sh -q
+```
 
-原工作区、旧候选、内容快照与活动数据保留，私有配置不入Git。
+辅助服务和完整测试还需要各自依赖；安装及验证边界见[测试说明](docs/testing.md)。配置示例不含有效凭据，真实配置、模型和运行数据不入 Git。
+
+服务启动器要求 `KDB_PYTHON` 为所选解释器的绝对路径，先执行本地预检：
+
+```bash
+KDB_PYTHON=/absolute/path/to/venv/bin/python scripts/services/retrieval.sh --check config/config_for_search_index.json
+```
+
+资源齐备后，使用相同参数去掉 `--check` 启动；也可在已安装环境中直接执行 `python -m kdb.services.retrieval.app config/config_for_search_index.json`。七服务参数见[运行配置](docs/runtime_configuration.md)。语言服务尚缺真实 fastText 依赖/模型，CSAT 尚缺真实认证配置，不能据离线测试视为可运行。
+
+[架构](docs/Architecture_Overview_Diagram.md) · [HTTP API](docs/api.md) · [挖掘与任务队列](docs/pipelines.md) · [ES8 路由](docs/es8_retrieval.md) · [函数契约索引](function_schema/current_index.md)

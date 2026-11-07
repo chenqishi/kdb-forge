@@ -1,7 +1,7 @@
 import json
 import logging
 import time
-from commons.mysql_connector import MySQLConnector
+from kdb.shared.clients.mysql_connector import MySQLConnector
 
 
 def sql_database_transfer(from_sql_config, to_sql_config, table_config_file, is_all_table=0, trans_data_count_limit=1000):
@@ -260,8 +260,8 @@ def transfer_es_data(source_config_path, target_config_path, source_index_name, 
         batch_size: 批量处理大小
     """
     import sys
-    from knowledge_interface_tools.search_index_data_interface import SearchDataInterface
-    from knowledge_interface_tools.es_search_interface import EsSearchInterface
+    from kdb.retrieval.application.search_index_data_interface import SearchDataInterface
+    from kdb.retrieval.engines.es_search_interface import EsSearchInterface
     
     logging.info(f"开始迁移ES数据: 源索引={source_index_name}, 目标索引={target_index_name}")
     
@@ -438,7 +438,7 @@ def get_all_indices(es_config_path):
     Returns:
         List[str]: 索引名称列表
     """
-    from knowledge_interface_tools.es_search_interface import EsSearchInterface
+    from kdb.retrieval.engines.es_search_interface import EsSearchInterface
     
     try:
         # 创建临时的ES接口（不指定index_name）
@@ -606,8 +606,8 @@ def _transfer_single_index(source_config_path, target_config_path, source_index_
         dict: 统计信息
     """
     import sys
-    from knowledge_interface_tools.search_index_data_interface import SearchDataInterface
-    from knowledge_interface_tools.es_search_interface import EsSearchInterface
+    from kdb.retrieval.application.search_index_data_interface import SearchDataInterface
+    from kdb.retrieval.engines.es_search_interface import EsSearchInterface
     
     # 1. 加载源和目标配置
     source_config = json.load(open(source_config_path, 'r', encoding='utf-8'))

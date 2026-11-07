@@ -18,8 +18,8 @@ from datetime import datetime
 import fire
 import requests
 
-from commons.embedding_tools import AliEmbedding
-from commons.local_llm_adapter import request_knowledge_llm
+from kdb.shared.clients.embedding_tools import AliEmbedding
+from kdb.shared.clients.local_llm_adapter import request_knowledge_llm
 
 SYSTEM_PROMPT = """你是电商平台知识库的检索优化助手。给定一段平台帮助文档的正文，
 写出真实卖家会用来搜索这段内容的问法。

@@ -12,10 +12,10 @@ import logging
 import traceback
 import csv
 import pandas as pd
-from commons.dify_tools import DifyChatFlowRequest
-from commons.dify_tools import DifyWorkFlowRequest
-from commons.common_utils import is_contain_value
-from cross_broder_access.data_control import get_chat_history_from_sql_iterator, ChatContextControl
+from kdb.shared.clients.dify_tools import DifyChatFlowRequest
+from kdb.shared.clients.dify_tools import DifyWorkFlowRequest
+from kdb.shared.text.common_utils import is_contain_value
+from kdb.integrations.cross_border.data_control import get_chat_history_from_sql_iterator, ChatContextControl
 
 
 class DifyModel(object):

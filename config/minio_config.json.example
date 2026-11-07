@@ -1,0 +1,7 @@
+{
+  "endpoint_url": "https://objects.example.invalid",
+  "access_key": "SET_CURRENT_ACCESS_KEY",
+  "secret_key": "SET_CURRENT_SECRET_KEY",
+  "region": "us-east-1",
+  "addressing_style": "path"
+}

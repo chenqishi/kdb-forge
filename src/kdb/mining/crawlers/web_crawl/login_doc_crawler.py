@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """登录态在线文档爬取器（飞书 docx/wiki、企微文档、腾讯文档）。
@@ -30,8 +31,6 @@
     python3 knowledge_crawler_tool/web_crawl/login_doc_crawler.py \
         --manifest knowledge_crawler_tool/data/payoneer_olive_doc_urls.json --download-images
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('knowledge_crawler_tool/web_crawl/login_doc_crawler.py')
 
 import argparse
 import base64
@@ -45,7 +44,7 @@ import sys
 import time
 from datetime import datetime
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__))))
+PROJECT_ROOT = str(_PROJECT_ROOT)
 
 LOGGER = logging.getLogger('login_doc_crawler')
 

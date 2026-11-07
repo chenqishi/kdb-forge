@@ -4,12 +4,12 @@ import traceback
 import copy
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from knowledge_interface_tools.search_index_data_interface import SearchDataInterface
-from commons.dify_tools import DifyWorkFlowRequest
+from kdb.retrieval.application.search_index_data_interface import SearchDataInterface
+from kdb.shared.clients.dify_tools import DifyWorkFlowRequest
 import time
 
 
-from config_tools.config import GLOBAL_CONFIG
+from kdb.shared.config.legacy_config import GLOBAL_CONFIG
 
 
 

@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 """
@@ -17,18 +18,15 @@
 - 名称同时比对 we_com_contact_nick_name 与 we_com_contact_real_name；命中的
   we_com_contact_user_id 去重。同账号内同名重复会命中多个ID，全部列出。
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('data_control_tools/build_external_id_map.py')
 import os
 import sys
 
 import openpyxl
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__))))
-from commons.mysql_connector import MySQLConnector
-from data_control_tools.wecom_name_matcher import load_account_map, load_scoped_index
+from kdb.shared.clients.mysql_connector import MySQLConnector
+from kdb.integrations.data_control.wecom_name_matcher import load_account_map, load_scoped_index
 
-BASE = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
+BASE = str(_PROJECT_ROOT)
 DEFAULT_CONFIG = os.path.join(BASE, 'config/mysql_conn_config.json')
 DEFAULT_XLSX = os.path.join(BASE, 'data/meikeduo/external_id/external_id_sample.xlsx')
 DEFAULT_OUT = os.path.join(BASE, 'data/meikeduo/external_id/external_id_wecom_map.xlsx')

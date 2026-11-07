@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT, resource_path as _resource_path
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 ################################################################################
@@ -12,8 +13,6 @@ Date: 2024-01-01
 多语言识别服务
 基于 fastText 的语言识别模型，提供文本语言预测服务
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('multi_language/multi_language_service.py')
 import sys
 import os
 import json
@@ -24,7 +23,6 @@ import fasttext
 import traceback
 
 # 添加项目根目录到sys.path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__))))
 
 
 app = Flask(__name__)
@@ -423,8 +421,8 @@ if __name__ == '__main__':
         model_path = args.model_path
     else:
         # 默认使用项目中的模型
-        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
-        model_path = os.path.join(project_root, 'model', 'lid.176.ftz')
+        project_root = str(_PROJECT_ROOT)
+        model_path = str(_resource_path('models', 'lid.176.ftz'))
     
     # 检查模型文件是否存在
     if not os.path.exists(model_path):

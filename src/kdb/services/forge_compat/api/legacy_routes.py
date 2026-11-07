@@ -1,7 +1,7 @@
 """Compatibility routes for the legacy :8003 HTTP search service.
 
 The old service exposed eleven POST routes from one FastAPI application.  Retrieval
-routes are mounted by :mod:`kdb.api.search_routes`; this module supplies the
+routes are mounted by :mod:`kdb.services.forge_compat.api.search_routes`; this module supplies the
 remaining management routes while preserving the old JSON contracts.  All ES
 access is lazy, so importing the application or running dry tests never contacts
 Elasticsearch.
@@ -192,7 +192,7 @@ def _get_service():
     if _service is None:
         with _service_lock:
             if _service is None:
-                from kdb.crud.service import KnowledgeService
+                from kdb.services.forge_compat.adapter import KnowledgeService
 
                 config_path = os.environ.get(
                     "KDB_FORGE_CONFIG", "config/config_search_runtime.local.json"

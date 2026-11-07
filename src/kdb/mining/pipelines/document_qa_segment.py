@@ -5,24 +5,21 @@
 基于原始的platform_knowledge_generate_from_raw_document.sh脚本改造
 支持从远程文件系统（MinIO等）下载文件并生成QA
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('control_service/document_qa_segment_mining.py')
 import os
 import sys
 import json
 import argparse
 import logging
 import subprocess
+import shlex
 import traceback
 from pathlib import Path
 
-# 添加项目根目录到sys.path
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
-sys.path.append(project_root)
+from kdb.shared.config.paths import SOURCE_ROOT, subprocess_env
 
-from off_task_tools.minio_downloader import MinioDownloader
-from off_task_tools.task_status_updater import TaskStatusUpdater
-from data_preprocess.document_clear_price_access import access_document_clear_price
+from kdb.mining.tasks.minio_downloader import MinioDownloader
+from kdb.mining.tasks.task_status_updater import TaskStatusUpdater
+from kdb.mining.parsing.document_clear_price_access import access_document_clear_price
 
 class DocumentQAMiningTaskController:
     """文档QA挖掘任务控制器"""
@@ -162,13 +159,14 @@ class DocumentQAMiningTaskController:
                     stdout=f,
                     stderr=subprocess.STDOUT,
                     text=True,
-                    cwd=self.script_dir
+                    cwd=self.script_dir,
+                    env=subprocess_env(),
                 )
             
             # 读取命令输出日志，打印一些关键信息
             if os.path.exists(log_file):
                 with open(log_file, 'r', encoding='utf-8') as f:
-                    log_content = f.read()
+                    log_content = f.read(500)
                     if log_content.strip():
                         logging.info(f"阶段 {stage_name} 命令输出（前500字符）:")
                         logging.info(log_content[:500])
@@ -182,8 +180,9 @@ class DocumentQAMiningTaskController:
                 logging.error(f"阶段 {stage_name} 执行失败，返回码: {result.returncode}")
                 # 如果有错误日志，显示更多信息
                 if os.path.exists(log_file):
-                    with open(log_file, 'r', encoding='utf-8') as f:
-                        error_content = f.read()
+                    with open(log_file, 'rb') as f:
+                        f.seek(max(os.path.getsize(log_file) - 4000, 0))
+                        error_content = f.read(4000).decode('utf-8', errors='replace')
                         if error_content.strip():
                             logging.error(f"错误详情: {error_content[-1000:]}")  # 显示最后1000字符
                 return False
@@ -256,7 +255,7 @@ class DocumentQAMiningTaskController:
             file_path_field = 3
             cmd = [
                 sys.executable,
-                os.path.join(self.script_dir, 'knowledge_clear_tool', 'wordtotext.py'),
+                '-m', 'kdb.mining.generation.processing.wordtotext',
                 'batch_map_files_trans',
                 f'--wait_process_file={self.file_mapping_path}',
                 f'--output_file={self.content_mapping_path}',
@@ -298,7 +297,7 @@ class DocumentQAMiningTaskController:
             return False
 
         cmd = (
-            f"python {self.script_dir}/data_preprocess/multimodal_process.py "
+            f"{shlex.quote(sys.executable)} -m kdb.mining.parsing.multimodal_process "
             f"batch_process_multimodal_data_file "
             f"--config_path={self.multimodal_config_path} "
             f"--data_map_file={self.content_mapping_path} "
@@ -337,7 +336,7 @@ class DocumentQAMiningTaskController:
         self.status_updater.update_task_stage(self.task_id, "document_translate")
         logging.info("开始阶段4：文本翻译")
         
-        cmd = f"python {self.script_dir}/knowledge_clear_tool/knowledge_translate_by_dify.py run_batch_translate_pdf_json_content {self.content_mapping_path}"
+        cmd = f"{shlex.quote(sys.executable)} -m kdb.mining.generation.processing.knowledge_translate_by_dify run_batch_translate_pdf_json_content {self.content_mapping_path}"
         
         if self._run_command(cmd, "translate"):
             # 翻译成功，检查可能的输出文件位置
@@ -381,8 +380,7 @@ class DocumentQAMiningTaskController:
         self.status_updater.update_task_stage(self.task_id, "build_business_context")
         logging.info("开始阶段4.5：构建业务上下文")
         try:
-            sys.path.insert(0, self.script_dir)
-            from knowledge_clear_tool.business_context_builder import build_business_context
+            from kdb.mining.generation.processing.business_context_builder import build_business_context
 
             ctx = build_business_context(
                 client=self.client,
@@ -440,7 +438,7 @@ class DocumentQAMiningTaskController:
         data_file = self.qa_file_path
         log_file = self.log_dir + '/qa_generation.log'
         context_args = self._qa_context_cli_args()
-        cmd = f"python {self.script_dir}/knowledge_clear_tool/knowledge_clear_by_dify_model_longcontent.py run_batch_clear_pdf_json_content {input_file} {self.task_id} {file_name_field_num} 1{context_args} 1>{data_file} 2>{log_file}"
+        cmd = f"{shlex.quote(sys.executable)} -m kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent run_batch_clear_pdf_json_content {input_file} {self.task_id} {file_name_field_num} 1{context_args} 1>{data_file} 2>{log_file}"
 
         if self._run_command(cmd, "qa_generation"):
             # 检查可能的输出文件位置
@@ -474,7 +472,7 @@ class DocumentQAMiningTaskController:
         self.status_updater.update_task_stage(self.task_id, "qa_quality")
         logging.info("开始阶段6：QA质量处理")
         
-        cmd = f"python {self.script_dir}/quality_tools/qa_quality_tools.py run_batch_re_clear_qa_info --input_file={self.qa_file_path} --output_file={self.reclear_qa_file_path} --process_field_num=-1"
+        cmd = f"{shlex.quote(sys.executable)} -m kdb.mining.quality.qa_quality_tools run_batch_re_clear_qa_info --input_file={self.qa_file_path} --output_file={self.reclear_qa_file_path} --process_field_num=-1"
         
         if self._run_command(cmd, "qa_quality"):
             logging.info("QA质量处理阶段完成")
@@ -502,8 +500,7 @@ class DocumentQAMiningTaskController:
         self.status_updater.update_task_stage(self.task_id, "generic_quality")
         logging.info("开始阶段6.5：通用质量后处理")
         try:
-            sys.path.insert(0, self.script_dir)
-            from knowledge_clear_tool.generic_knowledge_quality import (
+            from kdb.mining.generation.processing.generic_knowledge_quality import (
                 repair_self_contained_knowledge_rows, filter_business_quality_rows,
             )
 
@@ -574,7 +571,7 @@ class DocumentQAMiningTaskController:
         self.status_updater.update_task_stage(self.task_id, "schema_transform")
         logging.info("开始阶段7：ES Schema转换")
         
-        cmd = f"python {self.script_dir}/commons/schema_trans.py batch_trans_qa_to_search_data --batch_file={self.reclear_qa_file_path} --output_file={self.search_data_file_path} --field_num=9 --platform_field_num=0"
+        cmd = f"{shlex.quote(sys.executable)} -m kdb.mining.transformations.schema_trans batch_trans_qa_to_search_data --batch_file={self.reclear_qa_file_path} --output_file={self.search_data_file_path} --field_num=9 --platform_field_num=0"
         
         # 添加task_id参数
         if self.task_id:
@@ -616,7 +613,7 @@ class DocumentQAMiningTaskController:
         # 在 is_update_data=False 时 return (False,'数据重复')）——改写幅度越小越容易被吞，
         # 最后旧的删了、新的没进来，知识直接丢失。
         # 旧知识由调用方按文件名/标记精确软删，不依赖语义判重。
-        cmd = (f"python {self.script_dir}/knowledge_interface_tools/search_index_data_interface.py "
+        cmd = (f"{shlex.quote(sys.executable)} -m kdb.retrieval.application.search_index_data_interface "
                f"insert_data_to_search_index --data_file={self.search_data_file_path} "
                f"--config_path={index_config_path} --index_name_assign={self.index_name} "
                f"--check_duplicate=False")
@@ -643,7 +640,7 @@ class DocumentQAMiningTaskController:
         segment_log = os.path.join(self.log_dir, "segment_generation.log")
         context_args = self._qa_context_cli_args()
         cmd = (
-            f"python {self.script_dir}/knowledge_generate/knowlege_segment_builder_by_dify.py "
+            f"{shlex.quote(sys.executable)} -m kdb.mining.generation.builders.knowlege_segment_builder_by_dify "
             f"run_batch_get_segment_knowledge {segment_input} {segment_flag} 1 0 1 1{context_args} "
             f"1>{segment_output} 2>{segment_log}"
         )
@@ -668,7 +665,7 @@ class DocumentQAMiningTaskController:
             return False
 
         cmd = (
-            f"python {self.script_dir}/commons/schema_trans.py "
+            f"{shlex.quote(sys.executable)} -m kdb.mining.transformations.schema_trans "
             f"trans_segment_to_search_data_for_file "
             f"--input_file={self.segment_knowledge_file_path} "
             f"--output_file={self.segment_search_data_file_path} "
@@ -720,7 +717,7 @@ class DocumentQAMiningTaskController:
         # insert_data_to_search_index 的 docstring）。所以这里必须关查重，
         # 旧 segment 由调用方按文件名精确清理，而不是靠语义判重。
         cmd = (
-            f"python {self.script_dir}/knowledge_interface_tools/search_index_data_interface.py "
+            f"{shlex.quote(sys.executable)} -m kdb.retrieval.application.search_index_data_interface "
             f"insert_data_to_search_index --data_file={self.segment_search_data_file_path} "
             f"--config_path={index_config_path} --index_name_assign={self.index_name} "
             f"--check_duplicate=False"

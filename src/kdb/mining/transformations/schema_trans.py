@@ -7,7 +7,7 @@ import sys
 import re
 from typing import List, Dict, Any, Union, Optional
 import traceback
-from commons.common_utils import load_map_dict
+from kdb.shared.text.common_utils import load_map_dict
 import binascii
 from PIL import Image
 import io
@@ -1644,7 +1644,7 @@ def trans_web_excel_to_json_file(excel_file: str, output_file: str, list_field_n
         id_to_name_map = {}
         if extra_field_name_dict and extra_field_name_dict.get('client'):
             try:
-                from category_sys_manager.category_sys_util import get_category_maps
+                from kdb.shared.categories.category_sys_util import get_category_maps
                 name_to_id_map, id_to_name_map = get_category_maps(extra_field_name_dict.get('client'))
                 if name_to_id_map:
                     logging.info(f"成功获取客户端 {extra_field_name_dict.get('client')} 的类目映射，共 {len(name_to_id_map)} 个类目")

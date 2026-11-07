@@ -1,6 +1,6 @@
 import hashlib
 from datetime import datetime as dt
-from commons.mysql_connector import MySQLConnector
+from kdb.shared.clients.mysql_connector import MySQLConnector
 import logging
 import sys
 

@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """把本地爬下来的在线文档投递成 `document_qa_segment_mining` 任务（带业务上下文增强）。
@@ -32,8 +33,6 @@ http 图片会被下载到本地再进多模态 OCR。所以上传前要把 `ima
     # 3) 全量投递
     python3 data_control_tools/build_doc_mining_tasks.py ... --submit
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('data_control_tools/build_doc_mining_tasks.py')
 
 import argparse
 import hashlib
@@ -44,9 +43,7 @@ import re
 import sys
 import time
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+PROJECT_ROOT = str(_PROJECT_ROOT)
 
 LOGGER = logging.getLogger('build_doc_mining_tasks')
 
@@ -310,7 +307,7 @@ def submit_task(service_url, payload, timeout=60):
 
 
 def run(args):
-    from data_control_tools.minio_tools import MinioTools
+    from kdb.integrations.data_control.minio_tools import MinioTools
 
     docs = load_crawled_docs(args.manifest)
     if args.only:

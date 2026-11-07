@@ -1,20 +1,18 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 """
 任务状态更新工具
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('off_task_tools/task_status_updater.py')
 import os
 import sys
 import logging
 from datetime import datetime
 
 # 添加项目根目录到sys.path
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
-sys.path.append(project_root)
+project_root = str(_PROJECT_ROOT)
 
-from commons.mysql_connector import MySQLConnector
+from kdb.shared.clients.mysql_connector import MySQLConnector
 from mysql.connector import Error
 
 class TaskStatusUpdater:

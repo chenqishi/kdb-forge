@@ -17,7 +17,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Security, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import AliasChoices, BaseModel, Field, StrictStr, field_validator, model_validator
 
-from kdb.counting import validate_count_from_type, validate_count_index, validate_count_time
+from kdb.services.forge_compat.counting import validate_count_from_type, validate_count_index, validate_count_time
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["retrieval"])
@@ -121,7 +121,7 @@ def _get_service():
     if _service is None:
         with _service_lock:
             if _service is None:
-                from kdb.crud.service import KnowledgeService
+                from kdb.services.forge_compat.adapter import KnowledgeService
 
                 config_path = os.environ.get(
                     "KDB_FORGE_CONFIG", "config/config_search_runtime.local.json"
@@ -137,7 +137,7 @@ def _get_count_service():
     if _count_service is None:
         with _count_service_lock:
             if _count_service is None:
-                from kdb.crud.service import KnowledgeService
+                from kdb.services.forge_compat.adapter import KnowledgeService
 
                 config_path = os.environ.get(
                     "KDB_FORGE_CONFIG", "config/config_search_runtime.local.json"

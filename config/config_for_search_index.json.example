@@ -1,0 +1,10 @@
+{
+  "search_engine_config_path": "config/config_es_engine.json",
+  "embedding_config_path": "config/config_ali_embedding.json",
+  "simility_config_path": "config/config_dify_simility.json",
+  "category_service_url": "",
+  "multimodal_prefix": "https://files.example.invalid/",
+  "category_update_time_interval": 36000,
+  "is_need_llm": false,
+  "check_duplicate": true
+}

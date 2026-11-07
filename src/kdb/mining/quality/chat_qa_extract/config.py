@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 
@@ -12,8 +13,6 @@ chat_qa_extract 的配置加载。
   2. 环境变量 CHAT_QA_EXTRACT_LLM_CONFIG 指定的文件
   3. 环境变量 OPENROUTER_API_URL / OPENROUTER_API_KEY
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('chat_qa_extract/config.py')
 
 import json
 import logging
@@ -23,7 +22,7 @@ from typing import Any, Dict, Optional
 
 from . import llm_client
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
+PROJECT_ROOT = str(_PROJECT_ROOT)
 DEFAULT_CONFIG_PATH = os.path.join(PROJECT_ROOT, 'config', 'llm_config.json')
 
 # 各环节的默认模型。抽取用强模型保证质量，质检也不能用太弱的模型——

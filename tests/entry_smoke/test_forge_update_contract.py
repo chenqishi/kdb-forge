@@ -11,17 +11,12 @@ from elastic_transport._transport import TransportApiResponse
 from fastapi.testclient import TestClient
 import pytest
 
-import kdb.api.knowledge_routes as routes
-from kdb.api.app import app
+import kdb.services.forge_compat.api.knowledge_routes as routes
+from kdb.services.forge_compat.api.app import app
 from kdb.retrieval.engines.es8_client_router import IndexClientRouter
 from kdb.retrieval.engines.es8_search_interface import EsSearchInterfaceES8
 from kdb.services.forge_compat.adapter import KnowledgeService
-# Reuse unchanged assertions by file path. The two historical test trees both
-# contain a package named tests; neither package name is a stable import root.
-_baseline_path = Path(__file__).resolve().parents[1] / "baseline_forge/tests/test_es8_merge_regressions.py"
-_spec = importlib.util.spec_from_file_location("_forge_update_baseline", _baseline_path)
-_baseline = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(_baseline)
+from tests.support import forge_transport as _baseline
 embed_text = _baseline.embed_text
 test_update_preserves_unrelated_indexes = _baseline.test_update_preserves_unrelated_indexes
 test_title_update_without_stored_document_does_not_write = _baseline.test_title_update_without_stored_document_does_not_write

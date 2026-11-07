@@ -29,9 +29,9 @@ import json
 from typing import List, Dict, Optional, Union, Any
 import asyncio
 import pathlib
-from knowledge_interface_tools.search_index_data_interface import SearchDataInterface
+from kdb.retrieval.application.search_index_data_interface import SearchDataInterface
 from contextlib import asynccontextmanager
-from knowledge_clear_tool.modify_knowledge import ModifyKnowledge
+from kdb.retrieval.modification.modify_knowledge import ModifyKnowledge
 
 # 在文件顶部添加日志配置
 # 配置根日志记录器，使所有模块的日志都能输出
@@ -1025,5 +1025,5 @@ if __name__ == "__main__":
     # 回滚不需要改代码：SEARCH_SERVICE_WORKERS=1 重启即可。
     workers = int(os.environ.get("SEARCH_SERVICE_WORKERS", "4"))
     logger.info(f"启动 uvicorn，workers={workers}")
-    uvicorn.run("knowledge_database_search_es:app", host="0.0.0.0", port=8003,
+    uvicorn.run("kdb.services.retrieval.app:app", host="0.0.0.0", port=8003,
                 reload=False, workers=workers) # 提交git时reload记得设为False

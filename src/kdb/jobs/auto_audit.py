@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Apply the existing delayed audit policy through the shared engine interface."""
 from __future__ import annotations
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('control_script/timing_auto_audit_kg.py')
 
 import argparse
 import hashlib
@@ -14,12 +12,9 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-project_root = Path(__legacy_source_file__).resolve().parents[1]
-if str(project_root) not in sys.path:
-    sys.path.insert(0, str(project_root))
 
-from knowledge_interface_tools.es_search_interface import EsSearchInterface
-from knowledge_interface_tools.es_maintenance import exact_index, MaintenanceUpdateError
+from kdb.retrieval.engines.es_search_interface import EsSearchInterface
+from kdb.retrieval.engines.es_maintenance import exact_index, MaintenanceUpdateError
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)

@@ -1,5 +1,5 @@
-from commons import embedding_tools
-from commons import simility_tools
+from kdb.shared.clients import embedding_tools
+from kdb.shared.clients import similarity as simility_tools
 
 def norm_query_file(input_file, output_file, similarity_config, query_field=0):
     """

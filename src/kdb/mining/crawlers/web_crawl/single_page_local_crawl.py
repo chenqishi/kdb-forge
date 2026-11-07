@@ -18,8 +18,8 @@ import time
 import fire
 import requests
 
-from commons.firecrawl_tools import build_cookie_headers, fetch_firecrawl_content
-from knowledge_crawler_tool.web_crawl.web_batch_crawler import WebBatchCrawler
+from kdb.shared.clients.firecrawl_tools import build_cookie_headers, fetch_firecrawl_content
+from kdb.mining.crawlers.web_crawl.web_batch_crawler import WebBatchCrawler
 
 DEFAULT_USER_AGENT = ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 '
                       '(KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36')

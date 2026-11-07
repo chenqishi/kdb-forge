@@ -1,3 +1,0 @@
-# evaluate
-
-Inputs: case, actual old/new responses, source caches, clients, mappings. Outputs: per-side matching counts, checked hit count, violations, unresolved/ambiguous IDs, shape issues, comparison. Read source for each returned identity from original scopes; resolve same-ID copies independently using returned physical/source metadata, never using the desired filter. Evaluate resolved records; conflicting indistinguishable copies are ambiguous, not automatically violations or passes. Count expected membership via exact-field native _count on both indexes. /web_search totals are compared to oracle for empty-text requests; /search rankings compare identities without demanding raw scores identical. SQL: none.

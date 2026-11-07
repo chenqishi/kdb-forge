@@ -1,8 +1,7 @@
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('chatknowledge/gen_knowledge_from_chat.py')
-from commons import common_utils
-from commons.common_utils import load_attr_map_dict as load_3file_dict
-from config_tools.config import GLOBAL_CONFIG as config
+from kdb.shared.config.paths import resource_path as _resource_path
+from kdb.shared.text import common_utils
+from kdb.shared.text.common_utils import load_attr_map_dict as load_3file_dict
+from kdb.shared.config.legacy_config import GLOBAL_CONFIG as config
 import json
 import logging
 import sys
@@ -127,11 +126,7 @@ a 的生成标准：
 }
 """
 
-DIRECT_LLM_PROMPT_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__))),
-    'chat_qa_extract',
-    'prompts',
-)
+DIRECT_LLM_PROMPT_DIR = str(_resource_path('prompts', 'mining', 'chat_qa_extract'))
 
 
 def _normalize_name(name):
@@ -272,7 +267,7 @@ def load_contact_identity_lookup(mysql_config_file='config/mysql_conn_config.jso
         return lookup
 
     try:
-        from commons.mysql_connector import MySQLConnector
+        from kdb.shared.clients.mysql_connector import MySQLConnector
 
         conn = MySQLConnector(mysql_config_file).get_connection()
         cursor = conn.cursor(dictionary=True)
@@ -607,7 +602,7 @@ def get_chat_image_minio_runtime():
     prefix_fileservice_url = str(multimodal_config.get('prefix_fileservice_url') or '').rstrip('/')
 
     try:
-        from data_control_tools.minio_tools import MinioTools
+        from kdb.integrations.data_control.minio_tools import MinioTools
         with open(os.devnull, 'w') as devnull, contextlib.redirect_stdout(devnull):
             minio_client = MinioTools(minio_config)
     except Exception:

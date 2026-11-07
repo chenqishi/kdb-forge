@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 ################################################################################
@@ -9,8 +10,6 @@
 Authors: qishichen(263436967@qq.com)
 Date: 2024-08-23
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('knowledge_search_database/build_dataset_from_api_fastgpt.py')
 from kdb.shared.config.private_values import private_value as _private_value
 import string
 import sys
@@ -27,13 +26,12 @@ from datetime import datetime
 from datetime import timedelta
 import pandas as pd
 # 添加父目录到Python搜索路径
-current_dir = os.path.dirname(os.path.abspath(__legacy_source_file__))
+current_dir = str(_PROJECT_ROOT)
 parent_dir = os.path.dirname(current_dir)
-sys.path.append(parent_dir)#from concurrent.futures import ThreadPoolExecutor
-from knowledge_generate.knowledge_index_builder import get_fastgpt_index
+from kdb.mining.generation.builders.knowledge_index_builder import get_fastgpt_index
 import requests
-from commons.common_utils import load_map_file
-from config_tools import config
+from kdb.shared.text.common_utils import load_map_file
+from kdb.shared.config import legacy_config as config
 #URL_BASE = "https://api.fastgpt.in"
 URL_BASE = config.GLOBAL_CONFIG.get("fastgpt_api_base")
 #URL_BASE = "http://120.79.121.72:4000"

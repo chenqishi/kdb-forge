@@ -1,0 +1,6 @@
+{
+  "host": "mysql.example.invalid",
+  "database": "SET_CURRENT_DATABASE",
+  "user": "SET_CURRENT_USER",
+  "password": "SET_CURRENT_PASSWORD"
+}

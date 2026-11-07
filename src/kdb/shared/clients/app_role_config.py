@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Sequence
 
 import requests
 
-from config_tools.config import GLOBAL_CONFIG
+from kdb.shared.config.legacy_config import GLOBAL_CONFIG
 
 DEFAULT_ROLE_KEYS = ('peer', 'teacher', 'management')
 

@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 
@@ -17,8 +18,6 @@
 `del_flag=1` + `flag=<批次>`，写回前先落 rollback.jsonl；已经是 `del_flag=1` 的不动
 （它们带着别的批次的 flag，重打标会抹掉来源）。
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('data_control_tools/retire_superseded_knowledge.py')
 
 import argparse
 import json
@@ -27,9 +26,8 @@ import os
 import sys
 from typing import Any, Dict, List, Optional, Tuple
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__))))
 
-from commons.es_http_client import DEFAULT_BULK_BATCH, EsHttpClient
+from kdb.shared.clients.es_http_client import DEFAULT_BULK_BATCH, EsHttpClient
 
 logging.basicConfig(level=logging.INFO,
                     format='[%(levelname)s] [%(asctime)s] %(message)s')

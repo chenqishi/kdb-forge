@@ -1,5 +1,5 @@
-from commons import embedding_tools
-from commons import simility_tools
+from kdb.shared.clients import embedding_tools
+from kdb.shared.clients import similarity as simility_tools
 import logging
 import numpy as np
 import re

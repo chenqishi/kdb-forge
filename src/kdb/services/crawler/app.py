@@ -1,4 +1,4 @@
-from kdb.compat.layout import legacy_package_path as _legacy_package_path
+from kdb.shared.config.paths import source_path as _source_path
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 ################################################################################
@@ -28,10 +28,8 @@ import random
 from flask import Flask, request, jsonify
 from pydantic import BaseModel
 
-import sys as _legacy_sys
-_legacy_sys.path.insert(0, _legacy_package_path('knowledge_crawler_tool/server/server.py'))
-import controller
-app = Flask(__name__, root_path=_legacy_package_path('knowledge_crawler_tool/server/server.py'))
+import kdb.mining.crawlers.server.controller as controller
+app = Flask(__name__, root_path=str(_source_path('kdb', 'services', 'crawler')))
 
 logic_processer = controller.ProcessLogitic(update_time=(datetime.now() + timedelta(days=-1)).strftime('%Y-%m-%d %H:%M:%S'), data_dir="./data")  
 

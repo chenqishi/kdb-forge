@@ -17,7 +17,7 @@ from datetime import datetime
 import fire
 import requests
 
-from commons.embedding_tools import AliEmbedding
+from kdb.shared.clients.embedding_tools import AliEmbedding
 
 # 判定"这条含导航样板"的特征串。只用 cookie 横幅的开头句：
 # 「所有主题」「API 实验场」这类词正文里也会出现（如「所有主题 # Dropship Orders API」），

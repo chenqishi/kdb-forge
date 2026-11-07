@@ -9,7 +9,7 @@ import os
 import json
 import logging
 import traceback
-from dify_tools import DifyChatFlowRequest
+from kdb.integrations.cross_border.dify_tools import DifyChatFlowRequest
 
 class DifyModel(object):
     def __init__(self, api_base, api_key):

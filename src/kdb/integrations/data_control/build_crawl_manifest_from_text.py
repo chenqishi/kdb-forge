@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 """
@@ -13,8 +14,6 @@
 - **时效性内容默认丢掉**：`nadp` 类政策变更公告、节日/活动页写的是"某月起变更"，
   灌进知识库会过期且没人会回来清理。要留就显式 `--keep-timely`。
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('data_control_tools/build_crawl_manifest_from_text.py')
 
 import argparse
 import json
@@ -24,9 +23,7 @@ import re
 import sys
 from typing import Dict, List, Optional, Tuple
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+PROJECT_ROOT = str(_PROJECT_ROOT)
 
 LOGGER = logging.getLogger(__name__)
 

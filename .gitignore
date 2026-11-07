@@ -1,78 +1,40 @@
-# ---- 真实配置：绝不提交（含/指向凭据）。只提交 *.example 模板 ----
-config/config_test.json
-config/*.local.json
-.env
-.env.*
+# Secrets and environment-specific configuration.
+/private/
+/.env
+/.env.*
+!/.env.example
+/config/*
+!/config/*.example
+!/config/README.md
+*.private.json
 
-# ---- Python ----
+# Runtime data, downloaded models and generated evidence.
+/data/
+/output/
+/log/
+/logs/
+/tmp/
+/artifacts/
+/migration_runs/
+/resources/models/*
+!/resources/models/README.md
+
+# Python environments, build output and caches.
+/.venv*/
+/venv/
+/env/
 __pycache__/
 *.py[cod]
-*$py.class
 *.egg-info/
 .eggs/
 build/
 dist/
-.venv/
-venv/
-env/
-
-# ---- 测试/缓存 ----
 .pytest_cache/
 .cache/
 .coverage
 htmlcov/
 
-# ---- 编辑器/系统 ----
+# Editor and operating-system files.
 .vscode/
 .idea/
 .DS_Store
-
-# Private refactor/runtime state; examples remain versionable.
-/private/
-/.pyshim/
-/config/*.json
-/config/*.env
-/config/*.sh
-/config/._*
-/.venv*/
-__pycache__/
-.pytest_cache/
-
-/minio_config_default.json
-
-# Review remediation: preserve runtime/customer evidence locally; never stage it.
-*.private.json
-/1
-/data/
-/tmp/*.json
-/tmp/*.jsonl
-/tmp/*.csv
-/tmp/*.tsv
-/tmp/*.xlsx
-/tmp/*.xls
-/tmp/*.log
-/docs/source_materials/**/*.json
-# Historical source copies with contact-pattern hits; originals remain intact.
-/docs/source_materials/knowledge_database_builder/docs/api_user_id_map.md
-/docs/source_materials/knowledge_database_builder/docs/payoneer_olive_chat_auto_audit_20260827.md
-/docs/source_materials/knowledge_database_builder/docs/reviews/es817_local_restart_applied_20261005/service_before.py.txt
-/docs/source_materials/knowledge_database_builder/docs/reviews/from_type_count_local_activation_20261008/applied_feature.diff
-/docs/source_materials/knowledge_database_builder/docs/reviews/from_type_count_local_activation_20261008/backup/knowledge_database_search_service/src/knowledge_database_search_es.py
-/docs/source_materials/knowledge_database_builder/docs/wayfair_page_mismatched_images_20260916.md
-/docs/source_materials/knowledge_database_builder/docs/wayfair_unanswered_review.md
-/docs/source_materials/knowledge_database_builder/function_schema/user_id_map_query.query_user_id_map.md
-/docs/source_materials/knowledge_database_builder/function_schema/wayfair_unanswered_review.fetch_unanswered_chats.md
-
-# Additional historical crawler payloads and contact-bearing documentation copies.
-/knowledge_crawler_tool/data/
-/docs/api_user_id_map.md
-/docs/legacy_project/MEMORY.md
-/docs/legacy_project/function_schema/user_id_map_query.query_user_id_map.md
-/docs/legacy_project/function_schema/wayfair_unanswered_review.fetch_unanswered_chats.md
-/docs/payoneer_olive_chat_auto_audit_20260827.md
-/docs/reviews/auto_audit_unified_20261019/code.diff
-/docs/reviews/es817_incremental_sync_execution_20261009/maintenance_tools.diff
-/docs/wayfair_page_mismatched_images_20260916.md
-/docs/wayfair_unanswered_review.md
-/function_schema/legacy_project/user_id_map_query.query_user_id_map.md
-/function_schema/legacy_project/wayfair_unanswered_review.fetch_unanswered_chats.md

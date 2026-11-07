@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 """
@@ -11,8 +12,6 @@ external_id 映射（致趣 + 公众号双通道），并按机器人(robot_name
 - 公众号通道没有"机器人"概念，robot_name = None
 - cid 无任何 external_id → 1 行: external_id=None, source=None, robot_name=None
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('single_service/user_id_map_query.py')
 import json
 import logging
 import os
@@ -29,7 +28,7 @@ CLIENT_ALIASES = {
     'mercado': ['mercado', 'mercado_local'],
 }
 
-BASE = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
+BASE = str(_PROJECT_ROOT)
 # sid -> [robot_name, ...]，由 cron 写出（其值就是「致趣 user_owner 名字 ∩ scope 内 16 助手」）
 DEFAULT_SID_ROBOTS_PATH_TMPL = os.path.join(BASE, 'config', 'zhiqu_sid_to_robots_{client}.json')
 # nick_name -> rfwkt_we_com_user_id (marsmind 助手内部 id) 反查数据源；用于按 robot 精确取 email

@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 
@@ -44,8 +45,6 @@
         --min-audit-result 1 \\
         --output-dir output/mercado_all_knowledge_export
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('data_control_tools/export_qa_to_excel.py')
 
 import argparse
 import json
@@ -56,12 +55,10 @@ import sys
 from collections import Counter
 from typing import Any, Dict, List, Optional
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+PROJECT_ROOT = str(_PROJECT_ROOT)
 
-from commons.es_http_client import EsHttpClient  # noqa: E402
-from commons.schema_trans import trans_es_data_to_excel  # noqa: E402
+from kdb.shared.clients.es_http_client import EsHttpClient  # noqa: E402
+from kdb.mining.transformations.schema_trans import trans_es_data_to_excel  # noqa: E402
 
 DEFAULT_ES_CONFIG = os.path.join(PROJECT_ROOT, 'config', 'config_es_engine.json')
 

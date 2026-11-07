@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "kdb"
 version = "0.1.0"
 description = "Unified knowledge project: mining, retrieval and shared services."
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
     "elasticsearch>=8.17,<8.18",
     "fastapi>=0.100",

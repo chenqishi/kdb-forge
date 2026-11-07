@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """删掉知识正文里那些**指向不存在对象**的裸图片 URL。默认 dry-run。
@@ -28,8 +29,6 @@
 把拼接串当成一个 URL 去测——那当然 404。
 栽过一次：错切出 184 个串、报 171 个死链，正确切分后是 1015 个 URL、32 个死链。
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('data_control_tools/prune_dead_raw_urls.py')
 
 import argparse
 import collections
@@ -43,9 +42,8 @@ from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
 
 import requests
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__))))
 
-from commons.es_http_client import EsHttpClient
+from kdb.shared.clients.es_http_client import EsHttpClient
 
 logging.basicConfig(level=logging.INFO,
                     format='[%(levelname)s] [%(asctime)s] %(message)s')
@@ -300,7 +298,7 @@ def run(config_path: str, index: str, work_dir: str,
         logging.info('[dry-run] 未写回，加 --execute 才改 ES')
         return result
 
-    from commons.embedding_tools import AliEmbedding
+    from kdb.shared.clients.embedding_tools import AliEmbedding
     embedder = AliEmbedding(embedding_config)
     rollback_file = os.path.join(work_dir, 'rollback_dead_raw_urls.jsonl')
     updates: List[Tuple[str, Dict[str, Any]]] = []

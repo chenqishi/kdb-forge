@@ -5,8 +5,6 @@
 基于原始的chatknowledge_process.sh脚本改造
 支持从SQL数据库获取聊天数据并生成QA
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('control_service/chat_qa_mining_task_control.py')
 from kdb.shared.config.private_values import private_value as _private_value
 import os
 import sys
@@ -21,13 +19,11 @@ import traceback
 import requests
 from pathlib import Path
 
-# 添加项目根目录到sys.path
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
-sys.path.append(project_root)
+from kdb.shared.config.paths import SOURCE_ROOT, subprocess_env
 
-from data_control_tools.get_data_from_sql import ChatDataExtractor
-from off_task_tools.task_status_updater import TaskStatusUpdater
-from config_tools.config import GLOBAL_CONFIG
+from kdb.integrations.data_control.get_data_from_sql import ChatDataExtractor
+from kdb.mining.tasks.task_status_updater import TaskStatusUpdater
+from kdb.shared.config.legacy_config import GLOBAL_CONFIG
 GLOBAL_BLACK_NICK_NAME = GLOBAL_CONFIG['chat_qa_mining_task_control_global_black_nick_name']
 class ChatQAMiningTaskController:
     """聊天QA挖掘任务控制器"""
@@ -366,7 +362,7 @@ class ChatQAMiningTaskController:
         llm_env_file = os.path.join(self.config_dir, 'chatknowledge_llm_env.sh')
         if os.path.exists(llm_env_file):
             cmd = f"set -a; . {shlex.quote(llm_env_file)}; set +a; {cmd}"
-        cmd = f"export PYTHONPATH={shlex.quote(self.script_dir)}:$PYTHONPATH; {cmd}"
+        cmd = f"export PYTHONPATH={shlex.quote(str(SOURCE_ROOT))}:$PYTHONPATH; {cmd}"
         logging.info(f"执行阶段: {stage_name}")
         logging.info(f"工作目录: {self.script_dir}")
         logging.info("=" * 80)
@@ -390,6 +386,7 @@ class ChatQAMiningTaskController:
                     stderr=subprocess.STDOUT,
                     text=True,
                     cwd=self.script_dir,
+                    env=subprocess_env(),
                     start_new_session=True,
                 )
                 try:
@@ -407,7 +404,7 @@ class ChatQAMiningTaskController:
             # 读取命令输出日志，打印一些关键信息
             if os.path.exists(log_file):
                 with open(log_file, 'r', encoding='utf-8') as f:
-                    log_content = f.read()
+                    log_content = f.read(500)
                     if log_content.strip():
                         logging.info(f"阶段 {stage_name} 命令输出（前500字符）:")
                         logging.info(log_content[:500])
@@ -421,8 +418,9 @@ class ChatQAMiningTaskController:
                 logging.error(f"阶段 {stage_name} 执行失败，返回码: {process.returncode}")
                 # 如果有错误日志，显示更多信息
                 if os.path.exists(log_file):
-                    with open(log_file, 'r', encoding='utf-8') as f:
-                        error_content = f.read()
+                    with open(log_file, 'rb') as f:
+                        f.seek(max(os.path.getsize(log_file) - 4000, 0))
+                        error_content = f.read(4000).decode('utf-8', errors='replace')
                         if error_content.strip():
                             logging.error(f"错误详情: {error_content[-1000:]}")  # 显示最后1000字符
                 return False
@@ -512,7 +510,7 @@ class ChatQAMiningTaskController:
         
         try:
             # 构建命令，使用robot_data_map_file
-            cmd = f"""python {self.script_dir}/chatknowledge/gen_knowledge_from_chat.py run_batch_robot_chat_data \
+            cmd = f"""{shlex.quote(sys.executable)} -m kdb.mining.generation.chatknowledge.gen_knowledge_from_chat run_batch_robot_chat_data \
                 --data_file={self.robot_data_map_file_path} \
                 --output_dir={self.data_dir} \
                 --data_file_field_num=3 \
@@ -549,7 +547,7 @@ class ChatQAMiningTaskController:
         self.status_updater.update_task_stage(self.task_id, "qa_quality")
         logging.info("开始阶段3：QA独立质量审核")
         
-        cmd = f"""python -m chat_qa_extract.reviewer review_batch \
+        cmd = f"""{shlex.quote(sys.executable)} -m kdb.mining.quality.chat_qa_extract.reviewer review_batch \
                 --batch_file={shlex.quote(self.qa_file_path)} \
                 --output_batch_file={shlex.quote(self.qa_quality_file_path)} \
                 --process_field_num=4 \
@@ -568,7 +566,7 @@ class ChatQAMiningTaskController:
         self.status_updater.update_task_stage(self.task_id, "schema_transform")
         logging.info("开始阶段4：ES Schema转换")
         
-        cmd = f"""python {self.script_dir}/commons/schema_trans.py batch_trans_qa_to_search_data \
+        cmd = f"""{shlex.quote(sys.executable)} -m kdb.mining.transformations.schema_trans batch_trans_qa_to_search_data \
             --batch_file={self.qa_quality_file_path} \
             --output_file={self.search_data_file_path} \
             --field_num=5 \
@@ -669,7 +667,7 @@ class ChatQAMiningTaskController:
         logging.info(f"ES目标索引: {target_index_name}")
         if not self._validate_search_data_client_scope(target_index_name):
             return False
-        cmd = f"""python {self.script_dir}/knowledge_interface_tools/search_index_data_interface.py insert_data_to_search_index \
+        cmd = f"""{shlex.quote(sys.executable)} -m kdb.retrieval.application.search_index_data_interface insert_data_to_search_index \
             --data_file={self.search_data_file_path} \
             --config_path={index_config_path} \
             --index_name_assign={target_index_name} \

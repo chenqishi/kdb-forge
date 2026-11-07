@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 """
@@ -17,8 +18,6 @@
 
 默认 dry-run，只统计不写入；加 `--apply` 才真正软删。
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('data_control_tools/rollback_mining_tasks.py')
 
 import argparse
 import json
@@ -27,15 +26,13 @@ import os
 import sys
 from typing import Dict, List, Optional
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+PROJECT_ROOT = str(_PROJECT_ROOT)
 
 LOGGER = logging.getLogger(__name__)
 
 
 def _client(config_path: str):
-    from commons.es_http_client import EsHttpClient
+    from kdb.shared.clients.es_http_client import EsHttpClient
     return EsHttpClient.from_config(config_path)
 
 

@@ -22,7 +22,7 @@ import traceback
 import codecs
 from datetime import datetime
 from datetime import timedelta
-from dify_tools import DifyWorkFlowRequest
+from kdb.integrations.cross_border.dify_tools import DifyWorkFlowRequest
 
 def add_mark_dify(data_file, dify_config, query_field):
     # 读取dify配置

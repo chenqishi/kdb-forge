@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """把「整篇文档的图挂到每一页」留在库里的错图裁掉。默认 dry-run。
@@ -28,8 +29,6 @@
 「请看图片：」却没有图的悬空话术。判据见 `find_pointing_deictic`，
 三条联合：词边界 + 邻近有图片标记 + 强话术兜底。
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('data_control_tools/prune_page_mismatched_images.py')
 
 import argparse
 import collections
@@ -41,9 +40,8 @@ import re
 import sys
 from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__))))
 
-from commons.es_http_client import DEFAULT_BULK_BATCH, EsHttpClient
+from kdb.shared.clients.es_http_client import DEFAULT_BULK_BATCH, EsHttpClient
 
 logging.basicConfig(level=logging.INFO,
                     format='[%(levelname)s] [%(asctime)s] %(message)s')
@@ -509,7 +507,7 @@ def run(config_path: str, index: str, task_id: str, work_dir: str,
         logging.info('[dry-run] 未写回，加 --execute 才改 ES')
         return result
 
-    from commons.embedding_tools import AliEmbedding
+    from kdb.shared.clients.embedding_tools import AliEmbedding
     embedder = AliEmbedding(embedding_config)
 
     rollback_file = os.path.join(work_dir, 'rollback_%s.jsonl' % task_id[:8])
@@ -584,7 +582,7 @@ def rollback(config_path: str, index: str, rollback_file: str,
     if not execute:
         logging.info('[dry-run] 将回滚 %d 行', len(rows))
         return {'planned': len(rows), 'dry_run': True}
-    from commons.embedding_tools import AliEmbedding
+    from kdb.shared.clients.embedding_tools import AliEmbedding
     embedder = AliEmbedding(embedding_config)
     updates = []
     for row in rows:

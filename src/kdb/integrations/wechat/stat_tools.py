@@ -2,7 +2,7 @@ import json
 import sys
 import logging
 import time
-from wechat_tools.wkteam_request_util import WxWkteamRequestUtil
+from kdb.integrations.wechat.wkteam_request_util import WxWkteamRequestUtil
 import re
 
 def get_chatroom_member(chatroom_id_file, wx_config):
@@ -157,7 +157,7 @@ def get_all_room(config_path, customer, user=None):
     直接从数据库获取所有群聊room_id和room_name（is_group=1时other_user_id为群id，other_user_nick_name为群名）
     输出格式：{room_id}\t{room_name}
     """
-    from commons.mysql_connector import MySQLConnector
+    from kdb.shared.clients.mysql_connector import MySQLConnector
     connector = MySQLConnector(config_path)
     conn = connector.get_connection()
     cursor = conn.cursor(dictionary=True)

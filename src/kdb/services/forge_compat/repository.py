@@ -11,7 +11,7 @@ query_dict 通用结构：`{"query": <text>, "vector": {"value": <list[float]>},
 import logging
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from kdb.legacy_bridge import build_legacy_engine
+from kdb.services.forge_compat.bootstrap import build_legacy_engine
 
 logger = logging.getLogger(__name__)
 

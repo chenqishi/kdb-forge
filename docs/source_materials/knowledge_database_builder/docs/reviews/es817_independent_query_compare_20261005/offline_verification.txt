@@ -1,1 +1,0 @@
-9 offline metric/scope cases passed; no network. Same ID in distinct datasets remains distinct. Score-only delta is not body change. Null ID and duplicate identity rejected. DELETE, PUT, update POST, unknown-index POST, oversized search rejected before network.

@@ -12,16 +12,16 @@ from datetime import datetime
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
-from commons.common_utils import count_alaph_char, count_chinese_char
-from commons.text_utils import cluster_by_edit_distance
+from kdb.shared.text.common_utils import count_alaph_char, count_chinese_char
+from kdb.shared.text.text_utils import cluster_by_edit_distance
 try:
     from PIL import Image  # type: ignore
 except ImportError:  # pragma: no cover
     Image = None
 
-from commons.dify_tools import DIfyWorkFlowMlutiVisionRequest
-from data_control_tools.minio_tools import MinioTools
-from commons.text_utils import construct_multimodel_undestanding_content
+from kdb.shared.clients.dify_tools import DIfyWorkFlowMlutiVisionRequest
+from kdb.integrations.data_control.minio_tools import MinioTools
+from kdb.shared.text.text_utils import construct_multimodel_undestanding_content
 
 logger = logging.getLogger(__name__)
 

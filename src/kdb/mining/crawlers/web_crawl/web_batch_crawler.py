@@ -1,5 +1,5 @@
 import sys
-from knowledge_crawler_tool.web_crawl.mercado_special_parse import extract_knowledge_hub_children, is_knowledge_hub_url
+from kdb.mining.crawlers.web_crawl.mercado_special_parse import extract_knowledge_hub_children, is_knowledge_hub_url
 import logging
 from bs4 import BeautifulSoup
 import os
@@ -16,7 +16,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import fire
 from collections import deque
-from commons.firecrawl_tools import fetch_firecrawl_content
+from kdb.shared.clients.firecrawl_tools import fetch_firecrawl_content
 
 class WebBatchCrawler:
     def __init__(self, output_dir, auth_config=None, browser_enabled=True):

@@ -1,21 +1,11 @@
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
-"""本机批量跑文档挖掘（不投递线上任务服务）。
+"""本机批量运行文档挖掘，直接调用当前项目控制器。
 
-背景：`build_doc_mining_tasks.py --submit` 是投给线上任务服务、在远程机器执行；
-本机跑要直接调 `control_service/document_qa_segment_mining.py`。
-
-本机跑通的三个前置条件（都是实测踩出来的）：
-1. **`python` shim** —— 各阶段用 `subprocess` 调裸 `python`，本机 `python` 是 3.12 无依赖，
-   必须建 `.pyshim/python -> py38` 并加进 PATH；
-2. **`PYTHONPATH=<项目根>`** —— 否则子进程 `ModuleNotFoundError: No module named 'commons'`；
-3. 解释器用 `/root/miniconda3/envs/py38/bin/python`（只有它有 psutil/elasticsearch）。
-
-产出：`local_mining_tasks.json` 记录每篇的 task_id，供撤回用
-（`rollback_mining_tasks.py --task-ids-file`）。
+使用当前 Python 环境；KDB_PYTHON 可指定已配置依赖的其他解释器。
+子进程继承当前环境，并通过 PYTHONPATH 加入当前项目 src。
+产出 local_mining_tasks.json，逐篇记录 task_id 与退出码，供撤回使用。
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('run_local_mining.py')
 import argparse
 import hashlib
 import json
@@ -26,17 +16,14 @@ import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
 
-PROJECT_ROOT = os.path.dirname(os.path.abspath(__legacy_source_file__))
-PY38 = '/root/miniconda3/envs/py38/bin/python'
-SHIM = os.path.join(PROJECT_ROOT, '.pyshim')
-ENTRY = os.path.join(PROJECT_ROOT, 'control_service', 'document_qa_segment_mining.py')
+from kdb.shared.config.paths import PROJECT_ROOT, subprocess_env
+
+MINING_PYTHON = os.environ.get('KDB_PYTHON') or sys.executable
+ENTRY_MODULE = 'kdb.mining.pipelines.document_qa_segment'
 
 
 def make_env():
-    env = dict(os.environ)
-    env['PATH'] = SHIM + os.pathsep + env.get('PATH', '')
-    env['PYTHONPATH'] = PROJECT_ROOT + os.pathsep + env.get('PYTHONPATH', '')
-    return env
+    return subprocess_env()
 
 
 def gen_task_id(task_type, task_info):
@@ -48,7 +35,7 @@ def run_one(item, log_dir, env):
     name, task_type, task_info = item
     task_id = gen_task_id(task_type, task_info)
     log_path = os.path.join(log_dir, f'{task_id[:12]}.log')
-    cmd = [PY38, '-u', ENTRY, '--script-dir', PROJECT_ROOT,
+    cmd = [MINING_PYTHON, '-u', '-m', ENTRY_MODULE, '--script-dir', str(PROJECT_ROOT),
            '--task-id', task_id, '--task-info', task_info]
     t0 = time.time()
     with open(log_path, 'w', encoding='utf-8') as f:

@@ -1,0 +1,2 @@
+# client	receiver	send_url
+example-client	example-recipient	https://messages.example.invalid/send

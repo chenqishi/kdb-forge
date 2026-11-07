@@ -1,3 +1,4 @@
+from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 
@@ -38,8 +39,6 @@
     # 回滚
     ... --rollback output/audit_chat_auto_20260827/rollback.jsonl --execute
 """
-from kdb.compat.layout import legacy_source_path as _legacy_source_path
-__legacy_source_file__ = _legacy_source_path('data_control_tools/audit_chat_auto_qa_by_llm.py')
 
 import argparse
 import json
@@ -51,17 +50,15 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__legacy_source_file__)))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+PROJECT_ROOT = str(_PROJECT_ROOT)
 
-from chat_qa_extract import load_llm_config  # noqa: E402
-from chat_qa_extract import llm_client as cqe_llm_client  # noqa: E402
-from chat_qa_extract.config import get_model  # noqa: E402
-from commons import common_utils  # noqa: E402
-from commons.app_role_config import (extract_colleague_names,  # noqa: E402
+from kdb.mining.quality.chat_qa_extract import load_llm_config  # noqa: E402
+from kdb.mining.quality.chat_qa_extract import llm_client as cqe_llm_client  # noqa: E402
+from kdb.mining.quality.chat_qa_extract.config import get_model  # noqa: E402
+from kdb.shared.text import common_utils  # noqa: E402
+from kdb.shared.clients.app_role_config import (extract_colleague_names,  # noqa: E402
                                      fetch_role_config)
-from commons.es_http_client import DEFAULT_BULK_BATCH, EsHttpClient  # noqa: E402
+from kdb.shared.clients.es_http_client import DEFAULT_BULK_BATCH, EsHttpClient  # noqa: E402
 
 DEFAULT_ES_CONFIG = os.path.join(PROJECT_ROOT, 'config', 'config_es_engine.json')
 DEFAULT_APP_ID = '2071478687539675137'

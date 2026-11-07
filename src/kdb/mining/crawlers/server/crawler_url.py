@@ -25,7 +25,7 @@ from datetime import datetime
 from datetime import timedelta
 
 import requests
-from config_tools.config import GLOBAL_CONFIG
+from kdb.shared.config.legacy_config import GLOBAL_CONFIG
 
 def send_post_request(target_url, api_key=_private_value('f4f230b268c678437a093c36')):
     url = f"{GLOBAL_CONFIG['dify_api_base']}/workflows/run"
