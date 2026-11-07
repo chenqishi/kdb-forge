@@ -1,0 +1,260 @@
+"""Read-only explanation of selected independently sampled retrieval differences."""
+import argparse
+import copy
+import hashlib
+import json
+import os
+import time
+from collections import defaultdict
+from pathlib import Path
+from unittest.mock import Mock
+import requests
+
+from commons.embedding_tools import AliEmbedding
+from commons.simility_tools import cosine_similarity
+from knowledge_interface_tools.es_search_interface import EsSearchInterfaceOri
+from knowledge_interface_tools.es8_search_interface import EsSearchInterfaceES8
+from knowledge_interface_tools.search_index_data_interface import SearchDataInterface
+from es817_independent_query_compare_20261005 import ROOT, PAIRS, ENDPOINTS, make_clients, read_es, compare
+
+
+def source_evidence(clients, output):
+    paired = json.loads((output/'paired_responses.private.json').read_text())['cases']
+    identities = defaultdict(set)
+    for row in paired:
+        metric = row.get('comparison')
+        if metric is None:
+            continue
+        selected = metric['old_only'] + metric['new_only']
+        for label in ['old', 'new']:
+            selected += [[h['dataset'], h['id']] for h in row['runs'][label]['results'][:1]]
+        new = {(h['dataset'], h['id']): h for h in row['runs']['new']['results']}
+        selected += [[h['dataset'],h['id']] for h in row['runs']['old']['results']
+                     if (h['dataset'],h['id']) in new and abs(h['score']-new[(h['dataset'],h['id'])]['score'])>1e-6]
+        for _, data_id in selected:
+            for name in PAIRS[row['platform']][:2]:
+                identities[name].add(data_id)
+    evidence = []
+    for name, ids in sorted(identities.items()):
+        provider = next(pair[2] for pair in PAIRS.values() if name in pair[:2])
+        for position in range(0, len(ids), 40):
+            batch = sorted(ids)[position:position+40]
+            records = {}
+            for label, client in [('old', clients['old']), ('new', clients[provider])]:
+                records[label] = {r['_id']:r for r in read_es(client,'POST','/'+name+'/_mget',{'ids':batch})['docs']}
+            for data_id in batch:
+                a, b = records['old'][data_id], records['new'][data_id]
+                if not a.get('found') and not b.get('found'):
+                    continue
+                before, after = a.get('_source',{}), b.get('_source',{})
+                keys = sorted(set(before)|set(after))
+                different = [key for key in keys if before.get(key)!=after.get(key) or (key in before)!=(key in after)]
+                vector_a = {key:before.get(key) for key in ['title_embedding','content_embedding','indexes','image_indexes']}
+                vector_b = {key:after.get(key) for key in vector_a}
+                h_a = hashlib.sha256(json.dumps(before,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
+                h_b = hashlib.sha256(json.dumps(after,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
+                evidence.append({'dataset':name,'id':data_id,'old_found':a.get('found'), 'new_found':b.get('found'),
+                                 'full_source_equal':before==after,'changed_fields':different,'vector_fields_equal':vector_a==vector_b,
+                                 'old_source_sha256':h_a,'new_source_sha256':h_b,
+                                 'old_del_flag':before.get('del_flag'),'new_del_flag':after.get('del_flag'),
+                                 'old_root_dims':{key:len(before.get(key) or []) for key in ['title_embedding','content_embedding']},
+                                 'new_root_dims':{key:len(after.get(key) or []) for key in ['title_embedding','content_embedding']}})
+    freshness = []
+    hits = read_es(clients['old'],'POST','/mercado/_search',{'size':5,'sort':[{'insert_time':{'order':'desc','unmapped_type':'date'}}],
+                             '_source':['title','insert_time','audit_result','data_type','del_flag']})['hits']['hits']
+    docs = read_es(clients['serverless'],'POST','/mercado/_mget',{'ids':[h['_id'] for h in hits]})['docs']
+    for hit, doc in zip(hits, docs):
+        freshness.append({'id':hit['_id'],**hit['_source'],'new_found':doc.get('found')})
+    (output/'source_evidence.json').write_text(json.dumps({'checked_documents':len(evidence),'records':evidence,'latest_mercado':freshness},ensure_ascii=False,indent=2))
+    print(json.dumps({'source_checked':len(evidence),'source_changed':sum(not r['full_source_equal'] for r in evidence),
+                      'vector_changed':sum(not r['vector_fields_equal'] for r in evidence),'latest_missing':[r for r in freshness if not r['new_found']]},ensure_ascii=False),flush=True)
+
+
+def candidate_evidence(clients, output, selection):
+    paired = json.loads((output/'paired_responses.private.json').read_text())['cases']
+    chosen = [row for key in selection for row in paired if key==row['case']+':'+row['kind']]
+    if len(chosen)!=len(selection) or len(chosen)>8:
+        raise ValueError('expected <=8 existing completed cases')
+    cfg = json.loads((ROOT/'config/config_for_search_index_es817.local.json').read_text())
+    embedding = AliEmbedding(cfg['embedding_config_path'])
+    new_builder = object.__new__(EsSearchInterfaceES8)
+    new_builder.vector_fields = {'indexes_embedding':1024}
+    consumer = object.__new__(SearchDataInterface)
+    output_rows = []
+    for row in chosen:
+        public, private, provider = PAIRS[row['platform']]
+        if (row['case'],row['kind']) in [('mercado_local-H3','segment'),('mercado_local-H1','qa')]:
+            public = private
+        vector = embedding.text2embedding(row['query']).tolist()
+        query = {'query':row['query'],'vector':{'value':vector},'attribute':copy.deepcopy(row['request']['condition_dicts'])}
+        for group in query['attribute']:
+            group.setdefault('audit_result',[1,2,-1])
+        limit = row['request']['top_k']
+        old_builder = object.__new__(EsSearchInterfaceOri)
+        old_builder.vector_fields = {'indexes_embedding':1024}
+        old_builder.recall_mode = 'dual'
+        old_builder._get_index_name = Mock(return_value=public)
+        old_builder._msearch_with_shard_check = Mock(return_value={'responses':[]})
+        old_builder.search_multi(query,index_names=public,size=limit*2)
+        plan = old_builder._msearch_with_shard_check.call_args.args[0]
+        bodies = {'old': [plan[1],plan[3]], 'new': [
+            {'query':new_builder._build_search_query(query,include_text=True,include_vector=False,vector_k=limit), 'size':limit},
+            {'query':new_builder._build_search_query(query,include_text=False,include_vector=True,vector_k=limit,with_inner_hits=True), 'size':limit}]}
+        detail = {'case':row['case'],'kind':row['kind'],'query':row['query'],'index':public,'embedding_calls':1,'routes':{},'reranked':{}}
+        for label, client in [('old',clients['old']),('new',clients[provider])]:
+            merged = {}
+            for route_name, body in zip(['bm25','vector'], bodies[label]):
+                response = read_es(client,'POST','/'+public+'/_search',body)
+                hits = response['hits']['hits']
+                routes = []
+                for hit in hits:
+                    doc = copy.deepcopy(hit['_source'])
+                    EsSearchInterfaceOri._restore_inner_embeddings(hit,doc)
+                    if hit['_id'] in merged:
+                        EsSearchInterfaceOri._merge_index_embeddings(merged[hit['_id']],doc)
+                    else:
+                        merged[hit['_id']] = doc
+                    inner = (hit.get('inner_hits') or {}).get('best_index',{}).get('hits',{}).get('hits',[])
+                    routes.append({'id':hit['_id'],'es_score':hit['_score'],
+                                   'inner_vector_dims':[len(h.get('_source',{}).get('embedding') or []) for h in inner],
+                                   'nested_vectors_returned':sum(bool(ix.get('embedding')) for ix in doc.get('indexes',[]) if isinstance(ix,dict))})
+                detail['routes'][label+'_'+route_name] = {'hits':routes,'failed_shards':response.get('_shards',{}).get('failed'),
+                                                        'response_bytes':len(json.dumps(response,ensure_ascii=False).encode())}
+            scored = [{'id':data_id,'score':float(consumer._cal_similarity(row['query'],vector,doc,search_type=row['kind'],use_synonyms=True)),
+                       'title':doc.get('title',''),'content_preview':doc.get('content','')[:240]} for data_id,doc in merged.items()]
+            detail['reranked'][label] = sorted(scored,key=lambda h:h['score'],reverse=True)[:limit]
+        broad_body = {'query':new_builder._build_search_query(query,include_text=False,include_vector=True,vector_k=limit),
+                      'size':limit,'_source':False}
+        broad_body['query']['bool']['should'][0]['nested']['query']['knn']['num_candidates'] = 500
+        broad = read_es(clients[provider],'POST','/'+public+'/_search',broad_body)
+        detail['new_vector_candidates500'] = [{'id':h['_id'],'es_score':h['_score']} for h in broad['hits']['hits']]
+        wide_body = {'query':new_builder._build_search_query(query,include_text=False,include_vector=True,vector_k=max(20,limit)),
+                     'size':max(20,limit),'_source':False}
+        wide_body['query']['bool']['should'][0]['nested']['query']['knn']['num_candidates'] = 500
+        wide = read_es(clients[provider],'POST','/'+public+'/_search',wide_body)
+        detail['new_vector_k20_candidates500'] = [{'id':h['_id'],'es_score':h['_score']} for h in wide['hits']['hits']]
+        old_ids=[h['id'] for h in detail['routes']['old_vector']['hits']]
+        new_ids=[h['id'] for h in detail['routes']['new_vector']['hits']]
+        detail['old_vector_missing_in_new']=[i for i in old_ids if i not in new_ids]
+        detail['bm25_same_ids']=[h['id'] for h in detail['routes']['old_bm25']['hits']]==[h['id'] for h in detail['routes']['new_bm25']['hits']]
+        output_rows.append(detail)
+        (output/'candidate_evidence.json').write_text(json.dumps(output_rows,ensure_ascii=False,indent=2))
+        print(json.dumps({'case':row['case'],'kind':row['kind'],'bm25_same_ids':detail['bm25_same_ids'],
+                          'old_vector_missing_in_new':detail['old_vector_missing_in_new'],
+                          'candidates500_recovered':[h['id'] for h in detail['new_vector_candidates500'] if h['id'] in detail['old_vector_missing_in_new']],
+                          'k20_recovered':[h['id'] for h in detail['new_vector_k20_candidates500'] if h['id'] in detail['old_vector_missing_in_new']]},ensure_ascii=False),flush=True)
+
+
+def score_evidence(clients, output, selection):
+    existing=json.loads((output/'candidate_evidence.json').read_text())
+    chosen=[row for key in selection for row in existing if key==row['case']+':'+row['kind']]
+    if len(chosen)!=len(selection) or len(chosen)>5:
+        raise ValueError('expected <=5 already diagnosed cases')
+    paired=json.loads((output/'paired_responses.private.json').read_text())['cases']
+    cfg=json.loads((ROOT/'config/config_for_search_index_es817.local.json').read_text())
+    embedding=AliEmbedding(cfg['embedding_config_path'])
+    builder=object.__new__(EsSearchInterfaceES8)
+    builder.vector_fields={'indexes_embedding':1024}
+    evidence=[]
+    for row in chosen:
+        original=next(r for r in paired if (r['case'],r['kind'])==(row['case'],row['kind']))
+        provider=PAIRS[original['platform']][2]
+        name=row['index']
+        ids=sorted({h['id'] for route in ['old_vector','new_vector'] for h in row['routes'][route]['hits']})
+        ids=ids[:40]
+        vector=embedding.text2embedding(row['query']).tolist()
+        query={'query':row['query'],'vector':{'value':vector},'attribute':copy.deepcopy(original['request']['condition_dicts'])}
+        for group in query['attribute']:group.setdefault('audit_result',[1,2,-1])
+        old=object.__new__(EsSearchInterfaceOri)
+        old.vector_fields={'indexes_embedding':1024};old.recall_mode='dual'
+        old._get_index_name=Mock(return_value=name)
+        old._msearch_with_shard_check=Mock(return_value={'responses':[]})
+        old.search_multi(query,index_names=name,size=original['request']['top_k']*2)
+        old_bool=old._msearch_with_shard_check.call_args.args[0][3]['query']['function_score']['query']['bool']
+        filters={'old':{'bool':{'must':old_bool['must']}}, 'new':builder._filter_query(query)}
+        entry={'case':row['case'],'kind':row['kind'],'index':name,'index_metadata':{},'documents':[]}
+        docs, bases={},{}
+        for label,client in [('old',clients['old']),('new',clients[provider])]:
+            meta=read_es(client,'GET','/'+name)[name]
+            entry['index_metadata'][label]={'shards':meta['settings']['index'].get('number_of_shards'),
+                                          'data_type_mapping':meta['mappings']['properties'].get('data_type'),
+                                          'nested_vector_mapping':meta['mappings']['properties']['indexes']['properties']['embedding']}
+            docs[label]={r['_id']:r.get('_source',{}) for r in read_es(client,'POST','/'+name+'/_mget',{'ids':ids})['docs']}
+            base_query=copy.deepcopy(filters[label]);base_query['bool']['filter']=[{'ids':{'values':ids}}]
+            response=read_es(client,'POST','/'+name+'/_search',{'size':len(ids),'query':base_query,'_source':False})
+            bases[label]={h['_id']:h['_score'] for h in response['hits']['hits']}
+        scores={label:{h['id']:h['es_score'] for h in row['routes'][label+'_vector']['hits']} for label in ['old','new']}
+        for data_id in ids:
+            doc=docs['new'][data_id]
+            cosine=max([float(cosine_similarity(vector,item['embedding'])) for item in doc.get('indexes',[]) if item.get('embedding')] or [0.0])
+            values={'id':data_id,'full_source_equal':docs['old'][data_id]==doc,'max_nested_cosine':cosine,
+                    'old_attribute_score':bases['old'].get(data_id),'new_attribute_score':bases['new'].get(data_id)}
+            for label in ['old','new']:
+                observed=scores[label].get(data_id)
+                expected=bases[label].get(data_id,0)+(cosine if label=='old' else (1+cosine)/2)
+                values[label+'_observed_vector_score']=observed
+                values[label+'_expected_vector_score']=expected
+                values[label+'_decomposition_abs_error']=None if observed is None else abs(observed-expected)
+            entry['documents'].append(values)
+        evidence.append(entry)
+        (output/'score_decomposition.json').write_text(json.dumps(evidence,ensure_ascii=False,indent=2))
+        print(json.dumps({'case':row['case'],'kind':row['kind'],'documents':len(ids),
+                          'max_decomposition_error':max(d[label+'_decomposition_abs_error'] or 0 for d in entry['documents'] for label in ['old','new']),
+                          'old_attribute_scores':sorted({round(v,6) for v in bases['old'].values()}),
+                          'new_attribute_scores':sorted({round(v,6) for v in bases['new'].values()})},ensure_ascii=False),flush=True)
+
+
+def repeat_evidence(clients, output):
+    paired=json.loads((output/'paired_responses.private.json').read_text())['cases']
+    chosen=[r for r in paired if r['kind']=='segment' and not r['comparison']['top1_equal']]
+    if len(chosen)!=5:
+        raise ValueError('expected fixed five top1 changes')
+    for public,private,provider in PAIRS.values():
+        for name in [public,private]:
+            for client in [clients['old'],clients[provider]]:
+                read_es(client,'HEAD','/'+name)
+    results=[]
+    with requests.Session() as session:
+        for row in chosen:
+            evidence={'case':row['case'],'kind':row['kind'],'runs':{}}
+            for label in ['old','new']:
+                start=time.monotonic()
+                response=session.post(ENDPOINTS[label],json=row['request'],timeout=60)
+                response.raise_for_status()
+                values=response.json()['results']
+                comparison=compare(row['runs'][label]['results'],values)
+                evidence['runs'][label]={'elapsed_s':round(time.monotonic()-start,3),'http_status':response.status_code,
+                                        'same_order_as_initial':comparison['exact_order'],
+                                        'max_score_delta_as_initial':comparison['max_common_score_delta'],
+                                        'results':[{'dataset':h['dataset'],'id':h['id'],'score':h['score']} for h in values]}
+                time.sleep(0.15)
+            results.append(evidence)
+            (output/'repeat_evidence.json').write_text(json.dumps(results,ensure_ascii=False,indent=2))
+            print(json.dumps({'repeat_case':row['case'],'same_order_as_initial':{l:r['same_order_as_initial'] for l,r in evidence['runs'].items()}},ensure_ascii=False),flush=True)
+
+
+def main():
+    os.umask(0o077)
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--sources',action='store_true')
+    parser.add_argument('--cases',nargs='*',default=[])
+    parser.add_argument('--score-cases',nargs='*',default=[])
+    parser.add_argument('--repeat',action='store_true')
+    args=parser.parse_args()
+    clients=make_clients()
+    try:
+        if args.sources:
+            source_evidence(clients,args.output)
+        if args.cases:
+            candidate_evidence(clients,args.output,args.cases)
+        if args.score_cases:
+            score_evidence(clients,args.output,args.score_cases)
+        if args.repeat:
+            repeat_evidence(clients,args.output)
+    finally:
+        for client in clients.values():client.session.close()
+
+
+if __name__=='__main__':
+    main()

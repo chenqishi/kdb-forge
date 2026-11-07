@@ -1,101 +1,38 @@
-# 架构总览（rebuild）
+# 已实施候选架构（2026-11-06复核）
 
-> 重构第一步：CRUD 层抽取。后续步骤（pipeline、tasks）将扩展本图。
+候选 `/root/kdb-forge-refactor-dev-20261105-restart`；尚未切换运行服务。来源为发布f6a78084和四个SHA核验dirty挖掘修复，逐文件见本轮assembly.json。
 
-## 分层
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  调用方 / sell_agent / 后续 pipeline / tasks（预留）           │
-└───────────────┬─────────────────────────────────────────────┘
-                │ 文本级文档 / query，或 HTTP 写入请求
-                ▼
-┌─────────────────────────────────────────────────────────────┐
-│  kdb.api：health / knowledge insert / delete / modify         │
-│  kdb.modify：执行已决策的单索引写入计划；dry_run 不加载 CRUD    │
-│  包级公开 CRUD 类懒导入；首次实际写入才构建 Service            │
-└───────────────┬─────────────────────────────────────────────┘
-                ▼
-┌─────────────────────────────────────────────────────────────┐
-│  kdb.crud.KnowledgeService（文本级 CRUD + 旧接口兼容）          │
-│  - 新式：insert_text / search_text / update / delete / get      │
-│  - 旧式：insert_data / search_data / web_search_data / ...      │
-│  - 新增别名：search_text_multi / web_search / batch_insert      │
-│  - _prepare_document：CRUD 预处理，不含客户专属挖掘推断         │
-│  - _cal_similarity：相似度重排（复刻旧实现）                    │
-│  依赖注入：EmbeddingClient                                     │
-└──────┬──────────────────────────────────┬────────────────────┘
-       │ 已含向量的文档 / query_dict        │ text2embedding
-       ▼                                    ▼
-┌──────────────────────────────┐   ┌──────────────────────────┐
-│ kdb.crud.KnowledgeRepository │   │ kdb.embedding.client      │
-│ （纯向量 CRUD）              │   │  EmbeddingClient 协议      │
-│ insert/get/search/search_multi│  │  + AliEmbedding 适配      │
-│ /search_by_page/update_by_id  │   └─────────────┬────────────┘
-│ /update_by_condition/delete   │                 │
-│ /get_unique_values/ensure_index│                │
-└──────────────┬────────────────┘                 │
-               │ 全部委托                          │
-               ▼                                   ▼
-┌─────────────────────────────────────────────────────────────┐
-│  kdb.legacy_bridge（接线层：旧项目仅用于兼容/对齐测试）       │
-│  RoutedLegacyEngine（ES8 named API + native KNN）             │
-│  + re-export: AliEmbedding / gen_data_id / cosine_similarity  │
-└───────────────┬─────────────────────────────────────────────┘
-                │ 仅 embedding、_id、对齐基线按需 import
-                ▼
-┌─────────────────────────────────────────────────────────────┐
-│  兼容入口 kdb.knowledge_interface_tools                         │
-│  - SearchDataInterface：保留旧构造函数和公开方法名              │
-│  - 旧调用方无需改 insert/search/web_search 方法名               │
-│  - commons/embedding_tools.py（AliEmbedding / DashScope）     │
-└───────────────┬─────────────────────────────────────────────┘
-                ▼
-┌──────────────────────────┐    ┌────────────────────────────┐
-│ IndexClientRouter         │───▶│ ES 8.17 Serverless client   │
-│ index -> provider ->      │    └──────────────┬─────────────┘
-│ cached client             │                   │
-│ exact > wildcard > default│    ┌──────────────▼─────────────┐
-│                           │───▶│ ES 8.17 PaaS client         │
-└──────────────────────────┘    └──────────────┬─────────────┘
-                                               ▼
-                                Aliyun Elasticsearch（混用）
+```mermaid
+flowchart TB
+  L[scripts/services 显式KDB_PYTHON] --> P[本地preflight 资源和SDK检查]
+  P --> W
+  W[原路径 import/CLI wrappers] --> S[services 独立HTTP入口]
+  W --> M[mining 五管道与任务]
+  J[jobs 定时入口] --> M
+  S --> R[retrieval/application SearchDataInterface 整体]
+  S --> M
+  M --> R
+  R --> E[唯一发布引擎工厂 ES8 Router maintenance]
+  F[services/forge_compat 独立原协议] --> R
+  F --> A[严格count参数薄适配]
+  A --> E
+  M --> C[shared clients/config/text/files/categories]
+  R --> C
+  I[integrations / reporting] --> C
+  T[run_offline_tests / 默认pytest] --> G[导入前禁网络 进程 外部写]
+  G --> V[入口及离线测试]
 ```
 
-检索时 `RoutedLegacyEngine.search_multi` 使用 ES8 named `search(query=...)`，把 BM25 和
-native KNN 分成两路召回，按 `_index + _id` 合并；`search_multi_by_page` 使用 named
-`from_` 保持 BM25 分页路径。每个 index 通过 `IndexClientRouter` 交给正确的 ES8.17
-Serverless/PaaS client，跨 provider 的多索引请求按 provider 拆分。
+正式服务位于services/retrieval、off_task、crawler、files、multilingual、csat、fastgpt_proxy；旧12业务POST协议原样搬入retrieval/app.py，不与独立forge协议合并。五controller留原subprocess、解释器、shell、cwd、env、信号/超时机制。
 
-## 关键约束
+客户类目推断及缓存保持在SearchDataInterface，不从类中抽走。shared中的通用客户端、文件和纯文本模块按已有独立模块搬移。旧import路径委托同一正式模块；__file__计算使用本候选中的原逻辑路径；Flask资源根保留原目录语义。
 
-- **ES8 专用**：运行目标只有 ES8.17.x；`Legacy` 类名、方法和配置兼容不意味着支持
-  ES7 服务端。合并远端写入功能时不得恢复 ES7 驱动或 script_score 模拟召回。
-- **Schema 不变且可迁移**：字段语义沿用旧 mapping，但新索引的 `indexes.embedding` 必须是
-  `index=true`、`similarity=cosine`、HNSW。旧 ES7 未索引向量不可原地改 mapping，必须新建
-  ES8 索引并 reindex。
-- **分层但不丢接口**：Repository 只进出向量；Service/兼容层负责旧 `SearchDataInterface`
-  的 CRUD/检索公开契约，包括查重、通用类目、文件名操作、批量插入和 web_search。
-- **挖掘边界**：Payoneer Olive 自动类目推断属于上游挖掘，不迁入 CRUD/检索层。
-  CRUD 仅规范化、解析显式类目并补默认分组，不按平台线索、标签、标题猜类目；
-  类目树不可用时保留上游候选，不按 `source` 丢弃。`web_search` 的类目名转 ID 过滤保留。
-- **对齐基准**：旧方法名和返回结构保持不变；底层请求统一改为 ES8 named API，向量路由改为
-  native KNN。旧 ES7 索引仍需先迁移到 native KNN mapping。
-- **HTTP 契约**：`/search`、`/web_search` 复用旧请求/返回结构并加独立 HTTP Basic；
-  `/knowledge/insert`、`/knowledge/delete`、`/knowledge/modify_direct_update` 保持写入接口；
-  旧 HTTP 11 路由的管理路径在 `legacy_routes` 兼容层恢复，Dify 修改路径仅在注入外部 modifier 时执行。
-- **依赖注入**：远端 similarity/category 注入参数保留；通用类目映射复用兼容层，
-  不引入缺失的 CategoryClient 包；查重工具缺失时懒加载本地阈值实现，不跳过查重。
+forge原重复核心位于archive/forge_pre_refactor，正式import不使用archive。原Repository保持完整纯委托文件；KnowledgeService构造、更新、配置工厂与计数公开协议承接至薄适配。严格count只补forge原SDK参数并复用发布完整性校验；已发布ES8/Router原文件字节不变。
 
-## 数据流
+config旧名使用受忽略本地链接，私有有效值在private/runtime_config；Prompt位于resources并保留旧名链接。运行data/output/log、migration_runs不搬，不自动执行手工queue/drain/迁移工具。
 
-- **写**：`insert_text(doc)` → `_prepare_document`（归集 ext_info、构造 indexes、向量化、_id、时间）→ `repo.insert` → ES8 `RoutedLegacyEngine.insert`（校验维度/过滤零向量/upsert）→ ES。
-- **读**：`search_text(query)` → embed query → `repo.search_multi`（BM25/vector 双路，候选 size*2）→ 逐 doc `_cal_similarity` → 渲染多模态 URL → 返回 (docs, total)，不排序不截断。
-- **改**：`update` → title/synonyms 变更且未显式提供 indexes 时，通过同一 index 的
-  `repo.get` 读取原文档 → 合并派生检索项并保留其他项 → 重算 root/indexes 向量 →
-  `repo.update_by_id` → 按目标 index 刷新；读不到原文档则拒绝该合并写入。
-  content-only 更新不额外读库；`repo.update_by_condition` 用于软删除 del_flag=1 等。
-- **删**：`delete` → ES8 `RoutedLegacyEngine.delete`。
-- **兼容**：`SearchDataInterface(config_path=..., index_name=...)` → `KnowledgeService` 兼容层；
-  `web_search_data` → ES8 BM25 分页 + 类目 ID 转换 + URL/score 后处理；文件名删除使用
-  ES8 `count/search/agg_terms/update_by_query`，删前写 JSONL 快照。
+图中业务箭头表示最终委托关系，不能理解为已经完成全部import重写：253条正式模块仍经旧命名空间薄wrapper进入canonical模块，是过渡混合依赖图；残留路径与目标目录偏差见docs/runbooks/refactor_residuals_20261106.md。
+
+服务launcher新增本地预检，显式解释器、SDK版本和资源检查通过后才exec原wrapper；--check不启动业务。实际原__main__/worker lifespan接线已在禁外部操作、替换外部边界的测试中检查；五项本地预检通过，语言模型/fasttext与CSAT真实认证缺失仍明确失败。配置指针仅在候选私有副本重绑。
+
+检索另有真实ES同PIT视图验证：30重点样本、两轮60对原SDK计划与响应相同，不包含真实知识生成；五挖掘任务的完整生命周期、全部LLM/SQL/MinIO行为及生产切换仍未验收。默认测试入口只收集受保护的entry_smoke/offline，历史套件显式选择；具体边界见docs/runbooks/offline_testing.md。

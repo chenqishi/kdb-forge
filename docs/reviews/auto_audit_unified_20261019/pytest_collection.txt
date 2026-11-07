@@ -1,0 +1,30 @@
+
+==================================== ERRORS ====================================
+____________ ERROR collecting tests/test_off_task_es817_20261008.py ____________
+ImportError while importing test module '/root/knowledge_database_builder-auto-audit-20261019/tests/test_off_task_es817_20261008.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../miniconda3/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_off_task_es817_20261008.py:20: in <module>
+    import fire
+E   ModuleNotFoundError: No module named 'fire'
+=============================== warnings summary ===============================
+commons/common_utils.py:210
+  /root/knowledge_database_builder-auto-audit-20261019/commons/common_utils.py:210: SyntaxWarning: invalid escape sequence '\('
+    clear_re_str = clear_re_str.replace('(', '\(').replace(')', '\)')
+
+commons/common_utils.py:210
+  /root/knowledge_database_builder-auto-audit-20261019/commons/common_utils.py:210: SyntaxWarning: invalid escape sequence '\)'
+    clear_re_str = clear_re_str.replace('(', '\(').replace(')', '\)')
+
+commons/common_utils.py:295
+  /root/knowledge_database_builder-auto-audit-20261019/commons/common_utils.py:295: SyntaxWarning: invalid escape sequence '\+'
+    split_char = '\t| |；|、|,|，|\+'
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR tests/test_off_task_es817_20261008.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+3 warnings, 1 error in 1.29s

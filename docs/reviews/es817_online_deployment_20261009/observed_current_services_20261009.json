@@ -1,0 +1,55 @@
+{
+  "observed_utc": "2026-10-08T17:28:04.860636Z",
+  "checkout_head": "c84b6120be35c5ca78d41c84f190dec6619946c3",
+  "services": {
+    "retrieval": {
+      "pid": 1585100,
+      "create_time": 1791479981.8,
+      "cmdline": [
+        ".venv-es817/bin/python",
+        "knowledge_database_search_service/src/knowledge_database_search_es.py",
+        "config/config_for_search_index.json"
+      ],
+      "python": "/root/knowledge_database_builder/.venv-es817/bin/python",
+      "log": "/root/knowledge_database_builder/log/es_search_service.log.es817_20261009_1791478533832080738"
+    },
+    "off_task": {
+      "pid": 1533339,
+      "create_time": 1791478533.65,
+      "cmdline": [
+        "/root/knowledge_database_builder/.venv-es817/bin/python",
+        "control_service/off_task_control_service.py",
+        "--script-dir",
+        "/root/knowledge_database_builder",
+        "--port=6000"
+      ],
+      "python": "/root/knowledge_database_builder/.venv-es817/bin/python",
+      "log": "/root/knowledge_database_builder/log/run_off_task.log.es817_20261009_1791478533833602739"
+    }
+  },
+  "health": {
+    "retrieval": {
+      "http": 200,
+      "new_endpoint": true
+    },
+    "off_task": {
+      "http": 200,
+      "health": {
+        "code": 0,
+        "data": {
+          "active_tasks": 0,
+          "current_resource_usage": 0,
+          "max_concurrency": 2,
+          "queue_size": 0,
+          "resource_utilization": "0.0%",
+          "timestamp": "2026-10-09T01:28:04.859887"
+        },
+        "msg": "服务正常"
+      }
+    }
+  },
+  "original_activation_preserved": true,
+  "configuration_sha_matches": true,
+  "stdout_matches": true,
+  "services_restarted": 0
+}

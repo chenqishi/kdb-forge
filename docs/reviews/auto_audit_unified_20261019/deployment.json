@@ -1,0 +1,198 @@
+{
+  "release": "13b552c42a50be199ce09a016dd4aa3db326d3f5",
+  "backup": "/root/knowledge_database_builder/backup/auto_audit_unified_20261019_143009",
+  "initial_activation_at": "2026-10-19T14:30:47.534685",
+  "scope": "all",
+  "cron": "00 * * * * sh /root/knowledge_database_builder/control_script/timing_auto_audit_all_indexes.sh /root/knowledge_database_builder/config/python_env_config.sh >>/root/knowledge_database_builder/log/run_timing_auto_audit.log 2>&1",
+  "scope_correction": {
+    "scope": "all",
+    "cron": "00 * * * * sh /root/knowledge_database_builder/control_script/timing_auto_audit_all_indexes.sh /root/knowledge_database_builder/config/python_env_config.sh >>/root/knowledge_database_builder/log/run_timing_auto_audit.log 2>&1",
+    "corrected_at": "2026-10-19T14:35:13.768249",
+    "next_run": "2026-10-19 15:00:00 Asia/Shanghai",
+    "manual_audit_writes": 0,
+    "services_restarted": 0
+  },
+  "all_index_dry_run": {
+    "summary": {
+      "total_indexes": 109,
+      "success_count": 0,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "dry_run_count": 109,
+      "total_docs_updated": 0,
+      "total_high_quality": 0,
+      "total_other_quality": 0
+    },
+    "providers": {
+      "serverless": 93,
+      "paas": 16
+    },
+    "pending": 4983,
+    "high": 4050,
+    "other": 646,
+    "unchanged": 287,
+    "pending_indexes": [
+      {
+        "index": "admin_test",
+        "provider": "serverless",
+        "pending": 1,
+        "high": 0,
+        "other": 0,
+        "unchanged": 1
+      },
+      {
+        "index": "cdiscount",
+        "provider": "serverless",
+        "pending": 2,
+        "high": 0,
+        "other": 0,
+        "unchanged": 2
+      },
+      {
+        "index": "customer_platform",
+        "provider": "serverless",
+        "pending": 19,
+        "high": 0,
+        "other": 0,
+        "unchanged": 19
+      },
+      {
+        "index": "mars_mind_guanghe",
+        "provider": "serverless",
+        "pending": 13,
+        "high": 0,
+        "other": 0,
+        "unchanged": 13
+      },
+      {
+        "index": "mars_mind_to_c_sales_marsmind_toc_sales",
+        "provider": "serverless",
+        "pending": 134,
+        "high": 124,
+        "other": 10,
+        "unchanged": 0
+      },
+      {
+        "index": "mercado",
+        "provider": "serverless",
+        "pending": 117,
+        "high": 0,
+        "other": 0,
+        "unchanged": 117
+      },
+      {
+        "index": "onbuy",
+        "provider": "serverless",
+        "pending": 16,
+        "high": 0,
+        "other": 0,
+        "unchanged": 16
+      },
+      {
+        "index": "payoneer",
+        "provider": "paas",
+        "pending": 93,
+        "high": 79,
+        "other": 14,
+        "unchanged": 0
+      },
+      {
+        "index": "payoneer_olive",
+        "provider": "paas",
+        "pending": 952,
+        "high": 814,
+        "other": 138,
+        "unchanged": 0
+      },
+      {
+        "index": "qoo10",
+        "provider": "serverless",
+        "pending": 14,
+        "high": 0,
+        "other": 0,
+        "unchanged": 14
+      },
+      {
+        "index": "rakutenfrance",
+        "provider": "serverless",
+        "pending": 65,
+        "high": 0,
+        "other": 0,
+        "unchanged": 65
+      },
+      {
+        "index": "rufitself",
+        "provider": "serverless",
+        "pending": 8,
+        "high": 0,
+        "other": 0,
+        "unchanged": 8
+      },
+      {
+        "index": "santouliubi",
+        "provider": "serverless",
+        "pending": 17,
+        "high": 0,
+        "other": 0,
+        "unchanged": 17
+      },
+      {
+        "index": "skyee",
+        "provider": "serverless",
+        "pending": 15,
+        "high": 0,
+        "other": 0,
+        "unchanged": 15
+      },
+      {
+        "index": "test_case",
+        "provider": "serverless",
+        "pending": 1,
+        "high": 1,
+        "other": 0,
+        "unchanged": 0
+      },
+      {
+        "index": "wayfair_wayfair_test2",
+        "provider": "serverless",
+        "pending": 3516,
+        "high": 3032,
+        "other": 484,
+        "unchanged": 0
+      }
+    ],
+    "threshold": "2026-10-18 14:35:30"
+  },
+  "runtime": {
+    "processes": [
+      {
+        "pid": 47173,
+        "alive": true,
+        "path_first": [
+          "/root/knowledge_database_builder/.venv-es817/bin",
+          "/root/miniconda3/bin"
+        ],
+        "cwd": "/root/knowledge_database_builder"
+      },
+      {
+        "pid": 1533339,
+        "alive": true,
+        "path_first": [
+          "/root/knowledge_database_builder/.venv-es817/bin",
+          "/root/miniconda3/bin"
+        ],
+        "cwd": "/root/knowledge_database_builder"
+      }
+    ],
+    "custom_timer_matches": []
+  },
+  "code_hashes_verified": 87,
+  "preserved_dirty_files": 4,
+  "services_restarted": 0,
+  "manual_audit_writes": 0,
+  "health": {
+    "search_8003": 200,
+    "off_task_6000": 200
+  },
+  "next_run": "2026-10-19 15:00:00 Asia/Shanghai"
+}

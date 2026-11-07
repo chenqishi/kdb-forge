@@ -1,0 +1,6 @@
+{
+  "same_legacy_hosts": true,
+  "same_legacy_username": true,
+  "same_legacy_password": true,
+  "same_vector_dims": true
+}

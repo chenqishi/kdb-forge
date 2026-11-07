@@ -10,6 +10,7 @@ and online routes are not touched.
 from __future__ import annotations
 
 import argparse
+import copy
 import gzip
 import hashlib
 import json
@@ -33,6 +34,17 @@ def atomic_json(path: Path, value: Mapping[str, Any]) -> None:
     temp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
     temp.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     temp.replace(path)
+
+
+def archive_import_error(state: Dict[str, Any]) -> None:
+    """Keep earlier errors as history, separate from the current attempt."""
+    error = state.pop("error", None)
+    if error:
+        # Old checkpoints may already contain a newer attempt's timestamps
+        # and target. Do not attribute this older error to those fields.
+        state.setdefault("import_error_history", []).append(
+            {"error": error, "archived_at": utc_now()}
+        )
 
 
 def sha256_file(path: Path) -> str:
@@ -118,13 +130,15 @@ def create_target(
         return
     if exists.status_code != 404:
         raise RuntimeError(f"检查目标索引失败 {target_index}: HTTP {exists.status_code}")
+    target_mappings = copy.deepcopy(dict(mappings))
+    target_mappings.setdefault("_source", {}).setdefault("excludes", [])
     body = {
         "settings": {
             "number_of_shards": int(new_index_shards),
             "number_of_replicas": 0,
             "refresh_interval": "-1",
         },
-        "mappings": mappings,
+        "mappings": target_mappings,
     }
     response = target.request("PUT", f"/{target_index}", json=body)
     if response.status_code not in (200, 201):
@@ -180,9 +194,12 @@ def bulk_batch(target: ESHttp, target_index: str, records: List[Mapping[str, Any
     raise RuntimeError(f"bulk 重试耗尽: {last_error}; ids={[str(x['_id']) for x in pending[:5]]}")
 
 
-def iter_batches(path: Path) -> Iterable[List[Mapping[str, Any]]]:
+def iter_batches(
+    path: Path, skip_docs: int = 0, checkpoint_id: str | None = None,
+) -> Iterable[List[Mapping[str, Any]]]:
     batch: List[Mapping[str, Any]] = []
     batch_bytes = 0
+    skipped = 0
     with gzip.open(path, "rt", encoding="utf-8") as handle:
         for line_number, line in enumerate(handle, 1):
             if not line.strip():
@@ -193,6 +210,11 @@ def iter_batches(path: Path) -> Iterable[List[Mapping[str, Any]]]:
                 raise RuntimeError(f"导出文件 JSON 错误 {path}:{line_number}: {exc}") from exc
             if not isinstance(record, dict) or "_id" not in record or "_source" not in record:
                 raise RuntimeError(f"导出文件记录格式错误 {path}:{line_number}")
+            if skipped < skip_docs:
+                skipped += 1
+                if skipped == skip_docs and str(record["_id"]) != checkpoint_id:
+                    raise RuntimeError(f"本地续传位置与 checkpoint 不一致: {path}")
+                continue
             size = len(line.encode("utf-8"))
             if batch and (len(batch) >= BATCH_DOCS or batch_bytes + size > MAX_BULK_BYTES):
                 yield batch
@@ -200,6 +222,8 @@ def iter_batches(path: Path) -> Iterable[List[Mapping[str, Any]]]:
                 batch_bytes = 0
             batch.append(record)
             batch_bytes += size
+        if skipped != skip_docs:
+            raise RuntimeError(f"本地 dump 少于 checkpoint 已导数量: {path}")
         if batch:
             yield batch
 
@@ -211,6 +235,7 @@ def import_one(
     target_index: str,
     new_index_shards: int,
     target_replicas: int,
+    resume: bool = False,
 ) -> Dict[str, Any]:
     dump = Path(state["file"])
     if not dump.exists():
@@ -223,11 +248,48 @@ def import_one(
     settings = state.get("source_settings")
     if not isinstance(mappings, dict) or not isinstance(settings, dict):
         raise RuntimeError(f"{state.get('source_index')} 缺少导出阶段 mapping/settings")
-    state.update({"target_index": target_index, "import_status": "running", "import_started_at": utc_now(), "docs_imported": 0, "bulk_batches": 0, "bulk_bytes": 0})
+    skip_docs = int(state.get("docs_imported", 0)) if resume else 0
+    if skip_docs < 0:
+        raise RuntimeError("续传 checkpoint 已导数量不能为负数")
+    checkpoint_id = str(state.get("last_import_id", "")) if skip_docs else None
+    if skip_docs:
+        if (
+            state.get("target_index") != target_index
+            or state.get("import_status") not in ("failed", "running")
+            or skip_docs > int(state.get("docs_exported", -1))
+            or not checkpoint_id
+        ):
+            raise RuntimeError("续传 checkpoint 不完整或目标不一致，拒绝跳过已导数据")
+        exists = target.request("HEAD", f"/{target_index}")
+        if exists.status_code != 200:
+            raise RuntimeError("续传目标不存在或不可访问，拒绝跳过已导数据")
+        ensure_target_shards(target, target_index, new_index_shards)
+        ensure_target_mapping(target, target_index)
+        cursor = target.json(
+            "POST", f"/{target_index}/_mget",
+            json={"docs": [{"_id": checkpoint_id, "_source": False}]},
+        )
+        if not any(
+            item.get("found") and str(item.get("_id")) == checkpoint_id
+            for item in cursor.get("docs", [])
+        ):
+            raise RuntimeError("续传目标缺少 checkpoint 最后文档，拒绝跳过已导数据")
+    archive_import_error(state)
+    for key in ("target_count", "target_del_flag", "replicas_update_status", "import_finished_at"):
+        state.pop(key, None)
+    if not skip_docs:
+        state.pop("last_import_id", None)
+    state.update({
+        "target_index": target_index, "status": "import_running", "import_status": "running",
+        "import_started_at": utc_now(), "docs_imported": skip_docs,
+        "bulk_batches": int(state.get("bulk_batches", 0)) if skip_docs else 0,
+        "bulk_bytes": int(state.get("bulk_bytes", 0)) if skip_docs else 0,
+        "resume_skipped_docs": skip_docs,
+    })
     atomic_json(state_path, state)
     try:
         create_target(target, target_index, mappings, settings, new_index_shards)
-        for batch in iter_batches(dump):
+        for batch in iter_batches(dump, skip_docs, checkpoint_id):
             sent, byte_count = bulk_batch(target, target_index, list(batch))
             state["docs_imported"] += sent
             state["bulk_batches"] += 1
@@ -243,6 +305,12 @@ def import_one(
         state["target_del_flag"] = del_body.get("aggregations", {}).get("del", {}).get("buckets", [])
         settings_response = target.request("PUT", f"/{target_index}/_settings", json={"index": {"refresh_interval": "30s", "number_of_replicas": target_replicas}})
         state["replicas_update_status"] = settings_response.status_code
+        if not settings_response.ok:
+            raise RuntimeError(
+                f"恢复目标索引设置失败: HTTP {settings_response.status_code}: "
+                f"{settings_response.text[:600]}"
+            )
+        archive_import_error(state)
         state.update({"import_status": "done", "status": "import_done", "import_finished_at": utc_now()})
         atomic_json(state_path, state)
         return state
@@ -261,6 +329,7 @@ def main() -> int:
     parser.add_argument("--new-index-shards", type=int, default=1)
     parser.add_argument("--target-replicas", type=int, default=0)
     parser.add_argument("--shard-plan", type=Path, help="按 source_index 指定目标主分片数的本地 JSON 计划")
+    parser.add_argument("--resume", action="store_true", help="校验本地及目标 checkpoint 后，从失败批次继续导入")
     args = parser.parse_args()
     dump_dir = Path(args.dump_dir)
     states_dir = dump_dir / "states"
@@ -317,6 +386,9 @@ def main() -> int:
         state_path = states_dir / (hashlib.sha256(index.encode()).hexdigest()[:16] + ".json")
         # A completed import is idempotently skipped after its checkpoint is retained.
         if state.get("import_status") == "done" and state.get("target_index") == target_index:
+            if state.get("error"):
+                archive_import_error(state)
+                atomic_json(state_path, state)
             done += 1
             manifest["indices"].append(state)
             print(json.dumps({"index": index, "status": "already_done", "target": target_index}, ensure_ascii=False), flush=True)
@@ -326,6 +398,7 @@ def main() -> int:
             result = import_one(
                 targets[provider], state_path, state, target_index,
                 planned_shards, args.target_replicas,
+                resume=args.resume,
             )
             done += 1
             manifest["indices"].append(result)

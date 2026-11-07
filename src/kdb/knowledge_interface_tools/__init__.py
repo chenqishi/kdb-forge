@@ -1,5 +1,2 @@
-"""Compatibility import path for the rebuilt knowledge service."""
-
-from kdb.crud.service import SearchDataInterface
-
-__all__ = ["SearchDataInterface"]
+"""Original public symbols, forwarding to the same implementation."""
+from kdb.retrieval.application.search_index_data_interface import SearchDataInterface

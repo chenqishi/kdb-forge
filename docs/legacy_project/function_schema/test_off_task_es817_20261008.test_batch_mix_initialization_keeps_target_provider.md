@@ -1,0 +1,3 @@
+# test_batch_mix_initialization_keeps_target_provider
+
+Inputs: actual offline controller and business/engine factory with canonical es_version=8.17, ensure_index_on_init=True, mock missing indexes and target payoneer_olive. Outputs: stage succeeds, normal initialization creates mix on configured default Serverless provider and target on configured PaaS provider; actual document upsert targets only payoneer_olive/PaaS. This preserves the f873a593 legacy batch initialization contract. The earlier test required only-target creation without that legacy contract; that expectation is withdrawn, not fixed by changing application code. SQL/side effects: temporary fixture files and mock ES captures only; no real ES/SQL/model calls, config changes, deployment or restarts.

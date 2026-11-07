@@ -1,0 +1,1902 @@
+[
+  {
+    "old_file": "category_sys_manager/category_sys_manager.py",
+    "canonical_file": "src/kdb/shared/categories/category_sys_manager.py",
+    "legacy_entry": "category_sys_manager/category_sys_manager.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/category_sys_manager/category_sys_manager.py",
+    "source_sha256": "2ba6c11dc18eea212817da90e57828ad0b2f0a87f90ca1f1bd1226a8ee6b969c",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "category_sys_manager/category_sys_util.py",
+    "canonical_file": "src/kdb/shared/categories/category_sys_util.py",
+    "legacy_entry": "category_sys_manager/category_sys_util.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/category_sys_manager/category_sys_util.py",
+    "source_sha256": "3d50f0640c192c1313f9f7f47556206112b200d408a533de25d58ba97480e1dc",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "chat_qa_extract/config.py",
+    "canonical_file": "src/kdb/mining/quality/chat_qa_extract/config.py",
+    "legacy_entry": "chat_qa_extract/config.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/chat_qa_extract/config.py",
+    "source_sha256": "27075ad6fb6bfd3f7a4ce534a7129fec634f7ac0dfa54568caf31b8d94f99def",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "chat_qa_extract/llm_client.py",
+    "canonical_file": "src/kdb/mining/quality/chat_qa_extract/llm_client.py",
+    "legacy_entry": "chat_qa_extract/llm_client.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/chat_qa_extract/llm_client.py",
+    "source_sha256": "49353aaec90e2f3465457aab02a1fbe979268e9541c9eda4ad0698ab4c411b0a",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "chat_qa_extract/qa_extractor.py",
+    "canonical_file": "src/kdb/mining/quality/chat_qa_extract/qa_extractor.py",
+    "legacy_entry": "chat_qa_extract/qa_extractor.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/chat_qa_extract/qa_extractor.py",
+    "source_sha256": "6ccfb8d07505f78e728599aeda226b8ca68fa0c240fcff252b2a0d1497c5fda8",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "chat_qa_extract/quality_filter.py",
+    "canonical_file": "src/kdb/mining/quality/chat_qa_extract/quality_filter.py",
+    "legacy_entry": "chat_qa_extract/quality_filter.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/chat_qa_extract/quality_filter.py",
+    "source_sha256": "237ee43ac935ed914fe5b6803c0ea003c5647eefeea3f208cfdac4f49d959dee",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "chat_qa_extract/reviewer.py",
+    "canonical_file": "src/kdb/mining/quality/chat_qa_extract/reviewer.py",
+    "legacy_entry": "chat_qa_extract/reviewer.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/chat_qa_extract/reviewer.py",
+    "source_sha256": "fb736534aac1288752bdc1b820dc71d63c46cdfcc0e885df38c8e1ba3d7d878e",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "chatknowledge/gen_image_knowledge_from_chat.py",
+    "canonical_file": "src/kdb/mining/generation/chatknowledge/gen_image_knowledge_from_chat.py",
+    "legacy_entry": "chatknowledge/gen_image_knowledge_from_chat.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/chatknowledge/gen_image_knowledge_from_chat.py",
+    "source_sha256": "9545777e827dac050723e4a492f3141845a735caf328d8c743b7d1023a26df3e",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "chatknowledge/gen_knowledge_from_chat.py",
+    "canonical_file": "src/kdb/mining/generation/chatknowledge/gen_knowledge_from_chat.py",
+    "legacy_entry": "chatknowledge/gen_knowledge_from_chat.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/chatknowledge/gen_knowledge_from_chat.py",
+    "source_sha256": "ee4b935b34797ff69ce4d10d47b78ead9aa107ac7649a41fc479718b1f98f33d",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "chatknowledge/match_chat_history_to_chathistory.py",
+    "canonical_file": "src/kdb/mining/generation/chatknowledge/match_chat_history_to_chathistory.py",
+    "legacy_entry": "chatknowledge/match_chat_history_to_chathistory.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/chatknowledge/match_chat_history_to_chathistory.py",
+    "source_sha256": "3d6d11f220644111a27234afdf37217ef7ce62bd1a8fd256a58f688c4366e012",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "commons/app_role_config.py",
+    "canonical_file": "src/kdb/shared/clients/app_role_config.py",
+    "legacy_entry": "commons/app_role_config.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/commons/app_role_config.py",
+    "source_sha256": "c3f32e8927f99c837addfc63386d829a1c01cb2ad913626e96b994453be95984",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "commons/channel_communicate_by_request.py",
+    "canonical_file": "src/kdb/shared/clients/channel_communicate_by_request.py",
+    "legacy_entry": "commons/channel_communicate_by_request.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/commons/channel_communicate_by_request.py",
+    "source_sha256": "a90fed29e73fb7962255e659f8667f262b7155b8c39c0dc637968a829738f359",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "commons/common_utils.py",
+    "canonical_file": "src/kdb/shared/text/common_utils.py",
+    "legacy_entry": "commons/common_utils.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/commons/common_utils.py",
+    "source_sha256": "422185cd371a4c75a741e799f512d0d5e6e74c370c497d1098ee56018d43a521",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "commons/dify_tools.py",
+    "canonical_file": "src/kdb/shared/clients/dify_tools.py",
+    "legacy_entry": "commons/dify_tools.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/commons/dify_tools.py",
+    "source_sha256": "d14085a432a20031f87aa15d686c5a102fedc32dcf50d1b8a2a7fd0d6cd78cf1",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "commons/embedding_tools.py",
+    "canonical_file": "src/kdb/shared/clients/embedding_tools.py",
+    "legacy_entry": "commons/embedding_tools.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/commons/embedding_tools.py",
+    "source_sha256": "a61fe1a56f3fd0843c313b87a2373e47357bd8fee528fc3a92edfcec1a865298",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "commons/es_http_client.py",
+    "canonical_file": "src/kdb/shared/clients/es_http_client.py",
+    "legacy_entry": "commons/es_http_client.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/commons/es_http_client.py",
+    "source_sha256": "22da8b866bc6219e0e607d894430ed43aac5650cdd6969038634cc12cd07848b",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "commons/excel_tools.py",
+    "canonical_file": "src/kdb/shared/files/excel_tools.py",
+    "legacy_entry": "commons/excel_tools.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/commons/excel_tools.py",
+    "source_sha256": "1af864cc7da770fb64b9ea43e25e0ff35144bf7518e7a8bcb298efde7b9dfc41",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "commons/file_utils.py",
+    "canonical_file": "src/kdb/shared/files/file_utils.py",
+    "legacy_entry": "commons/file_utils.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/commons/file_utils.py",
+    "source_sha256": "3f4e34e42b459e86289a9faa3f3dd5b99b267e73d7ce21b4e91f1e30a0678da5",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "commons/firecrawl_tools.py",
+    "canonical_file": "src/kdb/shared/clients/firecrawl_tools.py",
+    "legacy_entry": "commons/firecrawl_tools.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/commons/firecrawl_tools.py",
+    "source_sha256": "adeef8ee202db47cfffe81cf9b12894d7c2786578fbe82483221139d124227ec",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "commons/image_data_tools.py",
+    "canonical_file": "src/kdb/shared/legacy_commons/image_data_tools.py",
+    "legacy_entry": "commons/image_data_tools.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/commons/image_data_tools.py",
+    "source_sha256": "65c19b207b7df8af1e45dc5de39ac7bafd50ef3b29760f7d92ebb959dcb222e8",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "commons/keywords_tools.py",
+    "canonical_file": "src/kdb/shared/text/keywords_tools.py",
+    "legacy_entry": "commons/keywords_tools.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/commons/keywords_tools.py",
+    "source_sha256": "58412a8c6654892db88fc64af1ff614253fbb4ac2b7b7c65961d2d65a272e84e",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "commons/local_llm_adapter.py",
+    "canonical_file": "src/kdb/shared/clients/local_llm_adapter.py",
+    "legacy_entry": "commons/local_llm_adapter.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/commons/local_llm_adapter.py",
+    "source_sha256": "07fee309a3424b7cbeab771a0b965ff32a691c6bd8a7fb8cf3fe210748dbeb1e",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "commons/mysql_connector.py",
+    "canonical_file": "src/kdb/shared/clients/mysql_connector.py",
+    "legacy_entry": "commons/mysql_connector.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/commons/mysql_connector.py",
+    "source_sha256": "f5ef5e6cbb45ec8dcd139e3aa31d91de98a9bdd8b3d9d658db7112958345d3d3",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "commons/qa_text_tools.py",
+    "canonical_file": "src/kdb/shared/text/qa_text_tools.py",
+    "legacy_entry": "commons/qa_text_tools.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/commons/qa_text_tools.py",
+    "source_sha256": "e02298543d8da21fcb0d16518e75cb3a06810f20050d30bba9087962d2569152",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "commons/schema_trans.py",
+    "canonical_file": "src/kdb/mining/transformations/schema_trans.py",
+    "legacy_entry": "commons/schema_trans.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/commons/schema_trans.py",
+    "source_sha256": "e0c69a9ffa2cd6e6d9a3a19a2fb65d930d097efe1ea241d0f79e938d0653ed7a",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "commons/simility_tools.py",
+    "canonical_file": "src/kdb/shared/legacy_commons/simility_tools.py",
+    "legacy_entry": "commons/simility_tools.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/commons/simility_tools.py",
+    "source_sha256": "e0f053100fe857a7a027c440c09fa0336258251ad8fe86128b07df68468fbb0f",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "commons/text_utils.py",
+    "canonical_file": "src/kdb/shared/text/text_utils.py",
+    "legacy_entry": "commons/text_utils.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/commons/text_utils.py",
+    "source_sha256": "43c4764a2b39b2d3aa0b82338f589487dd451c72f377f9cfec507bedb837e939",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "config_tools/config.py",
+    "canonical_file": "src/kdb/shared/config/legacy_config.py",
+    "legacy_entry": "config_tools/config.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/config_tools/config.py",
+    "source_sha256": "1e7fd70f42778e8a0b3b5ca1616e1a6c535327cdeef6dd66e4316603203b2e26",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_script/batch_gen_audit_data_and_send.py",
+    "canonical_file": "src/kdb/jobs/legacy/batch_gen_audit_data_and_send.py",
+    "legacy_entry": "control_script/batch_gen_audit_data_and_send.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/control_script/batch_gen_audit_data_and_send.py",
+    "source_sha256": "d8116702d8752143e48f93857c3c0eadb826c37ec299f03d3884c8cf7e06cb7b",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_script/batch_run_chatqa_request.py",
+    "canonical_file": "src/kdb/jobs/legacy/batch_run_chatqa_request.py",
+    "legacy_entry": "control_script/batch_run_chatqa_request.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/control_script/batch_run_chatqa_request.py",
+    "source_sha256": "4a6b21cddab3c32ff5a5c566fcd7d841b9fa99cad66d7ec39c7d4cf2eada9564",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_script/chatkonwledge_control.py",
+    "canonical_file": "src/kdb/jobs/legacy/chatkonwledge_control.py",
+    "legacy_entry": "control_script/chatkonwledge_control.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/control_script/chatkonwledge_control.py",
+    "source_sha256": "fccf556a6fc1339ea710b9daede1b911b539d6d92c3e1fbcfbb63ee15ed8599e",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_script/timing_auto_audit_kg.py",
+    "canonical_file": "src/kdb/jobs/auto_audit.py",
+    "legacy_entry": "control_script/timing_auto_audit_kg.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/control_script/timing_auto_audit_kg.py",
+    "source_sha256": "3f9a21c94fd3de9435cd9b61fcf56d0b77472468aea8c877e616479f6b50c16d",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_script_bak_20250130/chatkonwledge_control.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/control_script_bak_20250130/chatkonwledge_control.py",
+    "legacy_entry": "control_script_bak_20250130/chatkonwledge_control.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/control_script_bak_20250130/chatkonwledge_control.py",
+    "source_sha256": "e98d0ddd30c364c91684550fc8b09228376793c5e7132b3caf5f0a36b22d3b07",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_service/chat_qa_mining_task_control.py",
+    "canonical_file": "src/kdb/mining/pipelines/chat_qa.py",
+    "legacy_entry": "control_service/chat_qa_mining_task_control.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/control_service/chat_qa_mining_task_control.py",
+    "source_sha256": "17098b6370f6ab121052a46bc367cffa474322c85b39e0b60fd0083c88f4dd5d",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_service/document_qa_mining_task_control.py",
+    "canonical_file": "src/kdb/mining/pipelines/document_qa.py",
+    "legacy_entry": "control_service/document_qa_mining_task_control.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/control_service/document_qa_mining_task_control.py",
+    "source_sha256": "35b8b7da2f03c0e160ec5f1aa999070adc6993620f390ffd0c84dfaeb51e0cc0",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_service/document_qa_segment_mining.py",
+    "canonical_file": "src/kdb/mining/pipelines/document_qa_segment.py",
+    "legacy_entry": "control_service/document_qa_segment_mining.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/control_service/document_qa_segment_mining.py",
+    "source_sha256": "1c19a5947125c26f8be6a578b5b3452a53179930bdf0ba76f1136d8902216fc2",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_service/excel_qa_segment_upload_control.py",
+    "canonical_file": "src/kdb/mining/pipelines/excel_qa_segment_upload.py",
+    "legacy_entry": "control_service/excel_qa_segment_upload_control.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/control_service/excel_qa_segment_upload_control.py",
+    "source_sha256": "ffe97d9d78f8c47f6f214038e8c22e4949d1c948df8f4a7d179b7e3fa68d0fab",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_service/html_kg_gen_task_control.py",
+    "canonical_file": "src/kdb/mining/pipelines/html_qa_segment.py",
+    "legacy_entry": "control_service/html_kg_gen_task_control.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/control_service/html_kg_gen_task_control.py",
+    "source_sha256": "0aba8a8eb7278ba5e08f1f5eb1dde4d18f5e296036028d72b32d3a48c46172bb",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_service/off_task_control_service.py",
+    "canonical_file": "src/kdb/services/off_task/app.py",
+    "legacy_entry": "control_service/off_task_control_service.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/control_service/off_task_control_service.py",
+    "source_sha256": "afa45926fd90d35cfe7c77fe63a49b8f95fd96b4052b2de43e0afbf3d3b44467",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_service/test_document_qa_mining.py",
+    "canonical_file": "src/kdb/mining/pipelines/legacy/test_document_qa_mining.py",
+    "legacy_entry": "control_service/test_document_qa_mining.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/control_service/test_document_qa_mining.py",
+    "source_sha256": "1f129c832796c184a9a58aa8210bbb58ffa97fa9b8e620f133d313b6de4e3d5d",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_service/test_log_output.py",
+    "canonical_file": "src/kdb/mining/pipelines/legacy/test_log_output.py",
+    "legacy_entry": "control_service/test_log_output.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/control_service/test_log_output.py",
+    "source_sha256": "cf68eab00a4959cca679f8a5c0f68ead2a77455a15af177be2c321cf42c1ae25",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_service/test_service.py",
+    "canonical_file": "src/kdb/mining/pipelines/legacy/test_service.py",
+    "legacy_entry": "control_service/test_service.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/control_service/test_service.py",
+    "source_sha256": "ca655ba2fc7a8cef35a17e360a867c1aa4e0786848a2394daccd73fd3943757c",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "cross_broder_access/add_mark.py",
+    "canonical_file": "src/kdb/integrations/cross_border/add_mark.py",
+    "legacy_entry": "cross_broder_access/add_mark.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/cross_broder_access/add_mark.py",
+    "source_sha256": "cd1398568d35fea811c4521157e68d6ac4f24583d962b5e9c9fd7cfec6f9ccfa",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "cross_broder_access/backtest_online.py",
+    "canonical_file": "src/kdb/integrations/cross_border/backtest_online.py",
+    "legacy_entry": "cross_broder_access/backtest_online.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/cross_broder_access/backtest_online.py",
+    "source_sha256": "75517572cf4f9160b30857907854b20925b87f77945845d74a5d022db94279e6",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "cross_broder_access/data_control.py",
+    "canonical_file": "src/kdb/integrations/cross_border/data_control.py",
+    "legacy_entry": "cross_broder_access/data_control.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/cross_broder_access/data_control.py",
+    "source_sha256": "033b201a81e744f6174b33572873605baff340b1c30a2435fa9622dd1a6b314c",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "cross_broder_access/data_parse_tools.py",
+    "canonical_file": "src/kdb/integrations/cross_border/data_parse_tools.py",
+    "legacy_entry": "cross_broder_access/data_parse_tools.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/cross_broder_access/data_parse_tools.py",
+    "source_sha256": "90bc911971c9459cedddceb2b737470999a9d8c679a097b97c55547dee991735",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "cross_broder_access/data_stat.py",
+    "canonical_file": "src/kdb/integrations/cross_border/data_stat.py",
+    "legacy_entry": "cross_broder_access/data_stat.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/cross_broder_access/data_stat.py",
+    "source_sha256": "df9e0dbc2aae80404e77f5da277addfe4f5cb531b60618a5863a56ecd3235b3c",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "cross_broder_access/dify_tools.py",
+    "canonical_file": "src/kdb/integrations/cross_border/dify_tools.py",
+    "legacy_entry": "cross_broder_access/dify_tools.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/cross_broder_access/dify_tools.py",
+    "source_sha256": "53c7b0d7b1f15e93bd4ee1dcebb771b4de10323ebd8fdab7581e68c92995ccac",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "cross_broder_access/difymodel_access.py",
+    "canonical_file": "src/kdb/integrations/cross_border/difymodel_access.py",
+    "legacy_entry": "cross_broder_access/difymodel_access.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/cross_broder_access/difymodel_access.py",
+    "source_sha256": "cb61c3c07ad1117c8524fb4210b6275d5a35e265bae590dbc7f91d53a485ff0c",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "cross_broder_access/filter_query.py",
+    "canonical_file": "src/kdb/integrations/cross_border/filter_query.py",
+    "legacy_entry": "cross_broder_access/filter_query.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/cross_broder_access/filter_query.py",
+    "source_sha256": "2dd74cfb940bd811da962d8dd0cadf4b78a0b55a1a5a33798e251198c75d313e",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "cross_broder_access/query_norm_anslysis.py",
+    "canonical_file": "src/kdb/integrations/cross_border/query_norm_anslysis.py",
+    "legacy_entry": "cross_broder_access/query_norm_anslysis.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/cross_broder_access/query_norm_anslysis.py",
+    "source_sha256": "4773c9efd2d1b44c09967f64c6ae56014ec6c5a9fbe8a59e5aba5858d66774a8",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "cross_broder_access/workflow_access.py",
+    "canonical_file": "src/kdb/integrations/cross_border/workflow_access.py",
+    "legacy_entry": "cross_broder_access/workflow_access.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/cross_broder_access/workflow_access.py",
+    "source_sha256": "3614a0e808adea0019d281af21842a09437e20ea090f2a681f4ca0db0dcfd758",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/audit_chat_auto_qa_by_llm.py",
+    "canonical_file": "src/kdb/integrations/data_control/audit_chat_auto_qa_by_llm.py",
+    "legacy_entry": "data_control_tools/audit_chat_auto_qa_by_llm.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/audit_chat_auto_qa_by_llm.py",
+    "source_sha256": "ce6df056b22c291cba379cd14657c85e9cb8ceb584b397e7af971a9520d403b7",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/augment_segment_topics.py",
+    "canonical_file": "src/kdb/integrations/data_control/augment_segment_topics.py",
+    "legacy_entry": "data_control_tools/augment_segment_topics.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/augment_segment_topics.py",
+    "source_sha256": "c1c722277f3eb4e72b85780d1acca2efa3917b8609b4162efaa3e08823eb1873",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/build_crawl_manifest_from_text.py",
+    "canonical_file": "src/kdb/integrations/data_control/build_crawl_manifest_from_text.py",
+    "legacy_entry": "data_control_tools/build_crawl_manifest_from_text.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/build_crawl_manifest_from_text.py",
+    "source_sha256": "3dc3f4ce60902d6c78fe601c60be1282ae98e5b899cf991ee7a2c23f2f8653b4",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/build_doc_mining_tasks.py",
+    "canonical_file": "src/kdb/integrations/data_control/build_doc_mining_tasks.py",
+    "legacy_entry": "data_control_tools/build_doc_mining_tasks.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/build_doc_mining_tasks.py",
+    "source_sha256": "68cf9de4ae92c55f588b610945cf0f0e80b72ee723386f2d30ef0f799557bda8",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/build_external_id_map.py",
+    "canonical_file": "src/kdb/integrations/data_control/build_external_id_map.py",
+    "legacy_entry": "data_control_tools/build_external_id_map.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/build_external_id_map.py",
+    "source_sha256": "2715a67c4b4f398b61da14a119631026b4b9dd053e0ed735c33e4b0a6e1bc8e2",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/build_greenchannel_records.py",
+    "canonical_file": "src/kdb/integrations/data_control/build_greenchannel_records.py",
+    "legacy_entry": "data_control_tools/build_greenchannel_records.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/build_greenchannel_records.py",
+    "source_sha256": "29773fb8aab52ebd7d321499d57a9bdf71e321388dc8494449f345ebcfb7dac1",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/build_zhiqu_assistant_id_map.py",
+    "canonical_file": "src/kdb/integrations/data_control/build_zhiqu_assistant_id_map.py",
+    "legacy_entry": "data_control_tools/build_zhiqu_assistant_id_map.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/build_zhiqu_assistant_id_map.py",
+    "source_sha256": "8f176c67abbf9a622d91c4af6104186a56a90212ae37465f83dd441fb1328c9d",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/build_zhiqu_external_id_map.py",
+    "canonical_file": "src/kdb/integrations/data_control/build_zhiqu_external_id_map.py",
+    "legacy_entry": "data_control_tools/build_zhiqu_external_id_map.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/build_zhiqu_external_id_map.py",
+    "source_sha256": "1d50f2310cc5e4e8705f8327fe01733e6dfbda403d6f005b0415b1651113c990",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/data_transfer_tools.py",
+    "canonical_file": "src/kdb/integrations/data_control/data_transfer_tools.py",
+    "legacy_entry": "data_control_tools/data_transfer_tools.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/data_transfer_tools.py",
+    "source_sha256": "b26747181b38b1dc5df0a4772ec0909926e5a1fdea7e733f097489d1dcc02704",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/dump_zhiqu_contacts_raw.py",
+    "canonical_file": "src/kdb/integrations/data_control/dump_zhiqu_contacts_raw.py",
+    "legacy_entry": "data_control_tools/dump_zhiqu_contacts_raw.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/dump_zhiqu_contacts_raw.py",
+    "source_sha256": "1ed1b18df85fd8b065eaa6040d1889c6219eace6990669bb2a632f1bc4d8675b",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/export_qa_to_excel.py",
+    "canonical_file": "src/kdb/integrations/data_control/export_qa_to_excel.py",
+    "legacy_entry": "data_control_tools/export_qa_to_excel.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/export_qa_to_excel.py",
+    "source_sha256": "21a5ac0dcd78301ae544199d4fa5e2572782ec42101c0baded3b43b678081395",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/get_data_from_sql.py",
+    "canonical_file": "src/kdb/integrations/data_control/get_data_from_sql.py",
+    "legacy_entry": "data_control_tools/get_data_from_sql.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/get_data_from_sql.py",
+    "source_sha256": "e8deb4e98debf2edc0f1c33c932a94042651100a0931f981314a8f7263c20901",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/minio_tools.py",
+    "canonical_file": "src/kdb/integrations/data_control/minio_tools.py",
+    "legacy_entry": "data_control_tools/minio_tools.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/minio_tools.py",
+    "source_sha256": "633f21a9fcab59a9e6f419555219a122c13983efe0d0090fe30434eea1ac5c7d",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/prune_dead_raw_urls.py",
+    "canonical_file": "src/kdb/integrations/data_control/prune_dead_raw_urls.py",
+    "legacy_entry": "data_control_tools/prune_dead_raw_urls.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/prune_dead_raw_urls.py",
+    "source_sha256": "46fb0f95df719ea878e35620cc72b03a83d4878203142366ea92488155a3f99b",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/prune_page_mismatched_images.py",
+    "canonical_file": "src/kdb/integrations/data_control/prune_page_mismatched_images.py",
+    "legacy_entry": "data_control_tools/prune_page_mismatched_images.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/prune_page_mismatched_images.py",
+    "source_sha256": "5b2e7e1d7d19481be63fa3c70e0e824e1a0a6092d88d139f364225fc327038aa",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/recategorize_by_source_file.py",
+    "canonical_file": "src/kdb/integrations/data_control/recategorize_by_source_file.py",
+    "legacy_entry": "data_control_tools/recategorize_by_source_file.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/recategorize_by_source_file.py",
+    "source_sha256": "fd38879a0b428dd0089de78e227a8b79361c0555284f21d0b85943ef96d03693",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/refix_doc_images.py",
+    "canonical_file": "src/kdb/integrations/data_control/refix_doc_images.py",
+    "legacy_entry": "data_control_tools/refix_doc_images.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/refix_doc_images.py",
+    "source_sha256": "a65ff19372f97c9aac41bd8a3b1c523fe17813c868acd04badaf4b6d465a9872",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/remote_machine_tools.py",
+    "canonical_file": "src/kdb/integrations/data_control/remote_machine_tools.py",
+    "legacy_entry": "data_control_tools/remote_machine_tools.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/remote_machine_tools.py",
+    "source_sha256": "1086b3b349514fd6b0f2f2d321358bbd5910d03d5bf9fb88beef574851fd9600",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/retire_superseded_knowledge.py",
+    "canonical_file": "src/kdb/integrations/data_control/retire_superseded_knowledge.py",
+    "legacy_entry": "data_control_tools/retire_superseded_knowledge.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/retire_superseded_knowledge.py",
+    "source_sha256": "aaa86482e116163bc9d0c09174b87028af1c5d851eacd28faafd81773be0dfa6",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/rollback_mining_tasks.py",
+    "canonical_file": "src/kdb/integrations/data_control/rollback_mining_tasks.py",
+    "legacy_entry": "data_control_tools/rollback_mining_tasks.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/rollback_mining_tasks.py",
+    "source_sha256": "ff7a3415fdb769791c8c82b5f8776b60da9c255c483f116e9f12bede0a85b62d",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/skip_deleted_sources.py",
+    "canonical_file": "src/kdb/integrations/data_control/skip_deleted_sources.py",
+    "legacy_entry": "data_control_tools/skip_deleted_sources.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/skip_deleted_sources.py",
+    "source_sha256": "955f219a1da02494bb8e28a32928ce20bdfe5dbb04a4588d3dd21c7ce76f9d7d",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/strip_nav_boilerplate.py",
+    "canonical_file": "src/kdb/integrations/data_control/strip_nav_boilerplate.py",
+    "legacy_entry": "data_control_tools/strip_nav_boilerplate.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/strip_nav_boilerplate.py",
+    "source_sha256": "1d317ddbd09595fed9f1902bba899de6a1c644b98a8552357908d88bdfd47f6b",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/wecom_name_matcher.py",
+    "canonical_file": "src/kdb/integrations/data_control/wecom_name_matcher.py",
+    "legacy_entry": "data_control_tools/wecom_name_matcher.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/wecom_name_matcher.py",
+    "source_sha256": "2cda1a722dbcc7335b5df8a8671b49fa9cc1704b2c8162ecf90acc76e92569ba",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_control_tools/zhiqu_contact_fetcher.py",
+    "canonical_file": "src/kdb/integrations/data_control/zhiqu_contact_fetcher.py",
+    "legacy_entry": "data_control_tools/zhiqu_contact_fetcher.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_control_tools/zhiqu_contact_fetcher.py",
+    "source_sha256": "5d37e17dfa5a252333a58f60831e468b81471084162270355d49b54d5f94ae28",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_preprocess/document_clear_price_access.py",
+    "canonical_file": "src/kdb/mining/parsing/document_clear_price_access.py",
+    "legacy_entry": "data_preprocess/document_clear_price_access.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/data_preprocess/document_clear_price_access.py",
+    "source_sha256": "7329509f9a3df7da2c224ba7ecda037c18494c263bc00d7b34af3bc8bb8aa957",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "data_preprocess/multimodal_process.py",
+    "canonical_file": "src/kdb/mining/parsing/multimodal_process.py",
+    "legacy_entry": "data_preprocess/multimodal_process.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/main-shenzhen-120/content/data_preprocess/multimodal_process.py",
+    "source_sha256": "c452ba3f1214047a8a2419a6b156b9004c2dd36166c196266d8719c6f7b4aa6b",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "file_service/file_access_service.py",
+    "canonical_file": "src/kdb/services/files/app.py",
+    "legacy_entry": "file_service/file_access_service.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/file_service/file_access_service.py",
+    "source_sha256": "152610e066f2abccd65ce40a1b9052d0e13dc06ff493f4bc6f73864671ee40bd",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "finsh_tmp/clear_oral.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/finsh_tmp/clear_oral.py",
+    "legacy_entry": "finsh_tmp/clear_oral.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/finsh_tmp/clear_oral.py",
+    "source_sha256": "da9e73f3c6dd04364941f74cb737350ccdd15dd288c49ad7e4c4437e99a09cb2",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "finsh_tmp/mp_article_parse.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/finsh_tmp/mp_article_parse.py",
+    "legacy_entry": "finsh_tmp/mp_article_parse.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/finsh_tmp/mp_article_parse.py",
+    "source_sha256": "bb0262d6a0b07ce184d919cce3ff7f0f83795d78ccdfca50f6ad9d49ff4e6245",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "finsh_tmp/parse_data_tmp.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/finsh_tmp/parse_data_tmp.py",
+    "legacy_entry": "finsh_tmp/parse_data_tmp.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/finsh_tmp/parse_data_tmp.py",
+    "source_sha256": "3da507a5686df303d00b5a1afb68cade02798e861ac478ab43134de198712791",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_clear_tool/build_dataset_from_api.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_clear/build_dataset_from_api.py",
+    "legacy_entry": "knowledge_clear_tool/build_dataset_from_api.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_clear_tool/build_dataset_from_api.py",
+    "source_sha256": "9c07b068c884012e08c5c213075c10dc788cbf288fb941d4e16f06df8864af56",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_clear_tool/business_context_builder.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_clear/business_context_builder.py",
+    "legacy_entry": "knowledge_clear_tool/business_context_builder.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_clear_tool/business_context_builder.py",
+    "source_sha256": "2888598816834b89090ac57c2dc1668e6d452722b58b2c8f63f8068e8be95ae8",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_clear_tool/chat_query_context.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_clear/chat_query_context.py",
+    "legacy_entry": "knowledge_clear_tool/chat_query_context.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_clear_tool/chat_query_context.py",
+    "source_sha256": "817b44d3549bdb7338e96054caab83cf0bbab67fbe5cd8359c6faeaec88968b2",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_clear_tool/document_segment.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_clear/document_segment.py",
+    "legacy_entry": "knowledge_clear_tool/document_segment.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_clear_tool/document_segment.py",
+    "source_sha256": "346bbd98366ce1b28de74650d0bcec27ca00936849c93e8d02f6be6326a1af4d",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_clear_tool/excel_clear.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_clear/excel_clear.py",
+    "legacy_entry": "knowledge_clear_tool/excel_clear.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_clear_tool/excel_clear.py",
+    "source_sha256": "b8fae0337f588476bacb7763259a81e9912edb8af66c03d00abc3b8c509e04d2",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_clear_tool/generic_knowledge_quality.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_clear/generic_knowledge_quality.py",
+    "legacy_entry": "knowledge_clear_tool/generic_knowledge_quality.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_clear_tool/generic_knowledge_quality.py",
+    "source_sha256": "24321c6d912fcaa92e177a34b9b7d3785362e5226b3226fc132d1ee1d1940e1d",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_clear_tool/json_parse_windows.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_clear/json_parse_windows.py",
+    "legacy_entry": "knowledge_clear_tool/json_parse_windows.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_clear_tool/json_parse_windows.py",
+    "source_sha256": "106121b042f48b39306bbf1c4df24a34e6194dcd0f5c873b5cb8418b6388628c",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_clear_tool/knowledge_clear_by_dify_model.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_clear/knowledge_clear_by_dify_model.py",
+    "legacy_entry": "knowledge_clear_tool/knowledge_clear_by_dify_model.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_clear_tool/knowledge_clear_by_dify_model.py",
+    "source_sha256": "66b401ff9b609d3743ece90ace7f510be58a3fb3da421f1ff0c20af02721694b",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_clear_tool/knowledge_clear_by_dify_model_longcontent.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_clear/knowledge_clear_by_dify_model_longcontent.py",
+    "legacy_entry": "knowledge_clear_tool/knowledge_clear_by_dify_model_longcontent.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/main-shenzhen-120/content/knowledge_clear_tool/knowledge_clear_by_dify_model_longcontent.py",
+    "source_sha256": "aab9699b755c3eb6e860e24623657d10dd37f143edc4159402d0561a87db8fd6",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_clear_tool/knowledge_html_clear_by_dify.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_clear/knowledge_html_clear_by_dify.py",
+    "legacy_entry": "knowledge_clear_tool/knowledge_html_clear_by_dify.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_clear_tool/knowledge_html_clear_by_dify.py",
+    "source_sha256": "98acadf4d2836ce3469523c2e4e717d2a775dc61beacbf6b39c1796cf00b187a",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_clear_tool/knowledge_translate_by_dify.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_clear/knowledge_translate_by_dify.py",
+    "legacy_entry": "knowledge_clear_tool/knowledge_translate_by_dify.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_clear_tool/knowledge_translate_by_dify.py",
+    "source_sha256": "6a08242df165b0e24078ae333041cfd689ce654c827de73a1c7ff74e1e96db4d",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_clear_tool/modify_knowledge.py",
+    "canonical_file": "src/kdb/retrieval/modification/modify_knowledge.py",
+    "legacy_entry": "knowledge_clear_tool/modify_knowledge.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_clear_tool/modify_knowledge.py",
+    "source_sha256": "c7ee7913ea08b2bcc94fcb8d06b603b1abc487b5e72fe6f6947f98896c8b1bb0",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_clear_tool/special_clear_method.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_clear/special_clear_method.py",
+    "legacy_entry": "knowledge_clear_tool/special_clear_method.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_clear_tool/special_clear_method.py",
+    "source_sha256": "8c5fdd297dfc3a7379c5e64310dabb6e4665966bd136309c5ed0547d3ac0fb1d",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_clear_tool/tools/schema_trans.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_clear/tools/schema_trans.py",
+    "legacy_entry": "knowledge_clear_tool/tools/schema_trans.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_clear_tool/tools/schema_trans.py",
+    "source_sha256": "ab1f33d310f6e89d5231aa196027d6110f780bc5302dc7e4fa2c9df267b83a8a",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_clear_tool/web_business_context.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_clear/web_business_context.py",
+    "legacy_entry": "knowledge_clear_tool/web_business_context.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_clear_tool/web_business_context.py",
+    "source_sha256": "fb421a1fc09c3ab321e87f22414043d75c45bf13074c186b9dbf0517f1cc1970",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_clear_tool/wordtotext.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_clear/wordtotext.py",
+    "legacy_entry": "knowledge_clear_tool/wordtotext.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/main-shenzhen-120/content/knowledge_clear_tool/wordtotext.py",
+    "source_sha256": "dc5ef9404cf27d80383fc9e2989ca5a6fa4d2b97850d3d7ddf06bd8f848925b7",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/server/build_dataset_from_api.py",
+    "canonical_file": "src/kdb/mining/crawlers/server/build_dataset_from_api.py",
+    "legacy_entry": "knowledge_crawler_tool/server/build_dataset_from_api.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/server/build_dataset_from_api.py",
+    "source_sha256": "37377fd0950d4357204efd3e406e61d2f32f4098120d93875326f4125e7cd694",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/server/clear_util.py",
+    "canonical_file": "src/kdb/mining/crawlers/server/clear_util.py",
+    "legacy_entry": "knowledge_crawler_tool/server/clear_util.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/server/clear_util.py",
+    "source_sha256": "e241437cbcb12cc7df437c652423bbfa289077156774fdb405558453e0108d1d",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/server/controller.py",
+    "canonical_file": "src/kdb/mining/crawlers/server/controller.py",
+    "legacy_entry": "knowledge_crawler_tool/server/controller.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/server/controller.py",
+    "source_sha256": "83474fd5fd2dde6d572cfd8582b4f046960f0c61d62a35da6fbd2aef154e41d6",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/server/crawler_url.py",
+    "canonical_file": "src/kdb/mining/crawlers/server/crawler_url.py",
+    "legacy_entry": "knowledge_crawler_tool/server/crawler_url.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/server/crawler_url.py",
+    "source_sha256": "a7353a0692cd66ff630b9c468f607d96d6d3a39746e320794845f269856c9c36",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/server/crawler_url_v1.py",
+    "canonical_file": "src/kdb/mining/crawlers/server/crawler_url_v1.py",
+    "legacy_entry": "knowledge_crawler_tool/server/crawler_url_v1.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/server/crawler_url_v1.py",
+    "source_sha256": "fff8e98e5c20c9cecdb75261c72c3987a76140c08f0ce929cdf580565e6caaa5",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/server/document_segment.py",
+    "canonical_file": "src/kdb/mining/crawlers/server/document_segment.py",
+    "legacy_entry": "knowledge_crawler_tool/server/document_segment.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/server/document_segment.py",
+    "source_sha256": "346bbd98366ce1b28de74650d0bcec27ca00936849c93e8d02f6be6326a1af4d",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/server/mp_http_source_util.py",
+    "canonical_file": "src/kdb/mining/crawlers/server/mp_http_source_util.py",
+    "legacy_entry": "knowledge_crawler_tool/server/mp_http_source_util.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/server/mp_http_source_util.py",
+    "source_sha256": "e6f0944173b789cc59ea09477510e8d339f732f8360c157957da81deb6b5b3a1",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/server/server.py",
+    "canonical_file": "src/kdb/services/crawler/app.py",
+    "legacy_entry": "knowledge_crawler_tool/server/server.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/server/server.py",
+    "source_sha256": "903c42804a29f8a43b7c75a096ffffc43bf0dadb28b38aca9dfa6c9cb0ea9092",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/tmp/test_chromdriver.py",
+    "canonical_file": "src/kdb/mining/crawlers/tmp/test_chromdriver.py",
+    "legacy_entry": "knowledge_crawler_tool/tmp/test_chromdriver.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/tmp/test_chromdriver.py",
+    "source_sha256": "47d3dfd9ed67d0b342ab9c4dfa9e2325923554a8120d9a709ad9f272f90d7efb",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/web_crawl/bol_partner_portal_fetch.py",
+    "canonical_file": "src/kdb/mining/crawlers/web_crawl/bol_partner_portal_fetch.py",
+    "legacy_entry": "knowledge_crawler_tool/web_crawl/bol_partner_portal_fetch.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/web_crawl/bol_partner_portal_fetch.py",
+    "source_sha256": "6d1bcfdca44c1d8c3f6c335021ea75263795a8436e6f65c60b535229c22d7664",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/web_crawl/crawl_url_list.py",
+    "canonical_file": "src/kdb/mining/crawlers/web_crawl/crawl_url_list.py",
+    "legacy_entry": "knowledge_crawler_tool/web_crawl/crawl_url_list.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/web_crawl/crawl_url_list.py",
+    "source_sha256": "514da331b9509a41a01a92c755ff2d3b288d6f5ff80207d0a4926c097ddbcd83",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/web_crawl/discover_links.py",
+    "canonical_file": "src/kdb/mining/crawlers/web_crawl/discover_links.py",
+    "legacy_entry": "knowledge_crawler_tool/web_crawl/discover_links.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/web_crawl/discover_links.py",
+    "source_sha256": "f65cc01ebbe5bb906ce5cbde14c26de71d6247b110f6a9ca13c2bd46ede76926",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/web_crawl/greenchannel_catalog_fetch.py",
+    "canonical_file": "src/kdb/mining/crawlers/web_crawl/greenchannel_catalog_fetch.py",
+    "legacy_entry": "knowledge_crawler_tool/web_crawl/greenchannel_catalog_fetch.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/web_crawl/greenchannel_catalog_fetch.py",
+    "source_sha256": "2e51eee82ea9627a957633069b5e2ba822591d6d3c100ba7392cccd067abb03f",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/web_crawl/login_doc_crawler.py",
+    "canonical_file": "src/kdb/mining/crawlers/web_crawl/login_doc_crawler.py",
+    "legacy_entry": "knowledge_crawler_tool/web_crawl/login_doc_crawler.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/web_crawl/login_doc_crawler.py",
+    "source_sha256": "c44426444b5960bb55017d7feafb8948e1e0ab46a2500c3aadd0161f154681c2",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/web_crawl/mercado_special_parse.py",
+    "canonical_file": "src/kdb/mining/crawlers/web_crawl/mercado_special_parse.py",
+    "legacy_entry": "knowledge_crawler_tool/web_crawl/mercado_special_parse.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/web_crawl/mercado_special_parse.py",
+    "source_sha256": "265b9463ace13bf4685c63aa9d736180dfd39bd7ffe1fb972051316f285c601e",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/web_crawl/prep_platform_sources.py",
+    "canonical_file": "src/kdb/mining/crawlers/web_crawl/prep_platform_sources.py",
+    "legacy_entry": "knowledge_crawler_tool/web_crawl/prep_platform_sources.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/web_crawl/prep_platform_sources.py",
+    "source_sha256": "0176e43d1939c9b8502f9de3cebd5ac5e147d62406d46491f16fd5f0e6f1dd4c",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/web_crawl/single_page_local_crawl.py",
+    "canonical_file": "src/kdb/mining/crawlers/web_crawl/single_page_local_crawl.py",
+    "legacy_entry": "knowledge_crawler_tool/web_crawl/single_page_local_crawl.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/web_crawl/single_page_local_crawl.py",
+    "source_sha256": "4fa64050323bb250fd4822f2289a5123b7c83b784ab323749c79dcdb8e9bd92b",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/web_crawl/wayfair_developer_portal_fetch.py",
+    "canonical_file": "src/kdb/mining/crawlers/web_crawl/wayfair_developer_portal_fetch.py",
+    "legacy_entry": "knowledge_crawler_tool/web_crawl/wayfair_developer_portal_fetch.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/web_crawl/wayfair_developer_portal_fetch.py",
+    "source_sha256": "2e216471e6d84520aa685c1aa1ca26d6adea27a24827d5932417d98a3db3833a",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/web_crawl/web_batch_crawler.py",
+    "canonical_file": "src/kdb/mining/crawlers/web_crawl/web_batch_crawler.py",
+    "legacy_entry": "knowledge_crawler_tool/web_crawl/web_batch_crawler.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/web_crawl/web_batch_crawler.py",
+    "source_sha256": "4ab4250b1ad31316e9c8847ee3e73855c3da510487bc4cdc21baa979cd2eac48",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/web_crawl/web_deep_crawler_by_keywords.py",
+    "canonical_file": "src/kdb/mining/crawlers/web_crawl/web_deep_crawler_by_keywords.py",
+    "legacy_entry": "knowledge_crawler_tool/web_crawl/web_deep_crawler_by_keywords.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/web_crawl/web_deep_crawler_by_keywords.py",
+    "source_sha256": "a5ba250b77de97634565a112e992ddc8f24a64670c472ea4e1b0caf2bbf75d9c",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_crawler_tool/web_crawl/web_deep_crawler_for_has_topic.py",
+    "canonical_file": "src/kdb/mining/crawlers/web_crawl/web_deep_crawler_for_has_topic.py",
+    "legacy_entry": "knowledge_crawler_tool/web_crawl/web_deep_crawler_for_has_topic.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_crawler_tool/web_crawl/web_deep_crawler_for_has_topic.py",
+    "source_sha256": "a5ba250b77de97634565a112e992ddc8f24a64670c472ea4e1b0caf2bbf75d9c",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_database_search_service/src/knowledge_database_search.py",
+    "canonical_file": "src/kdb/services/fastgpt_proxy/app.py",
+    "legacy_entry": "knowledge_database_search_service/src/knowledge_database_search.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_database_search_service/src/knowledge_database_search.py",
+    "source_sha256": "acf0e71ef4201eea3518677fd105bb7e77f2220b9f8ba1db3c710e02b6bc2a4c",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_database_search_service/src/knowledge_database_search_es.py",
+    "canonical_file": "src/kdb/services/retrieval/app.py",
+    "legacy_entry": "knowledge_database_search_service/src/knowledge_database_search_es.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_database_search_service/src/knowledge_database_search_es.py",
+    "source_sha256": "b1c443a351d1642054751af3c740642fdaa7f95fffb5904006bd8aa04cc20f6f",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_generate/fixed_set_query_knowledge_gen.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_generate/fixed_set_query_knowledge_gen.py",
+    "legacy_entry": "knowledge_generate/fixed_set_query_knowledge_gen.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_generate/fixed_set_query_knowledge_gen.py",
+    "source_sha256": "dd3067a2373985cadd4da55a6181843b9470dafec46e094dcc91e7d602f5187e",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_generate/knowledge_index_builder.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_generate/knowledge_index_builder.py",
+    "legacy_entry": "knowledge_generate/knowledge_index_builder.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_generate/knowledge_index_builder.py",
+    "source_sha256": "37ed492a2d012a739a1ed22f46fbe07ca251d1166a55ed34e7a54c38801fafc8",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_generate/knowledge_process.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_generate/knowledge_process.py",
+    "legacy_entry": "knowledge_generate/knowledge_process.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_generate/knowledge_process.py",
+    "source_sha256": "b4d8c6e0b0733a4b2a2d27a4556eddc71163f28e7201783db9bd817e8a8dabde",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_generate/knowledge_search.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_generate/knowledge_search.py",
+    "legacy_entry": "knowledge_generate/knowledge_search.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_generate/knowledge_search.py",
+    "source_sha256": "56fd0d983b11cbe2d101b8f9d04a5741a8b2f4846a7c3709a96788cf776d82c3",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_generate/knowlege_segment_builder_by_dify.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_generate/knowlege_segment_builder_by_dify.py",
+    "legacy_entry": "knowledge_generate/knowlege_segment_builder_by_dify.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/main-shenzhen-120/content/knowledge_generate/knowlege_segment_builder_by_dify.py",
+    "source_sha256": "879f392725812d27974f2792b3fcb2758e1631eb776d6c2bd1a06675645fb873",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_generate/schema_trans.py",
+    "canonical_file": "src/kdb/mining/generation/legacy_generate/schema_trans.py",
+    "legacy_entry": "knowledge_generate/schema_trans.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_generate/schema_trans.py",
+    "source_sha256": "dcd42c0cd23c286411a71100091bbcf09b55277cb13aca425ef2c26cb9e0a3dc",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_interface_tools/backup_es_data.py",
+    "canonical_file": "src/kdb/retrieval/application/legacy_tools/backup_es_data.py",
+    "legacy_entry": "knowledge_interface_tools/backup_es_data.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_interface_tools/backup_es_data.py",
+    "source_sha256": "07e829dd299de53e97c70faf47a14a94344c526a0d17e3d9539fdca410bcc043",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_interface_tools/es8_client_router.py",
+    "canonical_file": "src/kdb/retrieval/engines/es8_client_router.py",
+    "legacy_entry": "knowledge_interface_tools/es8_client_router.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_interface_tools/es8_client_router.py",
+    "source_sha256": "4bec526ddce50c9e8594eabb935fd3f6d4801ccd54b730ca516df23847e22a73",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_interface_tools/es8_search_interface.py",
+    "canonical_file": "src/kdb/retrieval/engines/es8_search_interface.py",
+    "legacy_entry": "knowledge_interface_tools/es8_search_interface.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_interface_tools/es8_search_interface.py",
+    "source_sha256": "daaf142ec705855a84d11197dc6cdc00926e3650f6f50e8ef68a84edf02a8cbb",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_interface_tools/es_count_utils.py",
+    "canonical_file": "src/kdb/retrieval/engines/es_count_utils.py",
+    "legacy_entry": "knowledge_interface_tools/es_count_utils.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_interface_tools/es_count_utils.py",
+    "source_sha256": "0a4d82e166f98cb382fe39ecebed52156e7bcabc02870ba3f073471b4d229e78",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_interface_tools/es_maintenance.py",
+    "canonical_file": "src/kdb/retrieval/engines/es_maintenance.py",
+    "legacy_entry": "knowledge_interface_tools/es_maintenance.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_interface_tools/es_maintenance.py",
+    "source_sha256": "2b6e26064e5623f2095f4f2d2cbc8197eeb215fc76f4f7ba7b9529cdd16eb772",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_interface_tools/es_search_interface.py",
+    "canonical_file": "src/kdb/retrieval/engines/es_search_interface.py",
+    "legacy_entry": "knowledge_interface_tools/es_search_interface.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_interface_tools/es_search_interface.py",
+    "source_sha256": "00d9cb22034c5049eb9aeabd71b26bbc2066bb325f229e52be5f03d0238c52b5",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_interface_tools/knowledge_tools.py",
+    "canonical_file": "src/kdb/retrieval/application/knowledge_tools.py",
+    "legacy_entry": "knowledge_interface_tools/knowledge_tools.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_interface_tools/knowledge_tools.py",
+    "source_sha256": "18e058565ef3a0f79acf6b6b11bfc051e6cd27ed5556c0c0e61b810e9c6af108",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_interface_tools/rawdata_interface.py",
+    "canonical_file": "src/kdb/retrieval/application/rawdata_interface.py",
+    "legacy_entry": "knowledge_interface_tools/rawdata_interface.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_interface_tools/rawdata_interface.py",
+    "source_sha256": "10f439e82c50d2d803b3fd172d1d77cc56fbff9d619b0b5608e7393213d73c40",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_interface_tools/search_index_data_interface.py",
+    "canonical_file": "src/kdb/retrieval/application/search_index_data_interface.py",
+    "legacy_entry": "knowledge_interface_tools/search_index_data_interface.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_interface_tools/search_index_data_interface.py",
+    "source_sha256": "88e9b26967c0a5ba6f41199f36f43a7e11e09c7f05dd1b2ceb4944e94de684b3",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_interface_tools/supply_missing_field.py",
+    "canonical_file": "src/kdb/retrieval/application/legacy_tools/supply_missing_field.py",
+    "legacy_entry": "knowledge_interface_tools/supply_missing_field.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_interface_tools/supply_missing_field.py",
+    "source_sha256": "a5b406ed03e7b207f9b52e5b3d65b0f378e6bbf045a483ecf663213010465fc8",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_interface_tools/update_del_flag_batch.py",
+    "canonical_file": "src/kdb/retrieval/application/legacy_tools/update_del_flag_batch.py",
+    "legacy_entry": "knowledge_interface_tools/update_del_flag_batch.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_interface_tools/update_del_flag_batch.py",
+    "source_sha256": "2460cf278ceee5a5763cfaecb994ee5ba843c8a7159d05dff455f2e55dcca92b",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_search_database/build_dataset_from_api_fastgpt.py",
+    "canonical_file": "src/kdb/integrations/fastgpt/build_dataset_from_api_fastgpt.py",
+    "legacy_entry": "knowledge_search_database/build_dataset_from_api_fastgpt.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_search_database/build_dataset_from_api_fastgpt.py",
+    "source_sha256": "81e7c0f95b325b2622c7011f899a9cf75ccf9208ffaf765d917d47ef908bcd0c",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_search_database/fastgpt_dataset_build.py",
+    "canonical_file": "src/kdb/integrations/fastgpt/fastgpt_dataset_build.py",
+    "legacy_entry": "knowledge_search_database/fastgpt_dataset_build.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/knowledge_search_database/fastgpt_dataset_build.py",
+    "source_sha256": "24df90a6bff0bbb5671479df8c4f67b10e561689305dfd5d71791c9ebf14d453",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "multi_language/multi_language_service.py",
+    "canonical_file": "src/kdb/services/multilingual/app.py",
+    "legacy_entry": "multi_language/multi_language_service.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/multi_language/multi_language_service.py",
+    "source_sha256": "2701c92d3e661aff7f03a4c4709096869c85a2cb108a2b2a456f089f59288275",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "multi_language/test_multi_language_service.py",
+    "canonical_file": "src/kdb/services/multilingual/legacy/test_multi_language_service.py",
+    "legacy_entry": "multi_language/test_multi_language_service.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/multi_language/test_multi_language_service.py",
+    "source_sha256": "bd3f36eaec3c3430291497ad3ce3d99b5b532cafba22b83da1c9c134f533ab0b",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "off_task_tools/minio_downloader.py",
+    "canonical_file": "src/kdb/mining/tasks/minio_downloader.py",
+    "legacy_entry": "off_task_tools/minio_downloader.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/off_task_tools/minio_downloader.py",
+    "source_sha256": "b1e12771841c15d34e44a3ad9cecc44f3111f7ba9b5e454ec1270ff3c78f4f08",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "off_task_tools/task_status_updater.py",
+    "canonical_file": "src/kdb/mining/tasks/task_status_updater.py",
+    "legacy_entry": "off_task_tools/task_status_updater.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/off_task_tools/task_status_updater.py",
+    "source_sha256": "b9a5ad66ba8a0381aaab766ec9739533d77372956d5b1d426f173defd38bbf8a",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "quality_tools/qa_quality_tools.py",
+    "canonical_file": "src/kdb/mining/quality/legacy/qa_quality_tools.py",
+    "legacy_entry": "quality_tools/qa_quality_tools.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/quality_tools/qa_quality_tools.py",
+    "source_sha256": "3d31cf4fb0e873ab92051c1167b9cdbbfbf1226f23a68207d64615234b0b69c6",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "query_understanding_analysis/align_gap_queries.py",
+    "canonical_file": "src/kdb/mining/query_analysis/align_gap_queries.py",
+    "legacy_entry": "query_understanding_analysis/align_gap_queries.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/query_understanding_analysis/align_gap_queries.py",
+    "source_sha256": "7a6ad349d14074e4907553fb11d625bce10dcc1f5191e085ac063796d6b01673",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "query_understanding_analysis/category_manage.py",
+    "canonical_file": "src/kdb/mining/query_analysis/category_manage.py",
+    "legacy_entry": "query_understanding_analysis/category_manage.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/query_understanding_analysis/category_manage.py",
+    "source_sha256": "fe29ff0de974c6c7c7ac479e4ab3e8929dc9ff9bce1abffc211d221e2bd0da93",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "query_understanding_analysis/category_mining.py",
+    "canonical_file": "src/kdb/mining/query_analysis/category_mining.py",
+    "legacy_entry": "query_understanding_analysis/category_mining.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/query_understanding_analysis/category_mining.py",
+    "source_sha256": "7c4f9cea7854551c8423704e676db803c43d29a2e0f9d21e0aca79e559d5289d",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "query_understanding_analysis/ecommerce_query_mining.py",
+    "canonical_file": "src/kdb/mining/query_analysis/ecommerce_query_mining.py",
+    "legacy_entry": "query_understanding_analysis/ecommerce_query_mining.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/query_understanding_analysis/ecommerce_query_mining.py",
+    "source_sha256": "8c22a72f4ad952620bbec405797d38520c207b2132b36bf83ccd0be1cf1a787a",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "query_understanding_analysis/gap_material_coverage.py",
+    "canonical_file": "src/kdb/mining/query_analysis/gap_material_coverage.py",
+    "legacy_entry": "query_understanding_analysis/gap_material_coverage.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/query_understanding_analysis/gap_material_coverage.py",
+    "source_sha256": "db85df5809e40c821ff2bc1e4788c89b11e90189ea3e9c7511edb16031c34b11",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "query_understanding_analysis/query_category.py",
+    "canonical_file": "src/kdb/mining/query_analysis/query_category.py",
+    "legacy_entry": "query_understanding_analysis/query_category.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/query_understanding_analysis/query_category.py",
+    "source_sha256": "33bc461c550f0812946c878090cf6e326ff5a858d3f5775f6e1bef92b8b7e3cc",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "query_understanding_analysis/query_norm.py",
+    "canonical_file": "src/kdb/mining/query_analysis/query_norm.py",
+    "legacy_entry": "query_understanding_analysis/query_norm.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/query_understanding_analysis/query_norm.py",
+    "source_sha256": "4b2b590899f46b46debd0151a6fdafc82f19953c5ab75f47ab01f475ca6a16eb",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "query_understanding_analysis/update_sql_query_tag.py",
+    "canonical_file": "src/kdb/mining/query_analysis/update_sql_query_tag.py",
+    "legacy_entry": "query_understanding_analysis/update_sql_query_tag.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/query_understanding_analysis/update_sql_query_tag.py",
+    "source_sha256": "06314bba6e702560dd5eb311b9b753ebf287d3929e860014cc917b4a82efb69a",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "query_understanding_analysis/wayfair_unanswered_review.py",
+    "canonical_file": "src/kdb/mining/query_analysis/wayfair_unanswered_review.py",
+    "legacy_entry": "query_understanding_analysis/wayfair_unanswered_review.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/query_understanding_analysis/wayfair_unanswered_review.py",
+    "source_sha256": "c0fef5612bf834c69db19e7908f388dab23f838d1bd6242accf0fc0414ee0825",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "run.py",
+    "canonical_file": "src/kdb/mining/generation/run.py",
+    "legacy_entry": "run.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/run.py",
+    "source_sha256": "682f4c0c74c09996db8dae85d0bd196113c657597e6921d66a14a07ac67193f5",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "run_local_mining.py",
+    "canonical_file": "src/kdb/mining/pipelines/run_local_mining.py",
+    "legacy_entry": "run_local_mining.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/run_local_mining.py",
+    "source_sha256": "f7e1b588a9dd822fb5b6c0f39fa505459ec4b1d1fb1e0c9c98371a87254abbef",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "scripts/ops/es817_online_rollback_20261009.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/scripts/ops/es817_online_rollback_20261009.py",
+    "legacy_entry": "scripts/ops/es817_online_rollback_20261009.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/scripts/ops/es817_online_rollback_20261009.py",
+    "source_sha256": "cdb9473e89a0572f65ef6f5002dafed0828a6730704d5b84acff1f5a94598dbc",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "single_service/csat_data_query.py",
+    "canonical_file": "src/kdb/reporting/csat/csat_data_query.py",
+    "legacy_entry": "single_service/csat_data_query.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/single_service/csat_data_query.py",
+    "source_sha256": "efb99b38d657ab75075b8862f745742257e38e580cb90deafd23297d56ed7e3a",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "single_service/csat_report_service.py",
+    "canonical_file": "src/kdb/services/csat/app.py",
+    "legacy_entry": "single_service/csat_report_service.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/single_service/csat_report_service.py",
+    "source_sha256": "9972a42c41f39b94df7b4cace10b337dc9d8d56228064e4c9c5bcb96fd115318",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "single_service/user_id_map_query.py",
+    "canonical_file": "src/kdb/reporting/csat/user_id_map_query.py",
+    "legacy_entry": "single_service/user_id_map_query.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/single_service/user_id_map_query.py",
+    "source_sha256": "894be6241d988860b1cec75b4624b6137119380bfafd67c907bd94da2de3a13c",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "static_report/chatknowledge_report.py",
+    "canonical_file": "src/kdb/reporting/legacy/chatknowledge_report.py",
+    "legacy_entry": "static_report/chatknowledge_report.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/static_report/chatknowledge_report.py",
+    "source_sha256": "3f109b555c13c8ab1ef049d45783e1447183687817a007c70f39b02271548c67",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "static_report/robot_answer_static.py",
+    "canonical_file": "src/kdb/reporting/legacy/robot_answer_static.py",
+    "legacy_entry": "static_report/robot_answer_static.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/static_report/robot_answer_static.py",
+    "source_sha256": "f20c139031a78c69b1707a8eb90a24896a59a3289705014ac1c76e34e3418451",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "static_report/stat_chat_distribution.py",
+    "canonical_file": "src/kdb/reporting/legacy/stat_chat_distribution.py",
+    "legacy_entry": "static_report/stat_chat_distribution.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/static_report/stat_chat_distribution.py",
+    "source_sha256": "a222ad73e7eec7840088484a4cc3a6187b9a2da6878bfd9bf21ed64f6141c72e",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "static_report/timely_llm_report.py",
+    "canonical_file": "src/kdb/reporting/legacy/timely_llm_report.py",
+    "legacy_entry": "static_report/timely_llm_report.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/static_report/timely_llm_report.py",
+    "source_sha256": "6cfb4c973db37c27dac46c1fc4c09ad80b192b49865a65dc7ee59d9aacb8a230",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "test_queue_system.py",
+    "canonical_file": "tests/manual/test_queue_system.py",
+    "legacy_entry": "test_queue_system.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/test_queue_system.py",
+    "source_sha256": "71007a88ff11a336b5b253d7a1f7b1bb5bbbd995ebd2d951a4769ad285cdfc3e",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "tmp_shell/knowledge_clear_by_dify_model_longcontent.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/tmp_shell/knowledge_clear_by_dify_model_longcontent.py",
+    "legacy_entry": "tmp_shell/knowledge_clear_by_dify_model_longcontent.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/tmp_shell/knowledge_clear_by_dify_model_longcontent.py",
+    "source_sha256": "bfedda0432585d8ad6206a788e4b6120d2f8021927aff54bb2fa9e696f13f3ef",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "wechat_tools/stat_tools.py",
+    "canonical_file": "src/kdb/integrations/wechat/stat_tools.py",
+    "legacy_entry": "wechat_tools/stat_tools.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/wechat_tools/stat_tools.py",
+    "source_sha256": "7d48db22391a944a56cc480ed09fb1ae7cdf3414695524fd32066ca87698c562",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "wechat_tools/wkteam_request_util.py",
+    "canonical_file": "src/kdb/integrations/wechat/wkteam_request_util.py",
+    "legacy_entry": "wechat_tools/wkteam_request_util.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-restart/published-f6a78084/wechat_tools/wkteam_request_util.py",
+    "source_sha256": "9907c428d0d7840db2c8c79d75c8caf30304645b25022a86fe19baf8c5c8a626",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "drain_bol.py",
+    "canonical_file": "archive/incident_tools/drain_bol.py",
+    "legacy_entry": "drain_bol.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/knowledge_database_builder/content/drain_bol.py",
+    "source_sha256": "ab9f368fda2f893aeb109283cc1aae0ba835105ad3bb385824d23e5a0c8f2291",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "tmp/drive_full_insert.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/tmp/drive_full_insert.py",
+    "legacy_entry": "tmp/drive_full_insert.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/knowledge_database_builder/content/tmp/drive_full_insert.py",
+    "source_sha256": "74ffdf62a92176c3a2115d5344ca88e9d9ef0e2c81637906bc902983c091fac9",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "tmp/drive_insert.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/tmp/drive_insert.py",
+    "legacy_entry": "tmp/drive_insert.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/knowledge_database_builder/content/tmp/drive_insert.py",
+    "source_sha256": "0d2266360cf22bce2662fc20101e7b4e1e9787a41cb484335f9c36d61851acfd",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "tmp/es8_audit_diff.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/tmp/es8_audit_diff.py",
+    "legacy_entry": "tmp/es8_audit_diff.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/knowledge_database_builder/content/tmp/es8_audit_diff.py",
+    "source_sha256": "4d5292554b552dd11b00771174e35107ed56ea495b40c7bf18bcf907011fbc9e",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "tmp/es8_audit_readonly.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/tmp/es8_audit_readonly.py",
+    "legacy_entry": "tmp/es8_audit_readonly.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/knowledge_database_builder/content/tmp/es8_audit_readonly.py",
+    "source_sha256": "573013698aa2e6eb5bc0840b40b9c2fdf80a93f3922a2658e0be3f8b2089e05b",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "tmp/es8_audit_real_ro.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/tmp/es8_audit_real_ro.py",
+    "legacy_entry": "tmp/es8_audit_real_ro.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/knowledge_database_builder/content/tmp/es8_audit_real_ro.py",
+    "source_sha256": "72f0ef01ebc5dda5ec51a23f2a3f81750535391bb1f2ec15a77288c7140261e4",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "tmp/gen_export_jsonl.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/tmp/gen_export_jsonl.py",
+    "legacy_entry": "tmp/gen_export_jsonl.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/knowledge_database_builder/content/tmp/gen_export_jsonl.py",
+    "source_sha256": "34d56322b3b155b1dd07afd16a3f4ce5aee0ea436129472a2b136f5effc16c5a",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "tmp_q2.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/tmp_q2.py",
+    "legacy_entry": "tmp_q2.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/knowledge_database_builder/content/tmp_q2.py",
+    "source_sha256": "b4b68cb8b1febdee976339905cd1992407491d27d74bae605cbe8603581bd6cf",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "tmp_q3.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/tmp_q3.py",
+    "legacy_entry": "tmp_q3.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/knowledge_database_builder/content/tmp_q3.py",
+    "source_sha256": "1975990faf88d9f60c46405e8627b11ac00c0c915c9a9b04f21c6a1b880aceed",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "tmp_q4.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/tmp_q4.py",
+    "legacy_entry": "tmp_q4.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/knowledge_database_builder/content/tmp_q4.py",
+    "source_sha256": "e1db3c3548379d3907c04ea67254714e21a61d5bb5cf43b4c59e36f75a380ad8",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "tmp_q5.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/tmp_q5.py",
+    "legacy_entry": "tmp_q5.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/knowledge_database_builder/content/tmp_q5.py",
+    "source_sha256": "72522410ef27f87f7ac7199b8c0230156494f38e810285944bacad0a6f3960c7",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "tmp_q6.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/tmp_q6.py",
+    "legacy_entry": "tmp_q6.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/knowledge_database_builder/content/tmp_q6.py",
+    "source_sha256": "e6c2cd0849f31f1bef2fb6bdf94709d248efe95a5ca7dd444de0406cd9367d50",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "tmp_qk.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/tmp_qk.py",
+    "legacy_entry": "tmp_qk.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/knowledge_database_builder/content/tmp_qk.py",
+    "source_sha256": "67cbda1c77c6a9df131511ee2539bf4cb151581558dcb881a0038277abe93d4e",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "tmp_shell/test_analysis_doc_openai.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/tmp_shell/test_analysis_doc_openai.py",
+    "legacy_entry": "tmp_shell/test_analysis_doc_openai.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/knowledge_database_builder/content/tmp_shell/test_analysis_doc_openai.py",
+    "source_sha256": "076f01f2840e1d46c52cd9a3433c8e0dde1e7b86f656b57c37f96f980ffd0736",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_script/chatqa_learning_daily_report.py",
+    "canonical_file": "src/kdb/jobs/legacy/chatqa_learning_daily_report.py",
+    "legacy_entry": "control_script/chatqa_learning_daily_report.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/main-shenzhen-120/content/control_script/chatqa_learning_daily_report.py",
+    "source_sha256": "b5b4a082fa6c46c53da012dc27d96a03331029dd928940f60ca2a06c3b382a87",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_script/document_qa_segment_mining_tmp.py",
+    "canonical_file": "src/kdb/jobs/legacy/document_qa_segment_mining_tmp.py",
+    "legacy_entry": "control_script/document_qa_segment_mining_tmp.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/main-shenzhen-120/content/control_script/document_qa_segment_mining_tmp.py",
+    "source_sha256": "a9ae7d1cf48cea16d28bbcc5b440a6d80796cadffc995572a168de6548c20e73",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_script/document_qa_segment_mining_tmp2.py",
+    "canonical_file": "src/kdb/jobs/legacy/document_qa_segment_mining_tmp2.py",
+    "legacy_entry": "control_script/document_qa_segment_mining_tmp2.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/main-shenzhen-120/content/control_script/document_qa_segment_mining_tmp2.py",
+    "source_sha256": "42da4cbb2cf10c370e2a391bc44b6babf65760a8a116bf164e7f45d42a05835c",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_service/document_qa_segment_mining_tmp.py",
+    "canonical_file": "src/kdb/mining/pipelines/legacy/document_qa_segment_mining_tmp.py",
+    "legacy_entry": "control_service/document_qa_segment_mining_tmp.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/main-shenzhen-120/content/control_service/document_qa_segment_mining_tmp.py",
+    "source_sha256": "25fd0b341a4b49e9000cdc4ca4bde904e83356da806fd1d20b7c7a064f2ac3b6",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_service/document_qa_segment_mining_tmp2.py",
+    "canonical_file": "src/kdb/mining/pipelines/legacy/document_qa_segment_mining_tmp2.py",
+    "legacy_entry": "control_service/document_qa_segment_mining_tmp2.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/main-shenzhen-120/content/control_service/document_qa_segment_mining_tmp2.py",
+    "source_sha256": "42da4cbb2cf10c370e2a391bc44b6babf65760a8a116bf164e7f45d42a05835c",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "control_service/html_kg_gen_task_control_tmp.py",
+    "canonical_file": "src/kdb/mining/pipelines/legacy/html_kg_gen_task_control_tmp.py",
+    "legacy_entry": "control_service/html_kg_gen_task_control_tmp.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/main-shenzhen-120/content/control_service/html_kg_gen_task_control_tmp.py",
+    "source_sha256": "326f1976ab38c72a869a9730023c1fc1fbb757a0dd9716bd65fa7e3ddbbdb767",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "knowledge_database_search_service/src/knowledge_database_search_es_tmp.py",
+    "canonical_file": "src/kdb/compat/legacy_ops/knowledge_database_search_service/src/knowledge_database_search_es_tmp.py",
+    "legacy_entry": "knowledge_database_search_service/src/knowledge_database_search_es_tmp.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/main-shenzhen-120/content/knowledge_database_search_service/src/knowledge_database_search_es_tmp.py",
+    "source_sha256": "4b8029bfc9b8b9c59180a45206761b088cb7348021b747234995b974234c29ab",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  },
+  {
+    "old_file": "static_report/assistant_daily_report_v2.py",
+    "canonical_file": "src/kdb/reporting/legacy/assistant_daily_report_v2.py",
+    "legacy_entry": "static_report/assistant_daily_report_v2.py",
+    "source": "/root/kdb-forge-refactor-baselines/20261105-r1/main-shenzhen-120/content/static_report/assistant_daily_report_v2.py",
+    "source_sha256": "e7ea70bb653e7b498cfe4087971909384b1c6307df8c260be1b92895f57cece2",
+    "contract": "same existing functions/classes; path/private adaptations only",
+    "schema_provenance": "function_schema/legacy_project",
+    "validation": "mechanical_proof.json; controller_entry_checks.json; test_results.json; untested dependencies explicitly reported"
+  }
+]

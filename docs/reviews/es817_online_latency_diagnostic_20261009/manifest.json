@@ -1,0 +1,21 @@
+{
+  "captured_report_utc": "2026-10-08T18:17:27.246802+00:00",
+  "implementation_changed": false,
+  "native_read_http_calls": 29,
+  "native_search_subqueries": 32,
+  "service_readonly_calls": 4,
+  "test_writes": 0,
+  "source_head": "c84b6120be35c5ca78d41c84f190dec6619946c3",
+  "engine_sha256": "d9a30277f6464d639a9255800506f8bc9fffeff062834e10cd1839d1df4cd9fc",
+  "files": {
+    "docs/reviews/es817_online_latency_diagnostic_20261009/evidence.json": "fc6b4e074edf9572a52bbef2f629d1a1f7289aed1d414ea4ae19acf28a21e3ec",
+    "docs/reviews/es817_online_latency_diagnostic_20261009/service_readonly.json": "0d050e52546bc59f17b64af38a0ea592f55d1b8634ac39a208d30ed8092a4046",
+    "tests/es817_online_latency_diagnostic_20261009.py": "49e032cfadb51cdd8ddf078ee5c1b894e4b3ceae2bc8683e99afd71b88c18f70",
+    "function_schema/es817_online_latency_diagnostic_20261009.main.md": "384e9043f919db54a7d2e48c7f66c3194dc0d490d22932263f7d1bdeab1d4025",
+    "function_schema/es817_online_latency_diagnostic_20261009.snapshot.md": "60cfa205fb747da29723cba1d146e499869325cae4b417d33f87359e9efe667d",
+    "function_schema/es817_online_latency_diagnostic_20261009.trace_node.md": "d1277cd6398043fa12b86e6e56569bc7900365773cf36d5f9956ecc21c3d8cf7",
+    "function_schema/es817_online_latency_diagnostic_20261009.wrapped.md": "edefb49ea14631a0b456d7d6a35a4a1427a9e86617ee4292c852f98e97682577",
+    "function_schema/es817_online_latency_diagnostic_20261009.metric.md": "541f34471674e883a57c47c656d32fa2e43fc4e19f9005e24526a813f8806161",
+    "function_schema/es817_online_latency_diagnostic_20261009.run_plan.md": "84871a47d2b708d9376c734daa6d0f54404a1861ecae0cf7c5bf85481cb24942"
+  }
+}

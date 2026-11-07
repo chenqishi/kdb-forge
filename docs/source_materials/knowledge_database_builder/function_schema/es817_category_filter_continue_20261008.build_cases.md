@@ -1,0 +1,3 @@
+# build_cases
+
+Inputs: actual discovery/fixtures. Outputs: bounded <=105 matrix with exact original /search and /web_search requests, independent expected condition groups and query provenance. Only mercado_local and payoneer_olive exact existing public/private indexes. Cover Local Mexico/Brazil/default/service groups and Olive TikTok sites/other platforms, parent/child and numeric/string IDs, scalar/list, AND/OR, impossible and empty ID negatives, file/audit/type/delete combinations, full category_names path translations, nonempty text web and small-category pagination. Existing category_names plus category_ids are an OR union per actual old business contract; do not assume intersection. No time-range API invented. SQL: none.

@@ -1,8 +1,10 @@
 # RoutedLegacyEngine.count_by_query
 
 ## Inputs
-index 名和已构造的 ES query DSL。
+Original forge `index_name, query, require_complete=False`. Native DSL is passed through unchanged.
+
 ## Outputs
-通过 ES8 `count(query=...)` 返回命中数。
+For ordinary count, delegate directly to published ES8 method. For forge strict count only, retain original SDK flags ignore_unavailable=False, allow_no_indices=False, expand_wildcards="none", then use the published complete_count validator. No new query construction or retrieval algorithm. Same provider binding as published engine.
+
 ## SQL
-无；底层读取 Elasticsearch。
+None. Only native Elasticsearch count request; no ensure/index writes.

@@ -1,80 +1,11 @@
-# knowledge_database_builder_rebuild
+# KDB Forge — 整项目结构重构候选
 
-旧项目 `knowledge_database_builder` 的高内聚低耦合重构版。**当前进度：第一步——抽取干净的知识库 CRUD 模块。**
+本候选从已发布f6a78084与四个有效dirty修复重新组装；正式模块位于src/kdb/services、jobs、mining、retrieval、shared、integrations、reporting。旧脚本/import路径保留薄wrapper，旧forge重复核心归档。
 
-## 设计要点
+候选尚未部署；不直接启动离线任务或维护工具。运行命令、解释器和缺失资源见[启动说明](docs/runbooks/restart_runtime.md)，默认安全测试见[离线测试说明](docs/runbooks/offline_testing.md)，forge独立协议见[兼容协议](docs/runbooks/forge_compat_restart_protocol.md)，当前结构见[架构图](docs/Architecture_Overview_Diagram.md)。
 
-- **两层 CRUD + 旧接口兼容**：
-  - `kdb.crud.KnowledgeRepository`：纯向量 CRUD（insert/get/search/update/delete），封装 ES8.17 路由引擎，不含任何业务逻辑。
-  - `kdb.crud.KnowledgeService`：文本级 CRUD，同时原样暴露旧 `insert_data`、`search_data`、`search_data_by_query`、`search_data_by_multi_query`、`web_search_data`、批量插入、查重、类目和文件名操作。
-  - `kdb.crud.SearchDataInterface` / `kdb.knowledge_interface_tools.search_index_data_interface.SearchDataInterface`：旧构造函数兼容入口。
-- **ES 8.17 原生检索**：生产 CRUD 使用 ES8 named API；BM25/vector 双路中的 vector 路使用 indexed `dense_vector` + native HNSW KNN，不再使用旧 ES7 `body=`/`script_score`。
-- **兼容旧基线**：`kdb.legacy_bridge` 仍以 sys.path 注入旧项目，供 `_id`、embedding、关键词、类目默认和对齐测试使用；生产 `RoutedLegacyEngine` 不再调用旧 ES7 client。
-- **Schema 可迁移**：字段语义沿用旧 mapping；新索引要求 `indexes.embedding` 为 `index=true, similarity=cosine, index_options.type=hnsw`。旧 ES7 未索引向量索引需新建目标索引并 reindex。
-- **业务默认对齐口径**：
-  - **已对齐**（纯本地、零外部 IO）：is_audit→audit_result、audit_result/quality_level/from_type 缺省与矫正、from_type_norm（规则映射）、keywords（jieba.analyse 本地分词）、tags=keywords、category_infos[].category_id→str、dataset 缺省=index_name、multimodal_contents→content 拼接、search 返回时 `[multimodal_prefix]` 替换。
-  - **兼容服务已补齐**：dedup 去重、primary_category 构造、web_search、批量插入和按文件操作都由兼容层暴露，底层请求统一走 ES8.17。
-  - **范围排除**：Payoneer Olive 自动类目推断属于上游挖掘，CRUD/检索不实现；仍支持显式类目入库、通用类目解析和过滤。
-- **知识写入 HTTP API**：保留远端 `/knowledge/insert`、`/knowledge/delete`、`/knowledge/modify_direct_update` 和 `/health`；`dry_run` 不加载 CRUD/ES。它们不代表旧检索 HTTP 路径已全部迁移。
+ES检索已完成同一PIT视图的新旧对比：30个重点样本、两轮共60对，响应与原SDK请求计划均完全一致；不能将此结论扩展成1000条全量快照复验或七服务全部可上线。语言模型和CSAT认证仍缺真实资源。默认`./run_offline_tests.sh -q`或`./run_tests.sh -q`只运行受禁网络/进程边界保护的入口与离线测试；历史测试须显式选择。
 
-## 目录
+来源及初次组装证据保留在`/root/kdb-forge/artifacts/whole_project_refactor_restart_20261105/`。2026-11-06复核整改、最新候选清单与完整性复查见`/root/kdb-forge/artifacts/refactor_review_remediation_20261106/REPORT.md`，旧清单不能代表当前现场。遗留import、绝对路径与目标目录的未完成项见[结构处置清单](docs/runbooks/refactor_residuals_20261106.md)。
 
-```
-src/kdb/
-  api/                # FastAPI 写入接口，首次实写才构建 Service
-  modify/             # 上游决策后的单索引写入计划（无挖掘逻辑）
-  legacy_bridge.py     # 接线：路由引擎 + 兼容旧 embedding/_id/AliEmbedding
-  es/client_router.py  # index -> Serverless/PaaS -> ES8.17 client
-  es/engine.py         # ES8 named API、native KNN、按 provider 拆分多索引请求
-  crud/repository.py   # KnowledgeRepository（纯向量）
-  crud/service.py      # KnowledgeService（文本级）
-  crud/legacy_compat.py# 旧 SearchDataInterface 方法兼容层
-  crud/ids.py          # _id 生成（复用旧 gen_data_id，带兜底）
-  crud/models.py       # schema 字段集合常量
-  embedding/client.py  # EmbeddingClient 协议 + AliEmbedding 适配
-  config/loader.py     # 配置加载
-  pipeline/ tasks/     # 预留（后续步骤）
-tests/                 # 集成测试（真实 ES + DashScope）
-config/config_test.json# 引用旧 config 的绝对路径（不提交 git，见 .gitignore）
-config/config_es_engine.json.example # ES8.17 单地址/混合路由模板
-```
-
-## 配置
-
-复制模板并填入旧 config 的绝对路径（**真实 config 不提交 git**）：
-
-```bash
-cp config/config_test.json.example config/config_test.json
-# 编辑三个 *_config_path 指向旧项目 config/ 下对应文件
-```
-
-## 运行测试
-
-```bash
-./run_tests.sh                  # 全部集成测试（建 test_case 索引 → 回环 → 与旧实现对齐）
-KDB_LEGACY_ROOT=/path/to/old ./run_tests.sh   # 覆盖旧项目根路径
-```
-
-`python3 -m pytest -q -m 'not integration'` 可运行离线路由/业务单测；完整集成测试需要可访问的 ES8.17 与 DashScope embedding 服务，使用配置中的独立测试索引。
-合并后的 API/modify 回归也在 `tests/`，不会因缺少 FastAPI 而跳过。安装项目和测试依赖：
-`python -m pip install -e . pytest numpy httpx`。启动写入 API：
-`KDB_FORGE_CONFIG=config/config_search_runtime.local.json KDB_SEARCH_BASIC_USER=... KDB_SEARCH_BASIC_PASSWORD=... uvicorn kdb.api.app:app --host 127.0.0.1 --port 8012`（检索 API；写入 API 仍可单独运行在 8010）。
-
-混用两个 Aliyun ES 服务时，按 `config/config_es_engine.json.example` 增加 `providers`、
-`default_provider` 和 `index_routes`；`pass` 是 `paas` 的兼容别名。
-
-## 已知行为 / 遗留陷阱（实现过程中踩到的，后续 pipeline 作者请避开）
-
-1. **`del_flag=0` 是底层引擎的存储契约，不是业务默认值**。旧 `EsSearchInterface.search_multi/search/search_by_page` 在 attribute 不带 `del_flag` 时强制注入 `{term:del_flag=0}`，缺该字段的文档**默认搜不到**。`KnowledgeService._prepare_document` 在新建时已自动填 `del_flag=0`。
-2. **旧 `engine.update_value` 用 `_id` 做 `terms` 过滤是 silent no-op**：ES 要求 `_id` 用 `ids` 查询，`terms:_id` 不抛错但 0 命中，函数仍返回 True。要按 _id 改字段请用 `repository.update_by_id`；要按条件批量请用 `platform` 等其他字段。
-3. **Aliyun ES serverless 在高频写后 get/search 有可见延迟**。`KnowledgeRepository.update_by_id / update_by_condition / delete` 在 `refresh=True` 时除 `es.delete/update(refresh=True)` 外还额外调一次 `indices.refresh`；测试代码用 `tests/conftest.py` 的 `wait_for_present / wait_for_absent / wait_for_field / wait_for_search_hit` 轮询替代固定 sleep。
-4. **旧 ES7 索引不能直接复用 native KNN**。如果 `indexes.embedding` 的 mapping 缺少 `index:true` 或维度不符，ES8 引擎会明确拒绝启动；必须创建新索引、使用新 mapping，然后 reindex。这样可以避免误以为“客户端升级了”就已经启用向量索引。
-5. **多 shard ES 在两个不同 `EsSearchInterface` 实例下查同一份数据，分数极接近时 raw 结果顺序可能微抖动**。对齐口径：①命中 `_id` 集合相同；②每个 _id 的 `similarity` 在 `1e-6` 容差内一致；③按 `similarity` 降序排序后顺序完全一致（见 `test_alignment_with_legacy.py`）。
-6. **`legacy_bridge` 通过 sys.path 注入旧项目根**（环境变量 `KDB_LEGACY_ROOT` 可覆盖）。`gen_data_id` 走旧 import 链可能稍慢（实测约 1.4s 一次性 import）；不可用时 `ids.py` 内置字节级一致的复刻兜底（`md5(f"{title}_{content}_{data_type}")`）。
-
-
-## ES8.17 检索 HTTP API
-
-`/search` 与 `/web_search` 保留旧检索服务的请求和返回字段，但底层只使用 Elasticsearch 8.17 的 named API、BM25 和 native nested HNSW KNN。两个路由都要求 HTTP Basic；用户名和密码从运行环境读取，不能写进仓库或命令行。默认运行配置为 `config/config_search_runtime.local.json`，示例配置见 `config/config_es_engine.json.example`。
-
-索引路由按标准化后的名称匹配 `*payoneer*` 到 `paas`，其余索引使用 `serverless`。跨 provider 查询由 `IndexClientRouter` 分组后分别请求。生产数据迁移只按 [docs/ES8_Retrieval_Migration_Plan.md](docs/ES8_Retrieval_Migration_Plan.md) 的只读盘点和审批步骤执行。
+原工作区、旧候选、内容快照与活动数据保留，私有配置不入Git。

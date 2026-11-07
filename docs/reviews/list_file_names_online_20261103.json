@@ -1,0 +1,305 @@
+{
+  "phase": "healthy",
+  "before_head": "3aa4aadc854fd8e8fc6f31555754799882fbabd8",
+  "commit": "a6058547c03025f17ffb844c2a9eb48658274178",
+  "before_hashes": {
+    "config/config_es_engine.json": "c3c8c77a6688b76f584a45424110409986e38a391cd359bfdfcd9f58704a4e63",
+    "config/config_es_engine_es817.online.json": "ef3308c6dd97d2f297015c9cf2196accc0a7290fef2f517b3670be508ceb71a8",
+    "config/config_for_search_index.json": "8ceca10ad7e15a65e6f896aa72e00dc23831dcb55edeeb8e629826a899a6a03f",
+    "config/config_for_search_index_no_dup_payoneer.json": "487016b2eba9d608a0418d74109be801f9d616aa8a9bf15794a9b30906ac6b4c",
+    "data_preprocess/multimodal_process.py": "c452ba3f1214047a8a2419a6b156b9004c2dd36166c196266d8719c6f7b4aa6b",
+    "knowledge_clear_tool/knowledge_clear_by_dify_model_longcontent.py": "aab9699b755c3eb6e860e24623657d10dd37f143edc4159402d0561a87db8fd6",
+    "knowledge_clear_tool/wordtotext.py": "dc5ef9404cf27d80383fc9e2989ca5a6fa4d2b97850d3d7ddf06bd8f848925b7",
+    "knowledge_generate/knowlege_segment_builder_by_dify.py": "879f392725812d27974f2792b3fcb2758e1631eb776d6c2bd1a06675645fb873"
+  },
+  "old_retrieval": {
+    "pid": 47173,
+    "create_time": 1791555581.16,
+    "cmdline": [
+      ".venv-es817/bin/python",
+      "knowledge_database_search_service/src/knowledge_database_search_es.py",
+      "config/config_for_search_index.json"
+    ],
+    "python": "/root/knowledge_database_builder/.venv-es817/bin/python",
+    "log": "/root/knowledge_database_builder/log/es_search_service.log.es817_20261009_1791478533832080738"
+  },
+  "off_task": {
+    "pid": 1533339,
+    "create_time": 1791478533.65,
+    "cmdline": [
+      "/root/knowledge_database_builder/.venv-es817/bin/python",
+      "control_service/off_task_control_service.py",
+      "--script-dir",
+      "/root/knowledge_database_builder",
+      "--port=6000"
+    ],
+    "python": "/root/knowledge_database_builder/.venv-es817/bin/python",
+    "log": "/root/knowledge_database_builder/log/run_off_task.log.es817_20261009_1791478533833602739"
+  },
+  "started": "2026-11-03T14:50:44.288656+00:00",
+  "es_writes": 0,
+  "log": "/root/knowledge_database_builder/log/es_search_service.log.es817_20261009_1791478533832080738",
+  "log_offset": 545936861,
+  "new_retrieval_pid": 2977520,
+  "new_retrieval": {
+    "pid": 2977520,
+    "create_time": 1793717453.1,
+    "cmdline": [
+      ".venv-es817/bin/python",
+      "knowledge_database_search_service/src/knowledge_database_search_es.py",
+      "config/config_for_search_index.json"
+    ],
+    "python": "/root/knowledge_database_builder/.venv-es817/bin/python",
+    "log": "/root/knowledge_database_builder/log/es_search_service.log.es817_20261009_1791478533832080738"
+  },
+  "acceptance": [
+    {
+      "index": "payoneer_olive",
+      "endpoint": "list_file_names",
+      "source": "omitted",
+      "matched_raw_es": true,
+      "files": 5,
+      "doc_counts": [
+        376,
+        429,
+        477,
+        515,
+        1336
+      ],
+      "result_sha256": "791e39d7f835dad44a31e43396bc72fd52953de707911cb1236612951d51e58e",
+      "ms": 44.14,
+      "bytes": 450
+    },
+    {
+      "index": "payoneer_olive",
+      "endpoint": "list_file_names",
+      "source": "null",
+      "matched_raw_es": true,
+      "files": 5,
+      "doc_counts": [
+        376,
+        429,
+        477,
+        515,
+        1336
+      ],
+      "result_sha256": "791e39d7f835dad44a31e43396bc72fd52953de707911cb1236612951d51e58e",
+      "ms": 16.7,
+      "bytes": 450
+    },
+    {
+      "index": "payoneer_olive",
+      "endpoint": "list_file_names",
+      "source": "empty",
+      "matched_raw_es": true,
+      "files": 5,
+      "doc_counts": [
+        376,
+        429,
+        477,
+        515,
+        1336
+      ],
+      "result_sha256": "791e39d7f835dad44a31e43396bc72fd52953de707911cb1236612951d51e58e",
+      "ms": 15.76,
+      "bytes": 450
+    },
+    {
+      "index": "payoneer_olive",
+      "endpoint": "list_file_names",
+      "source": "blank",
+      "matched_raw_es": true,
+      "files": 5,
+      "doc_counts": [
+        376,
+        429,
+        477,
+        515,
+        1336
+      ],
+      "result_sha256": "791e39d7f835dad44a31e43396bc72fd52953de707911cb1236612951d51e58e",
+      "ms": 15.43,
+      "bytes": 450
+    },
+    {
+      "index": "payoneer_olive",
+      "endpoint": "list_file_names",
+      "source": "document",
+      "matched_raw_es": true,
+      "files": 5,
+      "doc_counts": [
+        376,
+        356,
+        429,
+        477,
+        515
+      ],
+      "result_sha256": "e59c61edc732526c05869cae85f6ad39b9d6a789340296dc4d5510a088103d04",
+      "ms": 28.71,
+      "bytes": 469
+    },
+    {
+      "index": "payoneer_olive",
+      "endpoint": "list_file_names",
+      "source": "auto_learning",
+      "matched_raw_es": true,
+      "files": 5,
+      "doc_counts": [
+        33,
+        27,
+        25,
+        134,
+        1336
+      ],
+      "result_sha256": "55c9d574ad591fc5350b9da3f990f4fc0d0933401eabedb67db4c693ae951b01",
+      "ms": 26.04,
+      "bytes": 467
+    },
+    {
+      "index": "payoneer_olive",
+      "endpoint": "web_search",
+      "hits": 2,
+      "total": 10000,
+      "ms": 58.5,
+      "bytes": 2317
+    },
+    {
+      "index": "payoneer_olive",
+      "endpoint": "search",
+      "hits": 2,
+      "ms": 3071.81,
+      "bytes": 4757,
+      "ids_sha256": "fe634b077ec41a9ddd484ca5c7c998bf7e9acc477759e313ccf697ac91ac21e0"
+    },
+    {
+      "index": "mercado_local",
+      "endpoint": "list_file_names",
+      "source": "omitted",
+      "matched_raw_es": true,
+      "files": 5,
+      "doc_counts": [
+        173,
+        144,
+        85,
+        96,
+        112
+      ],
+      "result_sha256": "634d8a90d9f778d136d422561b117488e791a5601b844a52844f618bfe1ad070",
+      "ms": 38.73,
+      "bytes": 471
+    },
+    {
+      "index": "mercado_local",
+      "endpoint": "list_file_names",
+      "source": "null",
+      "matched_raw_es": true,
+      "files": 5,
+      "doc_counts": [
+        173,
+        144,
+        85,
+        96,
+        112
+      ],
+      "result_sha256": "634d8a90d9f778d136d422561b117488e791a5601b844a52844f618bfe1ad070",
+      "ms": 19.81,
+      "bytes": 471
+    },
+    {
+      "index": "mercado_local",
+      "endpoint": "list_file_names",
+      "source": "empty",
+      "matched_raw_es": true,
+      "files": 5,
+      "doc_counts": [
+        173,
+        144,
+        85,
+        96,
+        112
+      ],
+      "result_sha256": "634d8a90d9f778d136d422561b117488e791a5601b844a52844f618bfe1ad070",
+      "ms": 18.17,
+      "bytes": 471
+    },
+    {
+      "index": "mercado_local",
+      "endpoint": "list_file_names",
+      "source": "blank",
+      "matched_raw_es": true,
+      "files": 5,
+      "doc_counts": [
+        173,
+        144,
+        85,
+        96,
+        112
+      ],
+      "result_sha256": "634d8a90d9f778d136d422561b117488e791a5601b844a52844f618bfe1ad070",
+      "ms": 18.54,
+      "bytes": 471
+    },
+    {
+      "index": "mercado_local",
+      "endpoint": "list_file_names",
+      "source": "document",
+      "matched_raw_es": true,
+      "files": 2,
+      "doc_counts": [
+        144,
+        51
+      ],
+      "result_sha256": "27f3e2e23682a5fbfb18639328aab7765ff43c7e4b4cb8955c7f613fed696156",
+      "ms": 23.5,
+      "bytes": 240
+    },
+    {
+      "index": "mercado_local",
+      "endpoint": "list_file_names",
+      "source": "auto_learning",
+      "matched_raw_es": true,
+      "files": 5,
+      "doc_counts": [
+        43,
+        47,
+        47,
+        173,
+        41
+      ],
+      "result_sha256": "343992fcb1056a5ad06eebccfcf9d7bf47740a49beb2aab13e3f86c21d46fefe",
+      "ms": 20.22,
+      "bytes": 397
+    },
+    {
+      "index": "mercado_local",
+      "endpoint": "web_search",
+      "hits": 2,
+      "total": 10000,
+      "ms": 49.68,
+      "bytes": 3750
+    },
+    {
+      "index": "mercado_local",
+      "endpoint": "search",
+      "hits": 2,
+      "ms": 431.37,
+      "bytes": 3525,
+      "ids_sha256": "90b0b40b43f412f1f1830a349fc3fed568dd610b9628fd53945b6ee0f4595c0f"
+    }
+  ],
+  "healthy": true,
+  "off_task_unchanged": true,
+  "off_task_health_code": 0,
+  "configurations_and_dirty_files_unchanged": true,
+  "log_bytes_added": 19466,
+  "log_tracebacks": 0,
+  "log_asgi_errors": 0,
+  "new_children": [
+    2977547,
+    2977548,
+    2977549,
+    2977550,
+    2977551
+  ],
+  "finished": "2026-11-03T14:51:01.111829+00:00"
+}

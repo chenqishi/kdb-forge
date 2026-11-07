@@ -1,0 +1,126 @@
+diff --git a/knowledge_interface_tools/es8_search_interface.py b/knowledge_interface_tools/es8_search_interface.py
+index ef6d1ec8..ab89ae2d 100644
+--- a/knowledge_interface_tools/es8_search_interface.py
++++ b/knowledge_interface_tools/es8_search_interface.py
+@@ -130,11 +130,23 @@ class EsSearchInterfaceES8:
+         index = str(index_name or "").strip().lower()
+         if not index:
+             raise ValueError("index_name 不能为空")
++        cached = self._impls.get(index)
++        if cached is not None and self._ensure_index_on_init:
++            try:
++                exists = bool(cached.es.indices.exists(index=index))
++            except Exception:
++                # Keep a previously validated binding on an availability error;
++                # the actual online search retains its per-route error fallback.
++                logger.exception("ES8 cached index existence check failed: index=%s", index)
++            else:
++                if not exists:
++                    self._impls.pop(index, None)
++                    self.has_build_index.pop(index, None)
+         if index not in self._impls:
+             binding = SimpleNamespace(index_name=index, es=self.router.get_client_by_index(index))
+-            self._impls[index] = binding
+             if self._ensure_index_on_init:
+-                self._ensure_index(index)
++                self._ensure_index(index, binding=binding)
++            self._impls[index] = binding
+             if self._impl is None and index == self.index_name:
+                 self._impl = binding
+         return self._impls[index]
+@@ -142,10 +154,18 @@ class EsSearchInterfaceES8:
+     def _group_indexes(self, index_names: IndexNames) -> List[Tuple[SimpleNamespace, List[str]]]:
+         """按 provider 分组索引，确保每组只使用对应连接池。"""
+         names = _split_index_names(index_names, self.index_name)
+-        grouped: "OrderedDict[str, List[str]]" = OrderedDict()
++        grouped: List[Tuple[str, List[str]]] = []
+         for name in names:
+-            grouped.setdefault(self.router.resolve_provider(name), []).append(name)
+-        return [(self._impl_for(group[0]), group) for group in grouped.values()]
++            provider = self.router.resolve_provider(name)
++            if not grouped or grouped[-1][0] != provider:
++                grouped.append((provider, []))
++            grouped[-1][1].append(name)
++        result = []
++        for _, group in grouped:
++            for name in group:
++                self._impl_for(name)
++            result.append((self._impls[group[0]], group))
++        return result
+ 
+     def _get_index_name(self, index_names: IndexNames = None) -> str:
+         """保留旧接口：规整索引名并确保每个目标索引经过 ES8 mapping 守卫。"""
+@@ -243,30 +263,42 @@ class EsSearchInterfaceES8:
+         properties = mapping.get("mappings", {}).get("properties", {})
+         return properties.get("indexes", {}).get("properties", {}).get("embedding", {})
+ 
+-    def _ensure_index(self, index_name: str) -> None:
++    def _ensure_index(self, index_name: str, binding: Optional[SimpleNamespace] = None) -> None:
+         """创建 native KNN 索引或拒绝不兼容的旧 ES7 mapping。"""
+         index = str(index_name or "").strip().lower()
+         if not index:
+             raise ValueError("index_name 不能为空")
+-        binding = self._impls.get(index)
++        binding = binding or self._impls.get(index)
+         if binding is None:
+             provider_client = self.router.get_client_by_index(index)
+             binding = SimpleNamespace(index_name=index, es=provider_client)
+-            self._impls[index] = binding
+         client = binding.es
+         if index in self.has_build_index:
+             return
+         if not bool(client.indices.exists(index=index)):
+-            client.indices.create(
+-                index=index,
+-                settings={"number_of_shards": 3, "number_of_replicas": 1, "refresh_interval": "30s"},
+-                mappings=self._build_mapping(),
+-            )
+-            self.has_build_index[index] = True
+-            return
++            try:
++                client.indices.create(
++                    index=index,
++                    settings={"number_of_shards": 3, "number_of_replicas": 1, "refresh_interval": "30s"},
++                    mappings=self._build_mapping(),
++                )
++            except Exception as exc:
++                # Workers may observe the same missing index. Only accept a
++                # concurrent creator after validating its actual vector mapping.
++                body = getattr(exc, "body", None)
++                error = body.get("error") if isinstance(body, Mapping) else None
++                if not isinstance(error, Mapping) or error.get("type") != "resource_already_exists_exception":
++                    raise
++            else:
++                self.has_build_index[index] = True
++                return
+         mappings = _as_dict(client.indices.get_mapping(index=index))
+         current = mappings.get(index) or (next(iter(mappings.values())) if mappings else {})
+         properties = current.get("mappings", {}).get("properties", {})
++        invalid_parent = [
++            field for field in ("indexes", "image_indexes")
++            if properties.get(field, {}).get("type") != "nested"
++        ]
+         vector_mappings = {
+             "title_embedding": properties.get("title_embedding", {}),
+             "content_embedding": properties.get("content_embedding", {}),
+@@ -283,6 +315,7 @@ class EsSearchInterfaceES8:
+                 or vector_mapping.get("index_options", {}).get("type") != "hnsw"
+             )
+         ]
++        invalid.extend(invalid_parent)
+         if invalid:
+             raise RuntimeError(
+                 f"索引 {index!r} 不是 ES8 native KNN mapping："
+@@ -850,7 +883,11 @@ class EsSearchInterfaceES8:
+                 # Each index gets its own candidate budget. Sending several index
+                 # names in one request would make `size` a shared budget and would
+                 # silently starve later indexes in the same provider.
+-                response = self._search_request(binding.es, [one_index], route_query, size=route_size)
++                try:
++                    response = self._search_request(binding.es, [one_index], route_query, size=route_size)
++                except Exception:
++                    logger.exception("ES8 native recall route failed: route=%s index=%s", route_name, one_index)
++                    continue
+                 route_totals[route_name or "single"] += self._total(response)
+                 for hit in response.get("hits", {}).get("hits", []) or []:
+                     key = f"{hit.get('_index', one_index)}:{hit.get('_id')}"

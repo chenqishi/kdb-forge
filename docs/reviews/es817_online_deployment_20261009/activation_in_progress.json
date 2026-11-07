@@ -1,0 +1,42 @@
+{
+  "phase": "healthy_readonly_verified",
+  "code_head": "3ee7f931d4ad598a54173bb2881a36f0a26a3112",
+  "old_services": {
+    "retrieval": [
+      307354,
+      1790011866.18
+    ],
+    "off_task": [
+      2269292,
+      1790096549.47
+    ]
+  },
+  "new_services": {
+    "retrieval": {
+      "pid": 1533338,
+      "create_time": 1791478533.65,
+      "cmdline": [
+        "/root/knowledge_database_builder/.venv-es817/bin/python",
+        "knowledge_database_search_service/src/knowledge_database_search_es.py",
+        "config/config_for_search_index.json"
+      ],
+      "python": "/root/knowledge_database_builder/.venv-es817/bin/python",
+      "log": "/root/knowledge_database_builder/log/es_search_service.log.es817_20261009_1791478533832080738"
+    },
+    "off_task": {
+      "pid": 1533339,
+      "create_time": 1791478533.65,
+      "cmdline": [
+        "/root/knowledge_database_builder/.venv-es817/bin/python",
+        "control_service/off_task_control_service.py",
+        "--script-dir",
+        "/root/knowledge_database_builder",
+        "--port=6000"
+      ],
+      "python": "/root/knowledge_database_builder/.venv-es817/bin/python",
+      "log": "/root/knowledge_database_builder/log/run_off_task.log.es817_20261009_1791478533833602739"
+    }
+  },
+  "started_utc": "2026-10-08T16:55:33Z",
+  "finished_utc": "2026-10-08T16:56:36Z"
+}

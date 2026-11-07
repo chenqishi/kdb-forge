@@ -1,0 +1,44 @@
+{
+  "head": "3ee7f931d4ad598a54173bb2881a36f0a26a3112",
+  "activated_utc": "2026-10-08T16:55:33Z",
+  "services": {
+    "retrieval": {
+      "pid": 1533338,
+      "create_time": 1791478533.65,
+      "cmdline": [
+        "/root/knowledge_database_builder/.venv-es817/bin/python",
+        "knowledge_database_search_service/src/knowledge_database_search_es.py",
+        "config/config_for_search_index.json"
+      ],
+      "python": "/root/knowledge_database_builder/.venv-es817/bin/python",
+      "log": "/root/knowledge_database_builder/log/es_search_service.log.es817_20261009_1791478533832080738"
+    },
+    "off_task": {
+      "pid": 1533339,
+      "create_time": 1791478533.65,
+      "cmdline": [
+        "/root/knowledge_database_builder/.venv-es817/bin/python",
+        "control_service/off_task_control_service.py",
+        "--script-dir",
+        "/root/knowledge_database_builder",
+        "--port=6000"
+      ],
+      "python": "/root/knowledge_database_builder/.venv-es817/bin/python",
+      "log": "/root/knowledge_database_builder/log/run_off_task.log.es817_20261009_1791478533833602739"
+    }
+  },
+  "config_files": [
+    {
+      "path": "/root/knowledge_database_builder/config/config_for_search_index.json",
+      "sha256": "8ceca10ad7e15a65e6f896aa72e00dc23831dcb55edeeb8e629826a899a6a03f"
+    },
+    {
+      "path": "/root/knowledge_database_builder/config/config_for_search_index_no_dup_payoneer.json",
+      "sha256": "487016b2eba9d608a0418d74109be801f9d616aa8a9bf15794a9b30906ac6b4c"
+    },
+    {
+      "path": "/root/knowledge_database_builder/config/config_es_engine.json",
+      "sha256": "c3c8c77a6688b76f584a45424110409986e38a391cd359bfdfcd9f58704a4e63"
+    }
+  ]
+}

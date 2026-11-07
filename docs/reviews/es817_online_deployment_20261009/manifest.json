@@ -1,0 +1,37 @@
+{
+  "head": "3ee7f931d4ad598a54173bb2881a36f0a26a3112",
+  "host": "shenzhen-120",
+  "checkout": "/root/knowledge_database_builder",
+  "old_head": "7ca77d71f82f5dbeb8ad75caf234550421bb35a7",
+  "deployment_transport": "git pull --ff-only",
+  "active_engine_config": "/root/knowledge_database_builder/config/config_es_engine_es817.online.json",
+  "online_requests": 6,
+  "test_writes": 0,
+  "migration_completed": true,
+  "files": {
+    "activated.json": "ca543407dd5278120a9c6809dc4edb64dd275222b9dc0967d3c7945baaf068cf",
+    "activation_in_progress.json": "2947a466477ce261eca77b01a65c827a164d85550407fff4e308084be513591c",
+    "current_log_entries.json": "ff277f16c4a739e79bd7738601367859400d12d5c00cef166b9aaa65980b838b",
+    "current_retrieval_count_readonly.json": "b87d8c4179b3de3c3267a77c2cb33667c9a2be8d5c793007ea637b70c3fa8c5e",
+    "health_after.json": "f887eb9d52bfc89fb568a312d68c066b899dcc78eb2fe52e07438e9ef15c7b16",
+    "observed_current_services_20261009.json": "37d37ef20ae39ec032af00d6070986badd62ea29e10c8eb0682844078c88f762",
+    "readonly_acceptance.json": "080838ec32e8b1d8ee327cb5752a35007a97cbd62a9a47d14e17a1ff8c589578",
+    "source_connection_check.json": "b4bbce1d86e11df0c2bdae4ad3ac5d4264ff9b3ffb1f37dc180f23e516f65083"
+  },
+  "fixed_log_entries": {
+    "retrieval": "/root/knowledge_database_builder/log/es_search_service.es817.current.log",
+    "off_task": "/root/knowledge_database_builder/log/run_off_task.es817.current.log"
+  },
+  "migration_snapshot_verified": {
+    "indexes": 86,
+    "source_roots": 202962,
+    "target_roots": 202962,
+    "identity_marker_differences": 0,
+    "applied_create": 213,
+    "applied_update": 17,
+    "full_time_window_documents_verified": 340,
+    "verified_local_time": "2026-10-09 01:28:23 Asia/Shanghai",
+    "full_untimed_business_fields_audited": false,
+    "continuous_cdc": false
+  }
+}

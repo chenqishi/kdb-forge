@@ -1,0 +1,32 @@
+[
+  {
+    "question": "Payoneer 提现到工商银行的手续费是多少？",
+    "expected_is_rag_suitable": "yes",
+    "expected_topic_keywords": ["提现", "费率", "手续费"]
+  },
+  {
+    "question": "Payoneer 注册需要哪些资料？",
+    "expected_is_rag_suitable": "yes",
+    "expected_topic_keywords": ["注册", "身份", "资料"]
+  },
+  {
+    "question": "在吗？",
+    "expected_is_rag_suitable": "no",
+    "expected_topic_keywords": ["闲聊", "寒暄", "其他"]
+  },
+  {
+    "question": "我的账户 ID 12345 为什么被冻结了？",
+    "expected_is_rag_suitable": "no",
+    "expected_topic_keywords": ["账户", "风控", "冻结"]
+  },
+  {
+    "question": "我刚才转账的订单号 OD-7788 现在到账了吗？",
+    "expected_is_rag_suitable": "no",
+    "expected_topic_keywords": ["订单", "状态", "账户", "转账"]
+  },
+  {
+    "question": "Payoneer 支持哪些币种提现？",
+    "expected_is_rag_suitable": "yes",
+    "expected_topic_keywords": ["提现", "币种"]
+  }
+]

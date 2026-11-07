@@ -1,0 +1,16 @@
+{
+  "unique_documents_independently_full_source_verified": 340,
+  "unique_changed_documents": 230,
+  "created_delete_state_distribution": {
+    "0": 213
+  },
+  "created_preserved_vector_instances": {
+    "title_embedding": 213,
+    "content_embedding": 213,
+    "indexes.embedding": 213,
+    "image_indexes.embedding": 0
+  },
+  "existing_replacement_four_vector_paths_unchanged": 17,
+  "embeddings_regenerated": 0,
+  "knowledge_review_decisions": 0
+}

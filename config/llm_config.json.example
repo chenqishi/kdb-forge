@@ -1,0 +1,36 @@
+{
+  "_comment": "chat_qa_extract 的 LLM 凭证与模型配置。复制为 config/llm_config.json 并填入真实值，该文件已在 .gitignore 中，不要提交。",
+  "providers": {
+    "openrouter": {
+      "api_url": "https://<your-openrouter-gateway>/api/v1/chat/completions",
+      "api_key": "<your-openrouter-api-key>"
+    },
+    "openai": {
+      "api_url": "https://<your-openai-gateway>/v1/chat/completions",
+      "api_key": ""
+    },
+    "qwen": {
+      "api_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+      "api_key": ""
+    },
+    "gemini": {
+      "api_url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+      "api_key": ""
+    },
+    "volcengine": {
+      "api_url": "https://ark.cn-beijing.volces.com/api/v3/chat/completions",
+      "api_key": ""
+    },
+    "deepseek": {
+      "api_url": "https://api.deepseek.com/v1/chat/completions",
+      "api_key": "<your-deepseek-api-key>"
+    }
+  },
+  "models": {
+    "extract": "anthropic/claude-sonnet-4",
+    "quality": "google/gemini-2.5-flash"
+  },
+  "fallback_model": "google/gemini-2.5-flash-lite",
+  "fallback_provider": "openrouter",
+  "force_use_backup": false
+}

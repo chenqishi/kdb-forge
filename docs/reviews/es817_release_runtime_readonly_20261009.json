@@ -1,0 +1,47 @@
+{
+  "elasticsearch_client": "8.17.2",
+  "code_mode": "verified release compiled only in this isolated process; production files unchanged",
+  "source_sha256": {
+    "knowledge_interface_tools.es8_client_router": "3570d825d5cdd660b23eeb8bbc53befd32b39a8def0195444a7318d64a5470ce",
+    "knowledge_interface_tools.es_count_utils": "0a4d82e166f98cb382fe39ecebed52156e7bcabc02870ba3f073471b4d229e78",
+    "knowledge_interface_tools.es8_search_interface": "d9a30277f6464d639a9255800506f8bc9fffeff062834e10cd1839d1df4cd9fc",
+    "knowledge_interface_tools.es_search_interface": "1aaebeaf53587f4e9e585fb908d09318c0a0be636eb4f36b8076517fb5c739e7"
+  },
+  "rows": [
+    {
+      "index": "open_shop",
+      "provider": "serverless",
+      "exists": false
+    },
+    {
+      "index": "mercado_local",
+      "provider": "serverless",
+      "exists": true,
+      "stored_source_filtered": false,
+      "exact_count": 11435,
+      "sample_failed_shards": 0,
+      "sample_vector_dims": 1024,
+      "hits": 2,
+      "total": 6,
+      "elapsed_ms": 127.3,
+      "docs_with_nested_vectors": 2,
+      "returned_source_bytes": 1098079
+    },
+    {
+      "index": "payoneer_olive",
+      "provider": "paas",
+      "exists": true,
+      "stored_source_filtered": false,
+      "exact_count": 60508,
+      "sample_failed_shards": 0,
+      "sample_vector_dims": 1024,
+      "hits": 2,
+      "total": 6,
+      "elapsed_ms": 5748.8,
+      "docs_with_nested_vectors": 2,
+      "returned_source_bytes": 485632
+    }
+  ],
+  "persistent_writes": 0,
+  "online_service_requests": 0
+}

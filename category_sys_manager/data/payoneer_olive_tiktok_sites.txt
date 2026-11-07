@@ -1,0 +1,22 @@
+# payoneer_olive：TikTok Shop 下的站点二级类目
+# 格式：每行一个类目路径，用 - 分隔层级。父类目 TikTok Shop 已存在（id=2084519180871708674），
+#       脚本按完整路径去重，已存在的会跳过。
+#
+# 站点取自 data/payoneer_olive/TikTok Shop/ 下已爬到知识的目录，一一对应。
+# 「欧洲12国」2026-08-08 补入：当时无权限、没知识所以没建，现在权限已开通并爬到内容。
+#
+# 导入命令：
+#   cd category_sys_manager
+#   python category_sys_manager.py batch_insert_category_from_file \
+#       --category_file=data/payoneer_olive_tiktok_sites.txt \
+#       --client=payoneer_olive --userId=2073772203129200642
+
+TikTok Shop-美国ACCU
+TikTok Shop-美国CCCU
+TikTok Shop-英国
+TikTok Shop-欧盟(西德意法)
+TikTok Shop-东南亚
+TikTok Shop-印尼
+TikTok Shop-墨西哥
+TikTok Shop-全托管
+TikTok Shop-欧洲12国

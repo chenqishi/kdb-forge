@@ -1,0 +1,5 @@
+# candidate_evidence
+
+For <=8 explicitly selected paired cases, generate one query vector using existing AliEmbedding (no new dependency/config). Reuse exactly it for old/new raw read requests. Capture old real EsSearchInterfaceOri.search_multi query bodies by replacing only index resolution and network boundary with mocks; never initialize old client. New builder real current root EsSearchInterfaceES8 allocated without constructor with declared vector fields. Two routes/public index size5(segment) or20(QA) for each cluster; Mercado Local H3 segment and H1 QA instead target the requested private index where their changed hits originate. Post only allowlisted _search. Compare native candidates, full-source local rerank using unmodified SearchDataInterface._cal_similarity; recover legacy filtered source via actual inner_hits. Log ranks/IDs/scores/dimensions and source bytes only. Native ANN candidate increase to500 and k20 for bounded new vector control requests are diagnostic only. No engine, routing or runtime config mutation. Embedding numeric values transient memory only.
+
+SQL: none.

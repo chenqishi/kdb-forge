@@ -1,10 +1,7 @@
-# Memory
+# Restart candidate memory
 
-- ES 8.17 mixed deployment and index routing: see [docs/ES8_Index_Routing.md](docs/ES8_Index_Routing.md).
-- ES7 -> ES8.17 retrieval migration: production uses `RoutedLegacyEngine` named APIs and native HNSW KNN; old unindexed `indexes.embedding` mappings must be reindexed into a new index. See [docs/ES8_Index_Routing.md](docs/ES8_Index_Routing.md).
-- Legacy service compatibility: `KnowledgeService` inherits `LegacySearchDataInterfaceMixin`; `SearchDataInterface` is exported from `kdb.crud` and `kdb.knowledge_interface_tools.search_index_data_interface`, including `insert_data`, `search_data_by_query`, and `web_search_data`. Method exposure is not proof of full HTTP/behavioral equivalence. See [docs/Architecture_Overview_Diagram.md](docs/Architecture_Overview_Diagram.md).
-- Scope correction (2026-09-28): Payoneer Olive category inference belongs to mining, not CRUD/retrieval compatibility. Keep generic explicit category processing and filters; see [docs/feedback_crud_mining_boundary.md](docs/feedback_crud_mining_boundary.md).
-- Merge workflow (2026-09-30): remote write API and ES8 service changes overlap; keep one compatibility implementation, preserve API contracts and run actual API tests (no import-error skips). See [docs/Merge_ES8_Write_API.md](docs/Merge_ES8_Write_API.md).
-- ES8-only correction (2026-09-30): preserve ES8.17 native retrieval and both merge parents' business APIs; do not restore ES7. Positional constructors and title/index vector synchronization need regression coverage. See [docs/feedback_es8_only.md](docs/feedback_es8_only.md) and [docs/Merge_ES8_Write_API.md](docs/Merge_ES8_Write_API.md).
-- ES8 retrieval HTTP exposure (2026-09-30): `/search` and `/web_search` are mounted only with HTTP Basic, while write/delete routes remain separate; runtime config and auth must stay outside Git. See `docs/ES8_Retrieval_Migration_Plan.md`.
-- ES8 endpoint verification (2026-09-30): supplied PaaS endpoint is reachable after whitelist and reports ES 8.17.0 but currently exposes only 36 system indices and HTTP on port 9200; Serverless is ES 8.17.0 with zero indices and HTTP-only. Do not claim retrieval acceptance until a business index with native KNN mapping is present.
+- 2026-11-05 全工程重启实施：只从已发布f6a78084+四个核验dirty重新组装，本候选为detached、未提交未部署。恢复上下文先读/root/kdb-forge/artifacts/whole_project_refactor_restart_20261105/START.md及STATE.json。历史ES分片/DFS不是当前任务。
+- SearchDataInterface含客户类目推断整体位于retrieval/application；旧core只保留这一套，forge仅薄协议适配。新发现原forge工厂/严格计数协议已按原契约承接，不能沿用上一轮报告当验收。
+- 本机/root/kdb-forge/.venv-es817实际Python3.12，legacy验证使用/root/miniconda3/envs/py38/bin/python（Python3.9）和本候选SDK依赖；不从目录名推断环境。
+- 六服务冷导入通过，语言fasttext缺失、爬虫selenium缺失、历史HTML夹具4失败及msearch请求计数2失败独立记录；测试非真实外部写入验收。
+- 2026-11-06复核：ES同PIT视图30样本/60对完全一致，见/root/kdb-forge/artifacts/snapshot_pair_validation_20261106。私有材料、launcher预检、默认安全测试和最新清单见/root/kdb-forge/artifacts/refactor_review_remediation_20261106/REPORT.md；旧清单仅代表旧时刻。默认运行run_offline_tests.sh，服务必须显式KDB_PYTHON；先读docs/runbooks/offline_testing.md和restart_runtime.md。混合import/旧路径/目录未完成项见refactor_residuals_20261106.md，不能宣称全项目完全ready。

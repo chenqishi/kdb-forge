@@ -1,0 +1,22 @@
+[
+  {
+    "client_version": "8.17.2",
+    "python": "/root/knowledge_database_builder/.venv-es817/bin/python",
+    "business_and_both_service_modules_imported": true,
+    "service_startups": 0,
+    "persistent_ES_writes": 0,
+    "counts": {
+      "mercado_local": 0,
+      "payoneer_olive": 0
+    },
+    "actual_factory_class": "EsSearchInterfaceES8"
+  },
+  {
+    "client_version": "7.10.0",
+    "python": "/root/miniconda3/envs/py38/bin/python",
+    "business_and_both_service_modules_imported": true,
+    "service_startups": 0,
+    "persistent_ES_writes": 0,
+    "counts": {}
+  }
+]

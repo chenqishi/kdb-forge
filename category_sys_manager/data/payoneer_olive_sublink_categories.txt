@@ -1,0 +1,15 @@
+# payoneer_olive：子链接知识的归属类目
+#
+# 背景：11 篇平台官方攻略里引用了大量子链接（卖家大学、帮助中心、政策页）。
+# 按业务口径只抓「到入驻为止」的那部分，类目继承自引用它的父文档。
+#
+# TikTok Shop 各站点已有二级类目，子链接直接继承，不用新建。
+# Mercado Libre 只有一级类目，40 条子链接和主文档混在一起不好管，单独建一个二级。
+#
+# 导入命令：
+#   cd category_sys_manager
+#   python category_sys_manager.py batch_insert_category_from_file \
+#       --category_file=data/payoneer_olive_sublink_categories.txt \
+#       --client=payoneer_olive --userId=2073772203129200642
+
+Mercado Libre-入驻指引

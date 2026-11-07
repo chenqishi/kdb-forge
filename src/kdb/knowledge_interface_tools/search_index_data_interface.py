@@ -1,5 +1,3 @@
-"""Old module path backed by the rebuilt ES8.17 service."""
-
-from kdb.crud.service import SearchDataInterface
-
-__all__ = ["SearchDataInterface"]
+"""Legacy import alias; no independent business implementation."""
+from kdb.compat.entrypoints import legacy_entry
+legacy_entry(__name__, 'kdb.retrieval.application.search_index_data_interface', globals())

@@ -1,21 +1,23 @@
-"""kdb —— Knowledge Database Builder（重构版）。
+"""Unified knowledge project. Legacy forge exports are thin protocol adapters."""
+from pathlib import Path as _Path
+import sys as _sys
 
-重构第一步：把知识库增删改查（CRUD）抽取成高内聚低耦合的独立模块。
-- crud.repository.KnowledgeRepository：纯向量 CRUD（封装 ES8.17 native 路由引擎）
-- crud.service.KnowledgeService：文本级 CRUD（注入 embedding 客户端）
-"""
-
-from importlib import import_module
-
-__version__ = "0.1.0"
+# The retained legacy imports live in this checkout, never in another old repo.
+_checkout_root = _Path(__file__).resolve().parents[2]
+if (_checkout_root / "knowledge_interface_tools").is_dir() and str(_checkout_root) not in _sys.path:
+    _sys.path.insert(0, str(_checkout_root))
 
 __all__ = ["KnowledgeRepository", "KnowledgeService", "SearchDataInterface"]
 
 
 def __getattr__(name):
-    """Keep health/dry-run imports independent of the CRUD dependencies."""
-    if name not in __all__:
-        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-    value = getattr(import_module("kdb.crud"), name)
-    globals()[name] = value
-    return value
+    if name == "KnowledgeRepository":
+        from .crud.repository import KnowledgeRepository
+        return KnowledgeRepository
+    if name == "KnowledgeService":
+        from .services.forge_compat.adapter import KnowledgeService
+        return KnowledgeService
+    if name == "SearchDataInterface":
+        from .retrieval.application.search_index_data_interface import SearchDataInterface
+        return SearchDataInterface
+    raise AttributeError(name)

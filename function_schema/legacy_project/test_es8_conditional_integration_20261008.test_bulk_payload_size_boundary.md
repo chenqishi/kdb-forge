@@ -1,0 +1,3 @@
+# test_bulk_payload_size_boundary
+
+Inputs: existing source-derived offline fixtures/client captures or declared pytest parameters; real old-project constructors/factory/business/service functions remain in use. Outputs: deterministic source-preservation/query/routing/PIT/CAS/update/error contract checks. Code is reused from prior verified old-project del_flag tests with no live-write probe. make_business uses canonical es_version=8.17, matching current application config. External ES/embedding/LLM boundaries are simulated; this is not ANN quality or real write acceptance. SQL/side effects: temporary fixture/snapshot files and mock requests only; no real ES/model/SQL/service/config/alias operations.

@@ -1,0 +1,3 @@
+# main
+
+Inputs: existing local configs/sources/saved cases; optional task-specific KDB_ES8_PROBE_OUTPUT for a fresh local evidence directory. Outputs: fresh private local evidence directory, launch main only via nice15 python3 in memory and SSHstdin, stream safe progress, store sanitized evidence/summary/manifests. Timeout480s remote; no overwrite of prior reports, no SG/old comparison. SQL/side effects: local report files and saved code/schema only, no main files/deploy/restart/config/data modifications. Preserve failed harness-attempt evidence and separately label it; never misclassify a guard rejecting nested inner_hits source as an engine failure.

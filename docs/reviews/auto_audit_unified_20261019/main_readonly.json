@@ -1,0 +1,272 @@
+{
+  "checked_at": "2026-10-19 11:54:14",
+  "mode": "candidate_in_memory_real_main_readonly",
+  "result": {
+    "summary": {
+      "total_indexes": 2,
+      "success_count": 0,
+      "failed_count": 0,
+      "skipped_count": 0,
+      "dry_run_count": 2,
+      "total_docs_updated": 0,
+      "total_high_quality": 0,
+      "total_other_quality": 0
+    },
+    "details": {
+      "payoneer_olive": {
+        "status": "dry_run",
+        "result": {
+          "mode": "dry_run",
+          "stats": {
+            "index_name": "payoneer_olive",
+            "provider": "paas",
+            "from_type_norm": [
+              "document",
+              "html"
+            ],
+            "total_count": 952,
+            "quality_distribution": {
+              "high": 814,
+              "mid": 138
+            },
+            "high_count": 814,
+            "other_count": 138,
+            "unchanged_count": 0,
+            "soft_deleted_count": 21,
+            "threshold_hours": 24,
+            "threshold_minutes": 0,
+            "threshold_desc": "24小时",
+            "threshold_time": "2026-10-18 11:54:14"
+          }
+        }
+      },
+      "mercado_local": {
+        "status": "dry_run",
+        "result": {
+          "mode": "dry_run",
+          "stats": {
+            "index_name": "mercado_local",
+            "provider": "serverless",
+            "from_type_norm": [
+              "document",
+              "html"
+            ],
+            "total_count": 0,
+            "quality_distribution": {},
+            "high_count": 0,
+            "other_count": 0,
+            "unchanged_count": 0,
+            "soft_deleted_count": 0,
+            "threshold_hours": 24,
+            "threshold_minutes": 0,
+            "threshold_desc": "24小时",
+            "threshold_time": "2026-10-18 11:54:14"
+          }
+        }
+      }
+    },
+    "config_path": "/root/knowledge_database_builder/config/config_es_engine_es817.online.json",
+    "config_sha256": "ef3308c6dd97d2f297015c9cf2196accc0a7290fef2f517b3670be508ceb71a8",
+    "es_version": "es8.17",
+    "started_at": "2026-10-19 11:54:14"
+  },
+  "independent_counts": {
+    "payoneer_olive": {
+      "total_count": 952,
+      "high_count": 814,
+      "other_count": 138
+    },
+    "mercado_local": {
+      "total_count": 0,
+      "high_count": 0,
+      "other_count": 0
+    }
+  },
+  "inventory_count": 109,
+  "inventory": [
+    "accenture",
+    "admin_test",
+    "caguuu",
+    "cdiscount",
+    "customer_platform",
+    "customer_platform_admin",
+    "diag_test_idx",
+    "individual",
+    "individual_1",
+    "individual_11_kalodata",
+    "individual_13",
+    "individual_13_123123",
+    "individual_14",
+    "individual_14_rakuten",
+    "individual_15",
+    "individual_16_takeyama",
+    "individual_17_zozotown",
+    "individual_18",
+    "individual_20",
+    "individual_20_payoneer",
+    "individual_20_payoneer__v817_local_dump_20261001",
+    "individual_26",
+    "individual_26_test001",
+    "individual_28_test002",
+    "individual_3",
+    "individual_33_test003",
+    "individual_5",
+    "individual_7",
+    "individual_7_konvie",
+    "individual_8",
+    "individual_8_konvie1",
+    "individual_9_test_stone",
+    "japanyeta",
+    "joint_login",
+    "joint_login_joint_login",
+    "jprefund",
+    "leelinesourcing",
+    "letian",
+    "lufitself",
+    "manyitax",
+    "mars_mind",
+    "mars_mind_guanghe",
+    "mars_mind_marsmind_sales",
+    "mars_mind_to_c_sales",
+    "mars_mind_to_c_sales_marsmind_toc_sales",
+    "mercado",
+    "mercado_celine",
+    "mercado_chelsea",
+    "mercado_gold",
+    "mercado_jonas",
+    "mercado_libby",
+    "mercado_local",
+    "mercado_local_mercado_local_admin",
+    "mercado_local_mercado_local_mercado_local_admin_0_we_com",
+    "mercado_local_sg_retrieval_test",
+    "mercado_mercado_crpe",
+    "mercado_mercado_ids_1",
+    "mercado_mercado_janice",
+    "mercado_mercado_lead_capture",
+    "mercado_mercado_local_admin",
+    "mercado_mercado_mercado_janice_13_we_com",
+    "mercado_mercado_nicole",
+    "mercado_mercadoalina",
+    "mercado_mercadoerin",
+    "mercado_mercadoids",
+    "mercado_sg_retrieval_test",
+    "mercado_test_melihelp_mx_context",
+    "mercado_test_mercado_stone",
+    "mercado_wangying",
+    "mix",
+    "oceanpay",
+    "onbuy",
+    "open_shop",
+    "payoneer",
+    "payoneer__v817_local_dump_20261001",
+    "payoneer_aliyun_canary_20261009",
+    "payoneer_aliyun_smoke_20261009",
+    "payoneer_olive",
+    "payoneer_olive__v817_local_dump_20261001",
+    "payoneer_olive_helen",
+    "payoneer_olive_payoneer_olive",
+    "payoneer_olive_payoneer_olive__v817_local_dump_20261001",
+    "payoneer_olive_rina",
+    "payoneer_payoneer",
+    "payoneer_payoneer__v817_local_dump_20261001",
+    "payoneer_sg_retrieval_test",
+    "private",
+    "product_knowledge",
+    "public",
+    "qoo10",
+    "qutian",
+    "rakumart",
+    "rakutenfrance",
+    "rakutenfrance_rakutenfr",
+    "replay_0fb44409b83746c188fa48a5099926b0_payoneer_olive__v817_initial_20260930",
+    "rufitself",
+    "santouliubi",
+    "serene_demo_client",
+    "shenkuaxie",
+    "skyee",
+    "smartdetax",
+    "test_case",
+    "wayfair",
+    "wayfair_test",
+    "wayfair_test_scarlett_test",
+    "wayfair_wayfair",
+    "wayfair_wayfair_test2",
+    "yiwupassport",
+    "yixin"
+  ],
+  "requests": [
+    {
+      "method": "HEAD",
+      "path": "/payoneer_olive"
+    },
+    {
+      "method": "POST",
+      "path": "/payoneer_olive/_count"
+    },
+    {
+      "method": "POST",
+      "path": "/payoneer_olive/_search"
+    },
+    {
+      "method": "POST",
+      "path": "/payoneer_olive/_count"
+    },
+    {
+      "method": "POST",
+      "path": "/payoneer_olive/_count"
+    },
+    {
+      "method": "POST",
+      "path": "/payoneer_olive/_count"
+    },
+    {
+      "method": "HEAD",
+      "path": "/mercado_local"
+    },
+    {
+      "method": "POST",
+      "path": "/mercado_local/_count"
+    },
+    {
+      "method": "POST",
+      "path": "/payoneer_olive/_count"
+    },
+    {
+      "method": "POST",
+      "path": "/payoneer_olive/_count"
+    },
+    {
+      "method": "POST",
+      "path": "/payoneer_olive/_count"
+    },
+    {
+      "method": "POST",
+      "path": "/mercado_local/_count"
+    },
+    {
+      "method": "POST",
+      "path": "/mercado_local/_count"
+    },
+    {
+      "method": "POST",
+      "path": "/mercado_local/_count"
+    },
+    {
+      "method": "GET",
+      "path": "/_cat/indices"
+    },
+    {
+      "method": "GET",
+      "path": "/_cat/indices"
+    }
+  ],
+  "persistent_writes": 0,
+  "services_restarted": 0,
+  "source_sha256": {
+    "knowledge_interface_tools.es_maintenance": "2b6e26064e5623f2095f4f2d2cbc8197eeb215fc76f4f7ba7b9529cdd16eb772",
+    "knowledge_interface_tools.es8_client_router": "4bec526ddce50c9e8594eabb935fd3f6d4801ccd54b730ca516df23847e22a73",
+    "knowledge_interface_tools.es8_search_interface": "daaf142ec705855a84d11197dc6cdc00926e3650f6f50e8ef68a84edf02a8cbb",
+    "knowledge_interface_tools.es_search_interface": "00d9cb22034c5049eb9aeabd71b26bbc2066bb325f229e52be5f03d0238c52b5",
+    "control_script.timing_auto_audit_kg": "3f9a21c94fd3de9435cd9b61fcf56d0b77472468aea8c877e616479f6b50c16d"
+  }
+}

@@ -1,0 +1,843 @@
+{
+  "task": "ES817-INCREMENTAL-SYNC-20261009-OLD",
+  "execution_stages": [
+    {
+      "stage": "identity_priority",
+      "started_utc": "2026-10-08T16:59:42.324584+00:00",
+      "finished_utc": "2026-10-08T17:08:00.266430+00:00",
+      "indexes": 7,
+      "failed_indexes": 2,
+      "ACK_full_source_verified": 179,
+      "classifications": {
+        "create_candidate": 176,
+        "replace_candidate": 3
+      },
+      "source_report": "data/es817_incremental_sync_20261009_identity_priority/results.json",
+      "report_sha256": "2b9aadbfbfa709cedad170fc4841e19cc548e6a0abc7395e34c23363e6fc8282"
+    },
+    {
+      "stage": "time_priority",
+      "started_utc": "2026-10-08T17:09:47.959951+00:00",
+      "finished_utc": "2026-10-08T17:10:03.600198+00:00",
+      "indexes": 2,
+      "failed_indexes": 0,
+      "ACK_full_source_verified": 37,
+      "classifications": {
+        "create_candidate": 37,
+        "noop_equal": 3
+      },
+      "source_report": "data/es817_incremental_sync_20261009_time_priority/results.json",
+      "report_sha256": "de28e4d7565676cfdeda9da42899745c839d78bb82db72f6e2dfb1b5e9d43547"
+    },
+    {
+      "stage": "time_all",
+      "started_utc": "2026-10-08T17:13:23.126309+00:00",
+      "finished_utc": "2026-10-08T17:15:50.569231+00:00",
+      "indexes": 86,
+      "failed_indexes": 0,
+      "ACK_full_source_verified": 14,
+      "classifications": {
+        "noop_equal": 326,
+        "replace_candidate": 14
+      },
+      "source_report": "data/es817_incremental_sync_20261009_time_all/results.json",
+      "report_sha256": "c95154649f6e3074f5d63aa2d08e0cac002e1be5729f5e6e157b9d47bf48789b"
+    }
+  ],
+  "per_changed_index": [
+    {
+      "index": "wayfair_test",
+      "provider": "serverless",
+      "create": 5,
+      "update": 0,
+      "ACK_full_source_verified": 5
+    },
+    {
+      "index": "joint_login",
+      "provider": "serverless",
+      "create": 87,
+      "update": 2,
+      "ACK_full_source_verified": 89
+    },
+    {
+      "index": "payoneer",
+      "provider": "paas",
+      "create": 5,
+      "update": 13,
+      "ACK_full_source_verified": 18
+    },
+    {
+      "index": "mercado",
+      "provider": "serverless",
+      "create": 53,
+      "update": 2,
+      "ACK_full_source_verified": 55
+    },
+    {
+      "index": "wayfair",
+      "provider": "serverless",
+      "create": 26,
+      "update": 0,
+      "ACK_full_source_verified": 26
+    },
+    {
+      "index": "mercado_local",
+      "provider": "serverless",
+      "create": 6,
+      "update": 0,
+      "ACK_full_source_verified": 6
+    },
+    {
+      "index": "payoneer_olive",
+      "provider": "paas",
+      "create": 31,
+      "update": 0,
+      "ACK_full_source_verified": 31
+    },
+    {
+      "index": "diag_test_idx",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_3",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mercado_gold",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mercado_mercado_local_admin",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mercado_mercado_nicole",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "rakutenfrance_rakutenfr",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "lufitself",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "manyitax",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mercado_chelsea",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mercado_mercadoerin",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_1",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mercado_celine",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "product_knowledge",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mercado_libby",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mercado_mercado_ids_1",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "joint_login_joint_login",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mercado_mercado_crpe",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "payoneer_payoneer",
+      "provider": "paas",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "serene_demo_client",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mercado_wangying",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "cdiscount",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_7_konvie",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_13_123123",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "public",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_5",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "shenkuaxie",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_8_konvie1",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_33_test003",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_8",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_18",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "rakumart",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_14",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "customer_platform_admin",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_7",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "rufitself",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_16_takeyama",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_26",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "onbuy",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_11_kalodata",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_14_rakuten",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "qutian",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "santouliubi",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_15",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mars_mind",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "wayfair_wayfair",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mercado_test_melihelp_mx_context",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "jprefund",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "admin_test",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "letian",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mercado_jonas",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "qoo10",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_17_zozotown",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_13",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_20_payoneer",
+      "provider": "paas",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_9_test_stone",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mars_mind_to_c_sales_marsmind_toc_sales",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mercado_local_mercado_local_admin",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mercado_mercadoalina",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_28_test002",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "yixin",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mars_mind_marsmind_sales",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mercado_mercado_janice",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "accenture",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "skyee",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "customer_platform",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "japanyeta",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_26_test001",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mars_mind_guanghe",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "smartdetax",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "payoneer_olive_payoneer_olive",
+      "provider": "paas",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "caguuu",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "wayfair_wayfair_test2",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "yiwupassport",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "individual_20",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "rakutenfrance",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "mercado_test_mercado_stone",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "oceanpay",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    },
+    {
+      "index": "leelinesourcing",
+      "provider": "serverless",
+      "create": 0,
+      "update": 0,
+      "ACK_full_source_verified": 0
+    }
+  ],
+  "replacement_changes": [
+    {
+      "stage": "identity_priority",
+      "index": "joint_login",
+      "identity_sha256": "43756db93868b110146d9e64b9e9d589d299db80337cba05517236c605df0d58",
+      "changed_root_fields": [
+        "del_flag",
+        "ext_info",
+        "flag",
+        "insert_time",
+        "tags",
+        "task_id",
+        "update_time"
+      ],
+      "existing_four_vector_paths_unchanged": true
+    },
+    {
+      "stage": "identity_priority",
+      "index": "mercado",
+      "identity_sha256": "744a7358e880b211ee382703260a9fd09d47f80750875fe5bc787bbbda9d1b5d",
+      "changed_root_fields": [
+        "del_flag",
+        "insert_time",
+        "update_time"
+      ],
+      "existing_four_vector_paths_unchanged": true
+    },
+    {
+      "stage": "identity_priority",
+      "index": "mercado",
+      "identity_sha256": "93ee1ef06e6f8eedf500b0611f6f56e3ded916fe78368446ca090955bf94c7b7",
+      "changed_root_fields": [
+        "del_flag",
+        "insert_time",
+        "update_time"
+      ],
+      "existing_four_vector_paths_unchanged": true
+    },
+    {
+      "stage": "time_all",
+      "index": "joint_login",
+      "identity_sha256": "541a969cfa4ca6fabc40e7d635c06c1558d1f3446881c9b7e14c9c404a0bba3c",
+      "changed_root_fields": [
+        "ext_info",
+        "flag",
+        "insert_time",
+        "task_id",
+        "update_time"
+      ],
+      "existing_four_vector_paths_unchanged": true
+    },
+    {
+      "stage": "time_all",
+      "index": "payoneer",
+      "identity_sha256": "6b1d90644968b938b260523fc9528ee23e90b339a5b263ad98f5c17f6fe61995",
+      "changed_root_fields": [
+        "insert_time",
+        "update_time"
+      ],
+      "existing_four_vector_paths_unchanged": true
+    },
+    {
+      "stage": "time_all",
+      "index": "payoneer",
+      "identity_sha256": "e80e6275670f0288812a0c68a77842183c5c33b04445c5ae2c9feb2fa52539aa",
+      "changed_root_fields": [
+        "insert_time",
+        "update_time"
+      ],
+      "existing_four_vector_paths_unchanged": true
+    },
+    {
+      "stage": "time_all",
+      "index": "payoneer",
+      "identity_sha256": "2cd272db4be431338bf1c39b634e5a5091af0e37e9d2594e805f2cdc3e1e3daf",
+      "changed_root_fields": [
+        "insert_time",
+        "update_time"
+      ],
+      "existing_four_vector_paths_unchanged": true
+    },
+    {
+      "stage": "time_all",
+      "index": "payoneer",
+      "identity_sha256": "ca01840cd2c80e8d1be7834a6015652ad1b8815786fbd9af1e6911c4a63c5423",
+      "changed_root_fields": [
+        "insert_time",
+        "update_time"
+      ],
+      "existing_four_vector_paths_unchanged": true
+    },
+    {
+      "stage": "time_all",
+      "index": "payoneer",
+      "identity_sha256": "ea881e6a95ae8a221a3a573c759eff740bc50c5e7b22219aecdd97319fb10cb2",
+      "changed_root_fields": [
+        "insert_time",
+        "update_time"
+      ],
+      "existing_four_vector_paths_unchanged": true
+    },
+    {
+      "stage": "time_all",
+      "index": "payoneer",
+      "identity_sha256": "121c031ffe1e38c153214be7c6fa66e895e521a88e132d9e5c1c08de5a99b70d",
+      "changed_root_fields": [
+        "insert_time",
+        "update_time"
+      ],
+      "existing_four_vector_paths_unchanged": true
+    },
+    {
+      "stage": "time_all",
+      "index": "payoneer",
+      "identity_sha256": "615a40ea0e66e06a9dfb98a253c53251fbb2ac872c1416645fc319a7aa7560a9",
+      "changed_root_fields": [
+        "insert_time",
+        "update_time"
+      ],
+      "existing_four_vector_paths_unchanged": true
+    },
+    {
+      "stage": "time_all",
+      "index": "payoneer",
+      "identity_sha256": "49ad4e95a1322ee8fecfc46426422e088f2833b1303db1db80af35fb6b9f420c",
+      "changed_root_fields": [
+        "insert_time",
+        "update_time"
+      ],
+      "existing_four_vector_paths_unchanged": true
+    },
+    {
+      "stage": "time_all",
+      "index": "payoneer",
+      "identity_sha256": "d34caab8ebd38e937f7867344b4d43f1e7f8a23dd76d6c52169da300800ff667",
+      "changed_root_fields": [
+        "insert_time",
+        "update_time"
+      ],
+      "existing_four_vector_paths_unchanged": true
+    },
+    {
+      "stage": "time_all",
+      "index": "payoneer",
+      "identity_sha256": "16d3e6ef7ccf292b3b9d864e18ac902758c5c3b4068b078dc8e8dc521ad5b81d",
+      "changed_root_fields": [
+        "insert_time",
+        "update_time"
+      ],
+      "existing_four_vector_paths_unchanged": true
+    },
+    {
+      "stage": "time_all",
+      "index": "payoneer",
+      "identity_sha256": "66125bafe062d9d6f40399a76d7ac0798706be4ab2ef57f286785bec4ad3c00a",
+      "changed_root_fields": [
+        "insert_time",
+        "update_time"
+      ],
+      "existing_four_vector_paths_unchanged": true
+    },
+    {
+      "stage": "time_all",
+      "index": "payoneer",
+      "identity_sha256": "a2d0428a37598d92f7450483bda7f967ead5e0bd3f0bc37fbb83a7002c208826",
+      "changed_root_fields": [
+        "insert_time",
+        "update_time"
+      ],
+      "existing_four_vector_paths_unchanged": true
+    },
+    {
+      "stage": "time_all",
+      "index": "payoneer",
+      "identity_sha256": "7850163d871de43bbc2e93cb451f33822b30ff3b42f1718aed2f58ce79435a4a",
+      "changed_root_fields": [
+        "insert_time",
+        "update_time"
+      ],
+      "existing_four_vector_paths_unchanged": true
+    }
+  ],
+  "acknowledged_complete_source_verified": 230,
+  "create": 213,
+  "update": 17,
+  "soft_delete_changes": {
+    "zero_to_one": 2,
+    "one_to_zero": 1
+  },
+  "source_writes": 0,
+  "hard_deletes": 0,
+  "all_unchanged_time_fields_audited": false
+}

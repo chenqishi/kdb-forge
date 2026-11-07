@@ -1,0 +1,3 @@
+# Optional runtime for the isolated ES8.17 engine.
+# Keep requirements.txt (elasticsearch==7.10) unchanged for the legacy service.
+elasticsearch>=8.17,<8.18
