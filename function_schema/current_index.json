@@ -1,5 +1,5 @@
 {
-  "contract_count": 612,
+  "contract_count": 519,
   "modules": [
     {
       "source_file": "scripts/scheduled/chat_mining.sh",
@@ -1906,364 +1906,6 @@
       ]
     },
     {
-      "source_file": "src/kdb/services/forge_compat/adapter.py",
-      "contracts": [
-        {
-          "symbol": "KnowledgeService",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.md"
-        },
-        {
-          "symbol": "KnowledgeService.__getattr__",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.__getattr__.md"
-        },
-        {
-          "symbol": "KnowledgeService.__init__",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.__init__.md"
-        },
-        {
-          "symbol": "KnowledgeService.__setattr__",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.__setattr__.md"
-        },
-        {
-          "symbol": "KnowledgeService._bind_category_protocol",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService._bind_category_protocol.md"
-        },
-        {
-          "symbol": "KnowledgeService._from_interface",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService._from_interface.md"
-        },
-        {
-          "symbol": "KnowledgeService._init_legacy_compat",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService._init_legacy_compat.md"
-        },
-        {
-          "symbol": "KnowledgeService._join_index_names",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService._join_index_names.md"
-        },
-        {
-          "symbol": "KnowledgeService._load_legacy_search_cfg",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService._load_legacy_search_cfg.md"
-        },
-        {
-          "symbol": "KnowledgeService._regenerate_embeddings",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService._regenerate_embeddings.md"
-        },
-        {
-          "symbol": "KnowledgeService._search_index_names",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService._search_index_names.md"
-        },
-        {
-          "symbol": "KnowledgeService._sync_retrieval_indexes",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService._sync_retrieval_indexes.md"
-        },
-        {
-          "symbol": "KnowledgeService.batch_insert",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.batch_insert.md"
-        },
-        {
-          "symbol": "KnowledgeService.delete",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.delete.md"
-        },
-        {
-          "symbol": "KnowledgeService.from_config",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.from_config.md"
-        },
-        {
-          "symbol": "KnowledgeService.from_count_config",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.from_count_config.md"
-        },
-        {
-          "symbol": "KnowledgeService.get",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.get.md"
-        },
-        {
-          "symbol": "KnowledgeService.get_from_type_count",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.get_from_type_count.md"
-        },
-        {
-          "symbol": "KnowledgeService.insert_data",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.insert_data.md"
-        },
-        {
-          "symbol": "KnowledgeService.insert_text",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.insert_text.md"
-        },
-        {
-          "symbol": "KnowledgeService.search_data_by_multi_query",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.search_data_by_multi_query.md"
-        },
-        {
-          "symbol": "KnowledgeService.search_data_by_query",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.search_data_by_query.md"
-        },
-        {
-          "symbol": "KnowledgeService.search_text",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.search_text.md"
-        },
-        {
-          "symbol": "KnowledgeService.search_text_multi",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.search_text_multi.md"
-        },
-        {
-          "symbol": "KnowledgeService.update",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.update.md"
-        },
-        {
-          "symbol": "KnowledgeService.web_search",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.web_search.md"
-        },
-        {
-          "symbol": "KnowledgeService.web_search_data",
-          "schema_file": "function_schema/kdb.services.forge_compat.adapter.KnowledgeService.web_search_data.md"
-        }
-      ]
-    },
-    {
-      "source_file": "src/kdb/services/forge_compat/api/knowledge_routes.py",
-      "contracts": [
-        {
-          "symbol": "_get_service",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.knowledge_routes._get_service.md"
-        },
-        {
-          "symbol": "delete_doc",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.knowledge_routes.delete_doc.md"
-        },
-        {
-          "symbol": "insert_doc",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.knowledge_routes.insert_doc.md"
-        }
-      ]
-    },
-    {
-      "source_file": "src/kdb/services/forge_compat/api/legacy_routes.py",
-      "contracts": [
-        {
-          "symbol": "InsertRequest._id",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.InsertRequest._id.md"
-        },
-        {
-          "symbol": "InsertRequest.get_ext_info_with_extra_fields",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.InsertRequest.get_ext_info_with_extra_fields.md"
-        },
-        {
-          "symbol": "_call_modifier",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes._call_modifier.md"
-        },
-        {
-          "symbol": "_category_infos",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes._category_infos.md"
-        },
-        {
-          "symbol": "_get_modifier",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes._get_modifier.md"
-        },
-        {
-          "symbol": "_get_service",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes._get_service.md"
-        },
-        {
-          "symbol": "_insert_document",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes._insert_document.md"
-        },
-        {
-          "symbol": "_unsupported_modifier_message",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes._unsupported_modifier_message.md"
-        },
-        {
-          "symbol": "delete",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.delete.md"
-        },
-        {
-          "symbol": "delete_by_file",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.delete_by_file.md"
-        },
-        {
-          "symbol": "get_value_collection",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.get_value_collection.md"
-        },
-        {
-          "symbol": "insert",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.insert.md"
-        },
-        {
-          "symbol": "list_file_names",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.list_file_names.md"
-        },
-        {
-          "symbol": "modify_knowledge",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.modify_knowledge.md"
-        },
-        {
-          "symbol": "modify_knowledge_direct_update",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.modify_knowledge_direct_update.md"
-        },
-        {
-          "symbol": "preview_delete_by_file",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.preview_delete_by_file.md"
-        },
-        {
-          "symbol": "update_by_condition",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.legacy_routes.update_by_condition.md"
-        }
-      ]
-    },
-    {
-      "source_file": "src/kdb/services/forge_compat/api/retrieval_app.py",
-      "contracts": [
-        {
-          "symbol": "app",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.retrieval_app.app.md"
-        }
-      ]
-    },
-    {
-      "source_file": "src/kdb/services/forge_compat/api/search_routes.py",
-      "contracts": [
-        {
-          "symbol": "_get_count_service",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.search_routes._get_count_service.md"
-        },
-        {
-          "symbol": "_get_service",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.search_routes._get_service.md"
-        },
-        {
-          "symbol": "_require_search_auth",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.search_routes._require_search_auth.md"
-        },
-        {
-          "symbol": "search",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.search_routes.search.md"
-        },
-        {
-          "symbol": "web_search",
-          "schema_file": "function_schema/kdb.services.forge_compat.api.search_routes.web_search.md"
-        }
-      ]
-    },
-    {
-      "source_file": "src/kdb/services/forge_compat/bootstrap.py",
-      "contracts": [
-        {
-          "symbol": "build_legacy_engine",
-          "schema_file": "function_schema/kdb.services.forge_compat.bootstrap.build_legacy_engine.md"
-        }
-      ]
-    },
-    {
-      "source_file": "src/kdb/services/forge_compat/counting.py",
-      "contracts": [
-        {
-          "symbol": "build_from_type_count_query",
-          "schema_file": "function_schema/kdb.services.forge_compat.counting.build_from_type_count_query.md"
-        },
-        {
-          "symbol": "validate_count_from_type",
-          "schema_file": "function_schema/kdb.services.forge_compat.counting.validate_count_from_type.md"
-        },
-        {
-          "symbol": "validate_count_index",
-          "schema_file": "function_schema/kdb.services.forge_compat.counting.validate_count_index.md"
-        },
-        {
-          "symbol": "validate_count_time",
-          "schema_file": "function_schema/kdb.services.forge_compat.counting.validate_count_time.md"
-        }
-      ]
-    },
-    {
-      "source_file": "src/kdb/services/forge_compat/engine.py",
-      "contracts": [
-        {
-          "symbol": "RoutedLegacyEngine",
-          "schema_file": "function_schema/kdb.services.forge_compat.engine.RoutedLegacyEngine.md"
-        },
-        {
-          "symbol": "RoutedLegacyEngine.count_by_query",
-          "schema_file": "function_schema/kdb.services.forge_compat.engine.RoutedLegacyEngine.count_by_query.md"
-        }
-      ]
-    },
-    {
-      "source_file": "src/kdb/services/forge_compat/modify/service.py",
-      "contracts": [
-        {
-          "symbol": "apply_modify_plan",
-          "schema_file": "function_schema/kdb.services.forge_compat.modify.service.apply_modify_plan.md"
-        }
-      ]
-    },
-    {
-      "source_file": "src/kdb/services/forge_compat/repository.py",
-      "contracts": [
-        {
-          "symbol": "KnowledgeRepository",
-          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.md"
-        },
-        {
-          "symbol": "KnowledgeRepository.__init__",
-          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.__init__.md"
-        },
-        {
-          "symbol": "KnowledgeRepository._force_refresh",
-          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository._force_refresh.md"
-        },
-        {
-          "symbol": "KnowledgeRepository._idx",
-          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository._idx.md"
-        },
-        {
-          "symbol": "KnowledgeRepository.count_by_query",
-          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.count_by_query.md"
-        },
-        {
-          "symbol": "KnowledgeRepository.delete",
-          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.delete.md"
-        },
-        {
-          "symbol": "KnowledgeRepository.ensure_index",
-          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.ensure_index.md"
-        },
-        {
-          "symbol": "KnowledgeRepository.get",
-          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.get.md"
-        },
-        {
-          "symbol": "KnowledgeRepository.get_client_by_index",
-          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.get_client_by_index.md"
-        },
-        {
-          "symbol": "KnowledgeRepository.get_unique_values",
-          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.get_unique_values.md"
-        },
-        {
-          "symbol": "KnowledgeRepository.insert",
-          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.insert.md"
-        },
-        {
-          "symbol": "KnowledgeRepository.search",
-          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.search.md"
-        },
-        {
-          "symbol": "KnowledgeRepository.search_by_page",
-          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.search_by_page.md"
-        },
-        {
-          "symbol": "KnowledgeRepository.search_multi",
-          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.search_multi.md"
-        },
-        {
-          "symbol": "KnowledgeRepository.update_by_condition",
-          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.update_by_condition.md"
-        },
-        {
-          "symbol": "KnowledgeRepository.update_by_id",
-          "schema_file": "function_schema/kdb.services.forge_compat.repository.KnowledgeRepository.update_by_id.md"
-        }
-      ]
-    },
-    {
       "source_file": "src/kdb/services/off_task/app.py",
       "contracts": [
         {
@@ -2342,47 +1984,6 @@
       ]
     },
     {
-      "source_file": "src/kdb/shared/categories/client.py",
-      "contracts": [
-        {
-          "symbol": "CategoryClient",
-          "schema_file": "function_schema/kdb.shared.categories.client.CategoryClient.md"
-        },
-        {
-          "symbol": "CategoryClient.__init__",
-          "schema_file": "function_schema/kdb.shared.categories.client.CategoryClient.__init__.md"
-        },
-        {
-          "symbol": "CategoryClient.all_client_category_dict",
-          "schema_file": "function_schema/kdb.shared.categories.client.CategoryClient.all_client_category_dict.md"
-        },
-        {
-          "symbol": "CategoryClient.category_update_time_dict",
-          "schema_file": "function_schema/kdb.shared.categories.client.CategoryClient.category_update_time_dict.md"
-        },
-        {
-          "symbol": "CategoryClient.get_category_parent_chain",
-          "schema_file": "function_schema/kdb.shared.categories.client.CategoryClient.get_category_parent_chain.md"
-        },
-        {
-          "symbol": "CategoryClient.load_category_map_dict",
-          "schema_file": "function_schema/kdb.shared.categories.client.CategoryClient.load_category_map_dict.md"
-        },
-        {
-          "symbol": "CategoryClient.map_cate_name_to_id",
-          "schema_file": "function_schema/kdb.shared.categories.client.CategoryClient.map_cate_name_to_id.md"
-        },
-        {
-          "symbol": "CategoryClient.service_url",
-          "schema_file": "function_schema/kdb.shared.categories.client.CategoryClient.service_url.md"
-        },
-        {
-          "symbol": "CategoryClient.update_interval",
-          "schema_file": "function_schema/kdb.shared.categories.client.CategoryClient.update_interval.md"
-        }
-      ]
-    },
-    {
       "source_file": "src/kdb/shared/clients/app_role_config.py",
       "contracts": [
         {
@@ -2405,19 +2006,6 @@
         {
           "symbol": "DifyWorkFlowRequest.request_dify",
           "schema_file": "function_schema/kdb.shared.clients.dify_tools.DifyWorkFlowRequest.request_dify.md"
-        }
-      ]
-    },
-    {
-      "source_file": "src/kdb/shared/clients/embedding.py",
-      "contracts": [
-        {
-          "symbol": "EmbeddingClient.text2embedding",
-          "schema_file": "function_schema/kdb.shared.clients.embedding.EmbeddingClient.text2embedding.md"
-        },
-        {
-          "symbol": "build_embedding_client",
-          "schema_file": "function_schema/kdb.shared.clients.embedding.build_embedding_client.md"
         }
       ]
     },
@@ -2478,15 +2066,6 @@
         {
           "symbol": "_load_global_config",
           "schema_file": "function_schema/kdb.shared.config.legacy_config._load_global_config.md"
-        }
-      ]
-    },
-    {
-      "source_file": "src/kdb/shared/config/loader.py",
-      "contracts": [
-        {
-          "symbol": "load_config",
-          "schema_file": "function_schema/kdb.shared.config.loader.load_config.md"
         }
       ]
     },
@@ -2617,10 +2196,6 @@
     {
       "source_file": "tests/entry_smoke/test_service_contracts.py",
       "contracts": [
-        {
-          "symbol": "test_forge_plain_update_preserves_default_without_embedding",
-          "schema_file": "function_schema/tests.entry_smoke.test_service_contracts.test_forge_plain_update_preserves_default_without_embedding.md"
-        },
         {
           "symbol": "test_public_application_export_keeps_category_behavior",
           "schema_file": "function_schema/tests.entry_smoke.test_service_contracts.test_public_application_export_keeps_category_behavior.md"
@@ -2889,6 +2464,23 @@
       ]
     },
     {
+      "source_file": "tests/retrieval/test_business_http_contract.py",
+      "contracts": [
+        {
+          "symbol": "test_openapi_matches_business_contract",
+          "schema_file": "function_schema/tests.retrieval.test_business_http_contract.test_openapi_matches_business_contract.md"
+        },
+        {
+          "symbol": "test_request_models_match_business_contract",
+          "schema_file": "function_schema/tests.retrieval.test_business_http_contract.test_request_models_match_business_contract.md"
+        },
+        {
+          "symbol": "test_search_preserves_business_wire_format",
+          "schema_file": "function_schema/tests.retrieval.test_business_http_contract.test_search_preserves_business_wire_format.md"
+        }
+      ]
+    },
+    {
       "source_file": "tests/retrieval/test_delete_by_file.py",
       "contracts": [
         {
@@ -3027,35 +2619,6 @@
         {
           "symbol": "_client",
           "schema_file": "function_schema/tests.shared.test_es_http_client_shards._client.md"
-        }
-      ]
-    },
-    {
-      "source_file": "tests/support/forge_transport.py",
-      "contracts": [
-        {
-          "symbol": "embed_text",
-          "schema_file": "function_schema/tests.support.forge_transport.embed_text.md"
-        },
-        {
-          "symbol": "es8_stack",
-          "schema_file": "function_schema/tests.support.forge_transport.es8_stack.md"
-        },
-        {
-          "symbol": "test_duplicate_config_is_rejected",
-          "schema_file": "function_schema/tests.support.forge_transport.test_duplicate_config_is_rejected.md"
-        },
-        {
-          "symbol": "test_positional_service_config_survives_merge",
-          "schema_file": "function_schema/tests.support.forge_transport.test_positional_service_config_survives_merge.md"
-        },
-        {
-          "symbol": "test_title_update_without_stored_document_does_not_write",
-          "schema_file": "function_schema/tests.support.forge_transport.test_title_update_without_stored_document_does_not_write.md"
-        },
-        {
-          "symbol": "test_update_preserves_unrelated_indexes",
-          "schema_file": "function_schema/tests.support.forge_transport.test_update_preserves_unrelated_indexes.md"
         }
       ]
     }

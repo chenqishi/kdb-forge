@@ -44,18 +44,3 @@ def test_service_lifespan_constructs_both_real_factory_roles(monkeypatch):
     asyncio.run(run())
     initialize.assert_called_once_with("isolated-test-config.json")
     modify_factory.assert_called_once_with(interface)
-
-
-def test_forge_plain_update_preserves_default_without_embedding():
-    from kdb.services.forge_compat.adapter import KnowledgeService
-    interface = Mock()
-    interface.engine.update.return_value = True
-    service = KnowledgeService._from_interface(interface, "test_index")
-    original = {"_id": "ignored", "title": "new"}
-    assert service.update(data_id="id", doc=original)
-    args, kwargs = interface.engine.update.call_args
-    assert args[0] == "id" and args[1]["title"] == "new"
-    assert "_id" not in args[1] and "update_time" in args[1]
-    assert kwargs == {"index_names": "test_index"}
-    assert original == {"_id": "ignored", "title": "new"}
-    interface.embedding_tools.text2embedding.assert_not_called()

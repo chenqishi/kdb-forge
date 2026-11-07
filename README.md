@@ -4,7 +4,7 @@
 
 ```text
 src/kdb/
-  services/       七个 HTTP 服务与独立协议适配
+  services/       七个原业务 HTTP 服务
   retrieval/      应用接口、ES8 引擎和索引路由
   mining/         五条挖掘管道与处理阶段
   jobs/           定时任务

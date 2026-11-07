@@ -1,0 +1,1949 @@
+{
+  "openapi": {
+    "openapi": "3.1.0",
+    "info": {
+      "title": "FastAPI",
+      "version": "0.1.0"
+    },
+    "paths": {
+      "/search": {
+        "post": {
+          "summary": "Search",
+          "operationId": "search_search_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SearchResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/insert": {
+        "post": {
+          "summary": "Insert",
+          "description": "插入数据接口",
+          "operationId": "insert_insert_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InsertRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/InsertResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/delete": {
+        "post": {
+          "summary": "Delete",
+          "description": "删除数据接口",
+          "operationId": "delete_delete_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DeleteResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/web_search": {
+        "post": {
+          "summary": "Web Search",
+          "description": "Web搜索接口 - 返回原始数据，不进行转换和过滤",
+          "operationId": "web_search_web_search_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebSearchRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/WebSearchResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/get_value_collection": {
+        "post": {
+          "summary": "Get Value Collection",
+          "description": "获取指定索引中指定字段的值集合",
+          "operationId": "get_value_collection_get_value_collection_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValueCollectionRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ValueCollectionResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/get_from_type_count": {
+        "post": {
+          "summary": "Get From Type Count",
+          "description": "按原索引名精确统计high来源知识，不查询source或创建索引。",
+          "operationId": "get_from_type_count_get_from_type_count_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FromTypeCountRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/FromTypeCountResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/list_file_names": {
+        "post": {
+          "summary": "List File Names",
+          "description": "列出未删除知识的来源文件，可选按 from_type_norm 筛选。\n\n文件列表的来源范围不代表删除权限，删除接口仍保留原来源白名单。",
+          "operationId": "list_file_names_list_file_names_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListFileNamesRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ListFileNamesResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/preview_delete_by_file": {
+        "post": {
+          "summary": "Preview Delete By File",
+          "description": "预览按文件名删除会命中哪些知识。只读，必须先调这个才能删。",
+          "operationId": "preview_delete_by_file_preview_delete_by_file_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewDeleteByFileRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/PreviewDeleteByFileResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/delete_by_file": {
+        "post": {
+          "summary": "Delete By File",
+          "description": "按来源文件名批量软删除知识（qa + segment）。删前自动写快照，可回滚。",
+          "operationId": "delete_by_file_delete_by_file_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteByFileRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DeleteByFileResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/update_by_condition": {
+        "post": {
+          "summary": "Update By Condition",
+          "description": "根据条件更新数据接口\n根据指定条件更新索引中文档的字段值",
+          "operationId": "update_by_condition_update_by_condition_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateByConditionRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/UpdateByConditionResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/modify_knowledge_direct_update": {
+        "post": {
+          "summary": "Modify Knowledge Direct Update",
+          "description": "直接更新知识库接口\n调用modify_knowledge_direct_update函数，修改知识库中的旧知识并直接写入ES",
+          "operationId": "modify_knowledge_direct_update_modify_knowledge_direct_update_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModifyKnowledgeRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ModifyKnowledgeResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/modify_knowledge": {
+        "post": {
+          "summary": "Modify Knowledge",
+          "description": "修改知识库接口\n调用modify_knowledge函数，修改知识库中的旧知识，返回修改后的QA信息列表",
+          "operationId": "modify_knowledge_modify_knowledge_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModifyKnowledgeRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ModifyKnowledgeResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "DeleteByFileRequest": {
+          "properties": {
+            "index_name": {
+              "type": "string",
+              "title": "Index Name",
+              "description": "索引名称，必填"
+            },
+            "file_names": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "title": "File Names",
+              "description": "要删除的来源文件名，可多个"
+            },
+            "match_mode": {
+              "type": "string",
+              "title": "Match Mode",
+              "description": "exact(默认)|fuzzy，严格二选一，无兜底",
+              "default": "exact"
+            },
+            "data_types": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Data Types",
+              "description": "限定 data_type，默认 qa+segment 全删"
+            },
+            "audit_results": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Audit Results",
+              "description": "限定审核状态，默认不限"
+            }
+          },
+          "type": "object",
+          "required": [
+            "index_name",
+            "file_names"
+          ],
+          "title": "DeleteByFileRequest",
+          "description": "入参与 PreviewDeleteByFileRequest 一致（除样例条数），区别只是这个真删。"
+        },
+        "DeleteByFileResponse": {
+          "properties": {
+            "success": {
+              "type": "boolean",
+              "title": "Success"
+            },
+            "deleted_count": {
+              "type": "integer",
+              "title": "Deleted Count",
+              "default": 0
+            },
+            "snapshot_path": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot Path"
+            },
+            "message": {
+              "type": "string",
+              "title": "Message",
+              "default": ""
+            }
+          },
+          "type": "object",
+          "required": [
+            "success"
+          ],
+          "title": "DeleteByFileResponse"
+        },
+        "DeleteRequest": {
+          "properties": {
+            "id": {
+              "type": "string",
+              "title": "Id",
+              "description": "数据ID"
+            },
+            "index_names": {
+              "type": "string",
+              "title": "Index Names",
+              "description": "索引名称"
+            },
+            "refresh_imm": {
+              "type": "boolean",
+              "title": "Refresh Imm",
+              "description": "是否立即刷新使删除立即生效",
+              "default": false
+            }
+          },
+          "type": "object",
+          "required": [
+            "id",
+            "index_names"
+          ],
+          "title": "DeleteRequest"
+        },
+        "DeleteResponse": {
+          "properties": {
+            "success": {
+              "type": "boolean",
+              "title": "Success"
+            },
+            "message": {
+              "type": "string",
+              "title": "Message",
+              "default": ""
+            }
+          },
+          "type": "object",
+          "required": [
+            "success"
+          ],
+          "title": "DeleteResponse"
+        },
+        "FromTypeCountRequest": {
+          "properties": {
+            "index_name": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Index Name",
+              "description": "单个原物理索引名；空名返回0",
+              "default": ""
+            },
+            "from_type": {
+              "type": "string",
+              "minLength": 1,
+              "title": "From Type",
+              "description": "精确来源类型，默认chat_auto",
+              "default": "chat_auto"
+            },
+            "start": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start"
+            },
+            "end": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End"
+            }
+          },
+          "additionalProperties": false,
+          "type": "object",
+          "title": "FromTypeCountRequest"
+        },
+        "FromTypeCountResponse": {
+          "properties": {
+            "success": {
+              "type": "boolean",
+              "title": "Success"
+            },
+            "count": {
+              "type": "integer",
+              "title": "Count",
+              "default": 0
+            },
+            "message": {
+              "type": "string",
+              "title": "Message",
+              "default": ""
+            }
+          },
+          "type": "object",
+          "required": [
+            "success"
+          ],
+          "title": "FromTypeCountResponse"
+        },
+        "HTTPValidationError": {
+          "properties": {
+            "detail": {
+              "items": {
+                "$ref": "#/components/schemas/ValidationError"
+              },
+              "type": "array",
+              "title": "Detail"
+            }
+          },
+          "type": "object",
+          "title": "HTTPValidationError"
+        },
+        "InsertRequest": {
+          "properties": {
+            "_id": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Id"
+            },
+            "title": {
+              "type": "string",
+              "title": "Title"
+            },
+            "content": {
+              "type": "string",
+              "title": "Content"
+            },
+            "multimodal_contents": {
+              "anyOf": [
+                {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Multimodal Contents"
+            },
+            "data_type": {
+              "type": "string",
+              "title": "Data Type"
+            },
+            "from_type": {
+              "type": "string",
+              "title": "From Type"
+            },
+            "index_names": {
+              "type": "string",
+              "title": "Index Names"
+            },
+            "platform": {
+              "type": "string",
+              "title": "Platform"
+            },
+            "audit_result": {
+              "type": "integer",
+              "title": "Audit Result"
+            },
+            "client": {
+              "type": "string",
+              "title": "Client"
+            },
+            "del_flag": {
+              "type": "integer",
+              "title": "Del Flag"
+            },
+            "tags": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tags"
+            },
+            "from_type_norm": {
+              "type": "string",
+              "title": "From Type Norm"
+            },
+            "dataset": {
+              "type": "string",
+              "title": "Dataset"
+            },
+            "task_id": {
+              "type": "string",
+              "title": "Task Id"
+            },
+            "categoryId": {
+              "type": "string",
+              "title": "Categoryid"
+            },
+            "categoryName": {
+              "type": "string",
+              "title": "Categoryname"
+            },
+            "category_infos": {
+              "anyOf": [
+                {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category Infos"
+            },
+            "ext_info": {
+              "anyOf": [
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ext Info"
+            },
+            "refresh_imm": {
+              "type": "boolean",
+              "title": "Refresh Imm",
+              "default": false
+            },
+            "is_need_llm": {
+              "type": "boolean",
+              "title": "Is Need Llm",
+              "default": false
+            },
+            "is_update_data": {
+              "type": "boolean",
+              "title": "Is Update Data",
+              "default": true
+            }
+          },
+          "additionalProperties": true,
+          "type": "object",
+          "required": [
+            "index_names"
+          ],
+          "title": "InsertRequest"
+        },
+        "InsertResponse": {
+          "properties": {
+            "success": {
+              "type": "boolean",
+              "title": "Success"
+            },
+            "message": {
+              "type": "string",
+              "title": "Message",
+              "default": ""
+            }
+          },
+          "type": "object",
+          "required": [
+            "success"
+          ],
+          "title": "InsertResponse"
+        },
+        "ListFileNamesRequest": {
+          "properties": {
+            "index_name": {
+              "type": "string",
+              "title": "Index Name",
+              "description": "索引名称，必填"
+            },
+            "keyword": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Keyword",
+              "description": "文件名关键词筛选，为空则列全部"
+            },
+            "size": {
+              "type": "integer",
+              "maximum": 1000.0,
+              "minimum": 1.0,
+              "title": "Size",
+              "description": "最多返回多少个文件名",
+              "default": 200
+            },
+            "from_type_norm": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From Type Norm",
+              "description": "来源类型精确筛选；不传、null、空串或仅空白时不限制来源"
+            }
+          },
+          "type": "object",
+          "required": [
+            "index_name"
+          ],
+          "title": "ListFileNamesRequest"
+        },
+        "ListFileNamesResponse": {
+          "properties": {
+            "success": {
+              "type": "boolean",
+              "title": "Success"
+            },
+            "values": {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "array",
+              "title": "Values",
+              "default": []
+            },
+            "total_count": {
+              "type": "integer",
+              "title": "Total Count",
+              "default": 0
+            },
+            "message": {
+              "type": "string",
+              "title": "Message",
+              "default": ""
+            }
+          },
+          "type": "object",
+          "required": [
+            "success"
+          ],
+          "title": "ListFileNamesResponse"
+        },
+        "ModifyKnowledgeRequest": {
+          "properties": {
+            "es_index": {
+              "type": "string",
+              "title": "Es Index",
+              "description": "ES索引名称"
+            },
+            "new_query_info": {
+              "additionalProperties": true,
+              "type": "object",
+              "title": "New Query Info",
+              "description": "新查询信息，包含title和content"
+            },
+            "old_query_info": {
+              "additionalProperties": true,
+              "type": "object",
+              "title": "Old Query Info",
+              "description": "旧查询信息，包含title和content；modify_knowledge接口必填，modify_knowledge_direct_update接口可选",
+              "default": {}
+            },
+            "search_querys": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search Querys",
+              "description": "搜索查询列表"
+            },
+            "write_db_id": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Write Db Id",
+              "description": "写入数据库ID（仅modify_knowledge使用）"
+            },
+            "allow_insert": {
+              "type": "boolean",
+              "title": "Allow Insert",
+              "description": "是否允许插入新QA到ES，仅当为True且没有要修改的旧QA时才插入",
+              "default": false
+            }
+          },
+          "type": "object",
+          "required": [
+            "es_index",
+            "new_query_info"
+          ],
+          "title": "ModifyKnowledgeRequest"
+        },
+        "ModifyKnowledgeResponse": {
+          "properties": {
+            "success": {
+              "type": "boolean",
+              "title": "Success"
+            },
+            "has_correction": {
+              "type": "boolean",
+              "title": "Has Correction",
+              "default": false
+            },
+            "message": {
+              "type": "string",
+              "title": "Message",
+              "default": ""
+            },
+            "modify_qa_infos": {
+              "anyOf": [
+                {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Modify Qa Infos"
+            }
+          },
+          "type": "object",
+          "required": [
+            "success"
+          ],
+          "title": "ModifyKnowledgeResponse"
+        },
+        "PreviewDeleteByFileRequest": {
+          "properties": {
+            "index_name": {
+              "type": "string",
+              "title": "Index Name",
+              "description": "索引名称，必填"
+            },
+            "file_names": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "title": "File Names",
+              "description": "要删除的来源文件名，可多个"
+            },
+            "match_mode": {
+              "type": "string",
+              "title": "Match Mode",
+              "description": "exact(默认)|fuzzy，严格二选一，无兜底",
+              "default": "exact"
+            },
+            "data_types": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Data Types",
+              "description": "限定 data_type，默认 qa+segment 全删"
+            },
+            "audit_results": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Audit Results",
+              "description": "限定审核状态，默认不限"
+            },
+            "sample_size": {
+              "type": "integer",
+              "maximum": 50.0,
+              "minimum": 0.0,
+              "title": "Sample Size",
+              "description": "返回几条样例供人工确认",
+              "default": 10
+            }
+          },
+          "type": "object",
+          "required": [
+            "index_name",
+            "file_names"
+          ],
+          "title": "PreviewDeleteByFileRequest"
+        },
+        "PreviewDeleteByFileResponse": {
+          "properties": {
+            "success": {
+              "type": "boolean",
+              "title": "Success"
+            },
+            "total_count": {
+              "type": "integer",
+              "title": "Total Count",
+              "default": 0
+            },
+            "by_file": {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "array",
+              "title": "By File",
+              "default": []
+            },
+            "type_count": {
+              "additionalProperties": {
+                "type": "integer"
+              },
+              "type": "object",
+              "title": "Type Count",
+              "default": {}
+            },
+            "samples": {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "array",
+              "title": "Samples",
+              "default": []
+            },
+            "warnings": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "title": "Warnings",
+              "default": []
+            },
+            "message": {
+              "type": "string",
+              "title": "Message",
+              "default": ""
+            }
+          },
+          "type": "object",
+          "required": [
+            "success"
+          ],
+          "title": "PreviewDeleteByFileResponse"
+        },
+        "SearchRequest": {
+          "properties": {
+            "text": {
+              "type": "string",
+              "title": "Text"
+            },
+            "top_k": {
+              "type": "integer",
+              "title": "Top K",
+              "default": 100
+            },
+            "score_threshold": {
+              "type": "number",
+              "title": "Score Threshold",
+              "default": -1
+            },
+            "index_names": {
+              "type": "string",
+              "title": "Index Names"
+            },
+            "condition_dicts": {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "array",
+              "title": "Condition Dicts"
+            },
+            "search_type": {
+              "type": "string",
+              "title": "Search Type",
+              "default": "qa"
+            },
+            "data_type": {
+              "type": "string",
+              "title": "Data Type",
+              "default": "text"
+            },
+            "use_synonyms": {
+              "type": "boolean",
+              "title": "Use Synonyms",
+              "default": false
+            }
+          },
+          "type": "object",
+          "required": [
+            "text"
+          ],
+          "title": "SearchRequest"
+        },
+        "SearchResponse": {
+          "properties": {
+            "results": {
+              "items": {
+                "$ref": "#/components/schemas/SearchResult"
+              },
+              "type": "array",
+              "title": "Results"
+            }
+          },
+          "type": "object",
+          "required": [
+            "results"
+          ],
+          "title": "SearchResponse"
+        },
+        "SearchResult": {
+          "properties": {
+            "id": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Id"
+            },
+            "dataset": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dataset"
+            },
+            "insert_time": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Insert Time"
+            },
+            "update_time": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Update Time"
+            },
+            "q": {
+              "type": "string",
+              "title": "Q"
+            },
+            "a": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "A"
+            },
+            "ext_info": {
+              "anyOf": [
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ext Info"
+            },
+            "score": {
+              "type": "number",
+              "title": "Score"
+            }
+          },
+          "additionalProperties": true,
+          "type": "object",
+          "required": [
+            "q",
+            "score"
+          ],
+          "title": "SearchResult"
+        },
+        "UpdateByConditionRequest": {
+          "properties": {
+            "index_name": {
+              "type": "string",
+              "title": "Index Name",
+              "description": "索引名称"
+            },
+            "update_fields": {
+              "additionalProperties": true,
+              "type": "object",
+              "title": "Update Fields",
+              "description": "要更新的字段和值的映射，格式为 {field_name: new_value}"
+            },
+            "conditions": {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "array",
+              "title": "Conditions",
+              "description": "查询条件列表，每个条件为 {field_name: value} 格式"
+            }
+          },
+          "type": "object",
+          "required": [
+            "index_name",
+            "update_fields",
+            "conditions"
+          ],
+          "title": "UpdateByConditionRequest"
+        },
+        "UpdateByConditionResponse": {
+          "properties": {
+            "success": {
+              "type": "boolean",
+              "title": "Success"
+            },
+            "updated_count": {
+              "type": "integer",
+              "title": "Updated Count",
+              "default": 0
+            },
+            "message": {
+              "type": "string",
+              "title": "Message",
+              "default": ""
+            }
+          },
+          "type": "object",
+          "required": [
+            "success"
+          ],
+          "title": "UpdateByConditionResponse"
+        },
+        "ValidationError": {
+          "properties": {
+            "loc": {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ]
+              },
+              "type": "array",
+              "title": "Location"
+            },
+            "msg": {
+              "type": "string",
+              "title": "Message"
+            },
+            "type": {
+              "type": "string",
+              "title": "Error Type"
+            },
+            "input": {
+              "title": "Input"
+            },
+            "ctx": {
+              "type": "object",
+              "title": "Context"
+            }
+          },
+          "type": "object",
+          "required": [
+            "loc",
+            "msg",
+            "type"
+          ],
+          "title": "ValidationError"
+        },
+        "ValueCollectionRequest": {
+          "properties": {
+            "index_name": {
+              "type": "string",
+              "title": "Index Name",
+              "description": "索引名称"
+            },
+            "field_name": {
+              "type": "string",
+              "title": "Field Name",
+              "description": "字段名称"
+            },
+            "size": {
+              "type": "integer",
+              "title": "Size",
+              "description": "返回值的数量限制",
+              "default": 10000
+            },
+            "include_doc_count": {
+              "type": "boolean",
+              "title": "Include Doc Count",
+              "description": "是否包含文档数量",
+              "default": false
+            },
+            "extra_query": {
+              "anyOf": [
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Extra Query",
+              "description": "额外的查询条件"
+            }
+          },
+          "type": "object",
+          "required": [
+            "index_name",
+            "field_name"
+          ],
+          "title": "ValueCollectionRequest"
+        },
+        "ValueCollectionResponse": {
+          "properties": {
+            "success": {
+              "type": "boolean",
+              "title": "Success"
+            },
+            "values": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              ],
+              "title": "Values",
+              "default": []
+            },
+            "total_count": {
+              "type": "integer",
+              "title": "Total Count",
+              "default": 0
+            },
+            "message": {
+              "type": "string",
+              "title": "Message",
+              "default": ""
+            }
+          },
+          "type": "object",
+          "required": [
+            "success"
+          ],
+          "title": "ValueCollectionResponse"
+        },
+        "WebSearchRequest": {
+          "properties": {
+            "text": {
+              "type": "string",
+              "title": "Text",
+              "default": ""
+            },
+            "page_size": {
+              "type": "integer",
+              "title": "Page Size",
+              "default": 10000
+            },
+            "page_num": {
+              "type": "integer",
+              "title": "Page Num",
+              "default": 1
+            },
+            "index_names": {
+              "type": "string",
+              "title": "Index Names"
+            },
+            "client": {
+              "type": "string",
+              "title": "Client"
+            },
+            "need_from_history": {
+              "type": "boolean",
+              "title": "Need From History",
+              "default": false
+            },
+            "condition_dicts": {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "array",
+              "title": "Condition Dicts",
+              "default": []
+            },
+            "score_threshold": {
+              "type": "number",
+              "title": "Score Threshold",
+              "default": 5.3
+            }
+          },
+          "type": "object",
+          "title": "WebSearchRequest"
+        },
+        "WebSearchResponse": {
+          "properties": {
+            "results": {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "array",
+              "title": "Results",
+              "default": []
+            },
+            "total_count": {
+              "type": "integer",
+              "title": "Total Count",
+              "default": 0
+            },
+            "current_count": {
+              "type": "integer",
+              "title": "Current Count",
+              "default": 0
+            }
+          },
+          "type": "object",
+          "title": "WebSearchResponse"
+        }
+      }
+    }
+  },
+  "models": [
+    {
+      "model": "SearchRequest",
+      "input": {
+        "text": "unit query"
+      },
+      "expected": {
+        "valid": true,
+        "payload": {
+          "text": "unit query",
+          "top_k": 100,
+          "score_threshold": -1.0,
+          "index_names": null,
+          "condition_dicts": null,
+          "search_type": "qa",
+          "data_type": "text",
+          "use_synonyms": false
+        }
+      }
+    },
+    {
+      "model": "SearchRequest",
+      "input": {},
+      "expected": {
+        "valid": false,
+        "errors": [
+          {
+            "loc": [
+              "text"
+            ],
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "model": "SearchRequest",
+      "input": {
+        "text": "unit query",
+        "index_names": null
+      },
+      "expected": {
+        "valid": false,
+        "errors": [
+          {
+            "loc": [
+              "index_names"
+            ],
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "model": "WebSearchRequest",
+      "input": {},
+      "expected": {
+        "valid": true,
+        "payload": {
+          "text": "",
+          "page_size": 10000,
+          "page_num": 1,
+          "index_names": null,
+          "client": null,
+          "need_from_history": false,
+          "condition_dicts": [],
+          "score_threshold": 5.3
+        }
+      }
+    },
+    {
+      "model": "InsertRequest",
+      "input": {
+        "index_names": "test_index",
+        "_id": "unit-doc",
+        "title": "synthetic question",
+        "custom_source": "synthetic"
+      },
+      "expected": {
+        "valid": true,
+        "payload": {
+          "_id": "unit-doc",
+          "title": "synthetic question",
+          "content": null,
+          "multimodal_contents": null,
+          "data_type": null,
+          "from_type": null,
+          "index_names": "test_index",
+          "platform": null,
+          "audit_result": null,
+          "client": null,
+          "del_flag": null,
+          "tags": null,
+          "from_type_norm": null,
+          "dataset": null,
+          "task_id": null,
+          "categoryId": null,
+          "categoryName": null,
+          "category_infos": null,
+          "ext_info": null,
+          "refresh_imm": false,
+          "is_need_llm": false,
+          "is_update_data": true,
+          "custom_source": "synthetic"
+        }
+      }
+    },
+    {
+      "model": "InsertRequest",
+      "input": {},
+      "expected": {
+        "valid": false,
+        "errors": [
+          {
+            "loc": [
+              "index_names"
+            ],
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "model": "DeleteRequest",
+      "input": {
+        "index_names": "test_index",
+        "id": "unit-doc"
+      },
+      "expected": {
+        "valid": true,
+        "payload": {
+          "id": "unit-doc",
+          "index_names": "test_index",
+          "refresh_imm": false
+        }
+      }
+    },
+    {
+      "model": "FromTypeCountRequest",
+      "input": {
+        "indexName": "test_index"
+      },
+      "expected": {
+        "valid": true,
+        "payload": {
+          "index_name": "test_index",
+          "from_type": "chat_auto",
+          "start": null,
+          "end": null
+        }
+      }
+    },
+    {
+      "model": "FromTypeCountRequest",
+      "input": {},
+      "expected": {
+        "valid": true,
+        "payload": {
+          "index_name": "",
+          "from_type": "chat_auto",
+          "start": null,
+          "end": null
+        }
+      }
+    },
+    {
+      "model": "FromTypeCountRequest",
+      "input": {
+        "index_name": "test_index",
+        "from_type": "chat_auto",
+        "start": "2026-01-01 00:00:00"
+      },
+      "expected": {
+        "valid": true,
+        "payload": {
+          "index_name": "test_index",
+          "from_type": "chat_auto",
+          "start": "2026-01-01T00:00:00",
+          "end": null
+        }
+      }
+    },
+    {
+      "model": "FromTypeCountRequest",
+      "input": {
+        "index_name": "test_*"
+      },
+      "expected": {
+        "valid": false,
+        "errors": [
+          {
+            "loc": [
+              "index_name"
+            ],
+            "type": "value_error"
+          }
+        ]
+      }
+    },
+    {
+      "model": "FromTypeCountRequest",
+      "input": {
+        "index_name": "test_index",
+        "start": "not-a-time"
+      },
+      "expected": {
+        "valid": false,
+        "errors": [
+          {
+            "loc": [
+              "start"
+            ],
+            "type": "value_error"
+          }
+        ]
+      }
+    },
+    {
+      "model": "ListFileNamesRequest",
+      "input": {
+        "index_name": "test_index"
+      },
+      "expected": {
+        "valid": true,
+        "payload": {
+          "index_name": "test_index",
+          "keyword": null,
+          "size": 200,
+          "from_type_norm": null
+        }
+      }
+    },
+    {
+      "model": "PreviewDeleteByFileRequest",
+      "input": {
+        "index_name": "test_index",
+        "file_names": [
+          "unit.pdf"
+        ]
+      },
+      "expected": {
+        "valid": true,
+        "payload": {
+          "index_name": "test_index",
+          "file_names": [
+            "unit.pdf"
+          ],
+          "match_mode": "exact",
+          "data_types": null,
+          "audit_results": null,
+          "sample_size": 10
+        }
+      }
+    },
+    {
+      "model": "PreviewDeleteByFileRequest",
+      "input": {
+        "index_name": "test_index",
+        "file_names": [
+          "unit.pdf"
+        ],
+        "sample_size": 51
+      },
+      "expected": {
+        "valid": false,
+        "errors": [
+          {
+            "loc": [
+              "sample_size"
+            ],
+            "type": "less_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "model": "DeleteByFileRequest",
+      "input": {
+        "index_name": "test_index",
+        "file_names": [
+          "unit.pdf"
+        ]
+      },
+      "expected": {
+        "valid": true,
+        "payload": {
+          "index_name": "test_index",
+          "file_names": [
+            "unit.pdf"
+          ],
+          "match_mode": "exact",
+          "data_types": null,
+          "audit_results": null
+        }
+      }
+    },
+    {
+      "model": "UpdateByConditionRequest",
+      "input": {
+        "index_name": "test_index",
+        "update_fields": {
+          "audit_result": 2
+        },
+        "conditions": []
+      },
+      "expected": {
+        "valid": true,
+        "payload": {
+          "index_name": "test_index",
+          "update_fields": {
+            "audit_result": 2
+          },
+          "conditions": []
+        }
+      }
+    },
+    {
+      "model": "ModifyKnowledgeRequest",
+      "input": {
+        "es_index": "test_index",
+        "new_query_info": "synthetic question and answer"
+      },
+      "expected": {
+        "valid": false,
+        "errors": [
+          {
+            "loc": [
+              "new_query_info"
+            ],
+            "type": "dict_type"
+          }
+        ]
+      }
+    }
+  ],
+  "search_wire": {
+    "request": {
+      "text": "unit query",
+      "index_names": "test_index"
+    },
+    "backend_results": [
+      {
+        "_id": "unit-doc",
+        "data_type": "qa",
+        "title": "synthetic question",
+        "content": "synthetic answer",
+        "similarity": 0.75,
+        "_index": "test_index"
+      }
+    ],
+    "response": {
+      "results": [
+        {
+          "id": "unit-doc",
+          "dataset": "test_index",
+          "insert_time": null,
+          "update_time": null,
+          "q": "synthetic question",
+          "a": "synthetic answer",
+          "ext_info": {},
+          "score": 0.75,
+          "content": "synthetic question\nsynthetic answer",
+          "synonyms_title": "synthetic question",
+          "metadata": {},
+          "primary_category": null
+        }
+      ]
+    }
+  }
+}

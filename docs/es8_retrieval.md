@@ -29,6 +29,6 @@
 
 新建索引的 `indexes.embedding` 为可索引 `dense_vector`，使用 cosine 与 HNSW。向量维度来自实际配置与模型，不能猜测。已有索引不满足 native KNN mapping 时应显式失败；dense_vector 的索引属性不能原地更改，需要先建立正确目标 mapping，再在明确范围内 reindex 并修改路由，不能先删除原索引。
 
-`SearchDataInterface` 保留类目归一化、条件、数据处理及缓存行为；独立 Forge 协议通过适配器委托同一实现。count-only 工厂不初始化 embedding 或创建索引。`get_from_type_count` 要求调用方提供单个原物理索引名，参数校验拒绝通配符、多索引表达式和非法名称；双时间才添加本地秒级闭区间，不隐式添加审核或软删条件。
+`SearchDataInterface` 保留类目归一化、条件、数据处理及缓存行为，原业务 HTTP 服务直接调用同一实现。`get_from_type_count` 要求调用方提供单个原物理索引名，参数校验拒绝通配符、多索引表达式和非法名称；双时间才添加本地秒级闭区间，不隐式添加审核或软删条件。
 
 真实集成验证需要有效的 ES8.17 凭据、确认过 mapping 的专用测试索引，以及明确的读写范围。离线请求契约测试不等同真实召回质量验证。

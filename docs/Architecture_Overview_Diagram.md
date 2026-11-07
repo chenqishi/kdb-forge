@@ -18,7 +18,6 @@ flowchart TB
   PIPE --> STAGE[mining · 抽取、清洗、审核、入库]
   RET --> APP[retrieval/application · SearchDataInterface]
   STAGE --> APP
-  COMP[services/forge_compat · 独立协议适配] --> APP
   APP --> ENG[retrieval/engines · ES8.17 与索引路由]
   APP --> SHARED[shared · 配置、客户端、文本、文件、类目]
   STAGE --> SHARED
@@ -34,7 +33,7 @@ flowchart TB
 
 | 目录 | 职责 |
 |---|---|
-| `services/` | HTTP 参数、响应、服务生命周期；`forge_compat` 保留独立调用协议 |
+| `services/` | HTTP 参数、响应、服务生命周期；对外沿用原业务协议 |
 | `retrieval/application/` | 检索、文档处理及通用业务兼容行为；SearchDataInterface 是唯一业务实现 |
 | `retrieval/engines/` | Elasticsearch 8.17 请求、索引路由、计数与维护接口 |
 | `mining/` | 五条管道及可组合的抽取、清洗、质量审核、任务阶段 |
@@ -49,6 +48,6 @@ flowchart TB
 
 五条管道按各自控制器执行生成、质量处理、格式转换和入库阶段，使用任务目录中的文件交接。具体开关和失败处理依各管道实现；直接检索/入库 API 保留各自默认参数与索引选择行为，详见对应函数契约。
 
-`forge_compat` 保留工厂、构造、Repository 委托与严格计数协议，不建立第二套检索核心。count-only 初始化不创建 embedding 或索引；协议细节见当前函数契约。
+对外服务只保留原业务接口。检索服务使用 `/search`、`/insert`、`/modify_knowledge*` 等既有路径；七个服务的参数、返回结构、默认值和原有认证行为保持一致。
 
 服务启动预检仅验证本地依赖、配置格式与资源存在。语言服务仍缺真实 fastText 依赖/模型，CSAT 仍缺真实认证配置；离线测试通过不能证明这些资源已就绪，也不代表真实后端或生产运行已经验收。

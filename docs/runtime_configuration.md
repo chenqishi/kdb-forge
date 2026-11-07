@@ -41,7 +41,6 @@ python -m kdb.services.files.app --config config/minio_config.json --host 127.0.
 | `config_es_engine.json.example` | `config/config_es_engine.json`；ES8.17 endpoint、凭据、索引、provider 路由与实际向量维度 |
 | `config_ali_embedding.json.example` | `config/config_ali_embedding.json`；`DASHSCOPE_API_KEY`、模型与维度，`DASHSCOPE_ENCODING_FORMAT` 为 `float` |
 | `config_dify_simility.json.example` | `config/config_dify_simility.json`；实际相似度工作流配置 |
-| `config_test.json.example` | `config/config_test.json`；独立 Forge 协议所用配置路径和专用测试索引 |
 | `mysql_conn_config.json.example` | `config/mysql_conn_config.json`；真实 SQL host/database/user/password |
 | `minio_config.json.example` | `config/minio_config.json`；对象存储 endpoint、访问密钥、region 与寻址方式 |
 | `csat_auth.json.example` | `config/csat_auth.json`；真实 `{client: secret}` 映射 |
@@ -62,7 +61,7 @@ cp config/hardcoded_defaults.json.example private/runtime_config/hardcoded_defau
 
 复制只建立文件格式，`SET_CURRENT_*`、`.invalid` 地址和示例索引均须按实际环境替换；模板文件存在或预检能解析 JSON，不计作真实依赖/凭据/模型已经补齐。只配置实际启用能力所需的值，不能猜测私有默认键的含义或用占位值启动真实业务。
 
-检索主配置通过 `search_engine_config_path`、`embedding_config_path` 及可选 `simility_config_path` 指向实际配置。embedding 配置使用 `DASHSCOPE_API_KEY`；ES 引擎必须声明 `es_version: "8.17"`、目标索引与向量字段。独立 Forge 协议配置使用 `engine_config_path`、`embedding_config_path` 及可选 `legacy_search_config_path` / `search_config_path`。
+检索主配置通过 `search_engine_config_path`、`embedding_config_path` 及可选 `simility_config_path` 指向实际配置。embedding 配置使用 `DASHSCOPE_API_KEY`；ES 引擎必须声明 `es_version: "8.17"`、目标索引与向量字段。
 
 文件服务配置优先级为显式 `--config`、`MINIO_CONFIG_PATH`、项目内候选配置。连接字段为 `endpoint_url`、`access_key`、`secret_key`；遗漏字段可能使用保留的私有默认值，预检会提示，不能把存在检查当认证成功。FastGPT 缺 `config/config.json` 时同样可能沿用保留的上游和私有默认值，预检只提示，不请求上游。
 

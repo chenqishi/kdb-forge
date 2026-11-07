@@ -10,7 +10,7 @@
 
 ## Outputs
 
-ES8.17 `RoutedLegacyEngine`。
+通过 `kdb.retrieval.engines.es_search_interface.EsSearchInterface` 工厂构造的原业务检索引擎；当前运行配置使用 ES8.17。配置路径和额外参数按原调用传入，不增加另一套服务或引擎适配层。
 
 ## SQL
 

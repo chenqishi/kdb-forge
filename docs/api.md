@@ -31,12 +31,6 @@
 
 计数的空索引返回 0；不接收通配符、多索引表达式或非法物理名。时间格式为不带时区的 `yyyy-MM-dd HH:mm:ss`，仅同时提供 start/end 时增加闭区间条件，不隐式添加审核或软删筛选。完整字段和异常语义见模型及函数契约。
 
-## 独立 Forge 协议
-
-`kdb.services.forge_compat.api.app:app` 保留独立的检索/CRUD 路由与认证协议，通过适配器委托同一检索应用核心。它与上面的 8003 服务是独立入口，不能混用请求模型或假定认证一致。
-
-配置由 `KDB_FORGE_CONFIG` 指定；检索路由使用独立 HTTP Basic 环境凭据。模型修改依赖显式 modifier 注入，缺少时返回失败，不伪造模型结果。count-only 工厂不加载 embedding 或创建索引。构造参数、工厂、更新与 Repository 委托细节见 `function_schema/current_index.md`。
-
 ## 配套服务
 
 | 服务 | 接口 | 主要语义 |
