@@ -17,7 +17,7 @@ import pytest
 
 ROOT = str(_PROJECT_ROOT)
 
-from kdb.mining.crawlers.web_crawl import login_doc_crawler as crawler
+import kdb.mining.web.crawlers.authenticated as crawler
 
 
 MANIFEST = {

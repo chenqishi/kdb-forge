@@ -2,7 +2,7 @@
 
 ## Signature
 
-`EsSearchInterfaceES8.__init__(self, hosts: Optional[Union[str, List[str]]]=None, index_name: Optional[str]=None, username: Optional[str]=None, password: Optional[str]=None, vector_fields: Optional[Dict[str, int]]=None, config_path: Optional[str]=None, extra_params: Optional[Dict[str, Any]]=None, *, config: Optional[Dict[str, Any]]=None, router: Optional[IndexClientRouter]=None, ensure_index: bool=True) -> None`
+`__init__(self, hosts: Optional[Union[str, List[str]]]=None, index_name: Optional[str]=None, username: Optional[str]=None, password: Optional[str]=None, vector_fields: Optional[Dict[str, int]]=None, config_path: Optional[str]=None, extra_params: Optional[Dict[str, Any]]=None, *, config: Optional[Dict[str, Any]]=None, router: Optional[IndexClientRouter]=None, ensure_index: bool=True) -> None`
 
 ## Inputs
 
@@ -28,4 +28,4 @@ engine config 或 config_path、默认 index、向量字段、额外参数、可
 
 ## Source
 
-`src/kdb/retrieval/engines/es8_search_interface.py`。SQL 表/字段来自本契约已记录的真实结构资料或该实现中的查询；未附真实 DDL 的部分仅表示代码使用范围，不能视为已验证的完整表结构。
+`src/kdb/retrieval/engines/es8_search_interface.py`。SQL 字段依据保留在上面的 SQL 契约中；没有真实 DDL 的部分不宣称完整表结构已核验。

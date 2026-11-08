@@ -7,7 +7,9 @@ import requests
 import time
 import traceback
 import os
-from typing import Optional, Dict, Any
+from typing import Optional
+from typing import Dict
+from typing import Any
 
 class DifyWorkFlowRequest(object):
     def __init__(self, api_base=None, api_key=None, max_retries=3, system_prompt=None, timeout=600):

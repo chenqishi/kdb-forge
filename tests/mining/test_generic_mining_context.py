@@ -15,15 +15,15 @@ import sys
 
 _REPO_ROOT = str(_PROJECT_ROOT)
 
-from kdb.mining.generation.processing.generic_knowledge_quality import repair_self_contained_knowledge_rows
-from kdb.mining.generation.processing.generic_knowledge_quality import filter_business_quality_rows
-from kdb.mining.generation.processing.generic_knowledge_quality import is_generic_heading
-from kdb.mining.generation.processing.generic_knowledge_quality import has_dangling_reference
-from kdb.mining.generation.processing.generic_knowledge_quality import source_subject
-from kdb.mining.generation.processing.business_context_builder import build_business_context
-from kdb.mining.generation.processing.chat_query_context import _is_meaningful_query
-from kdb.mining.generation.processing.chat_query_context import load_client_queries
-from kdb.mining.generation.processing.web_business_context import build_web_business_context
+from kdb.mining.common.quality.generic import repair_self_contained_knowledge_rows
+from kdb.mining.common.quality.generic import filter_business_quality_rows
+from kdb.mining.common.quality.generic import is_generic_heading
+from kdb.mining.common.quality.generic import has_dangling_reference
+from kdb.mining.common.quality.generic import source_subject
+from kdb.mining.common.context.business import build_business_context
+from kdb.mining.common.context.chat_intents import _is_meaningful_query
+from kdb.mining.common.context.chat_intents import load_client_queries
+from kdb.mining.common.context.web import build_web_business_context
 
 
 # ---------------------------------------------------------------------------
@@ -193,7 +193,7 @@ def test_context_cache_hit(tmp_path):
 
 
 def test_context_query_exclude_terms_filter_and_cache_key(tmp_path, monkeypatch):
-    from kdb.mining.generation.processing import chat_query_context
+    import kdb.mining.common.context.chat_intents as chat_query_context
 
     monkeypatch.setattr(
         chat_query_context,

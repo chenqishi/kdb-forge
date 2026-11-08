@@ -1,3 +1,8 @@
+import kdb.mining.chat.generation.direct_json as _chat_generation_direct_json
+import kdb.mining.chat.sources.robot_files as _chat_sources_robot_files
+import kdb.mining.chat.generation.direct_json as _chat_generation_direct_json
+import kdb.mining.chat.prompts as _mining_chat_prompts
+import kdb.mining.chat.sources.robot_files as _chat_sources_robot_files
 from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 # -*- coding: utf-8 -*-
 """生产 Direct LLM 抽取器的通用/客户 Prompt 路由。"""
@@ -7,7 +12,7 @@ import sys
 
 ROOT = str(_PROJECT_ROOT)
 
-from kdb.mining.generation.chatknowledge import gen_knowledge_from_chat as gk
+import kdb.mining.chat.generation.batch as gk
 
 
 SCHEDULED_CLIENTS = (
@@ -33,7 +38,7 @@ def test_every_scheduled_client_has_extract_and_review_delta():
 
 
 def test_direct_llm_uses_base_plus_matching_client_delta_only():
-    prompt, meta = gk.resolve_direct_llm_system_prompt(client='joint_login')
+    prompt, meta = _mining_chat_prompts.resolve_direct_llm_system_prompt(client='joint_login')
 
     assert 'Chat QA Extract Prompt v20260905-base' in prompt
     assert 'Client Delta v20260905-joint_login' in prompt
@@ -44,8 +49,8 @@ def test_direct_llm_uses_base_plus_matching_client_delta_only():
 
 
 def test_unknown_or_unsafe_client_falls_back_to_base():
-    unknown, unknown_meta = gk.resolve_direct_llm_system_prompt(client='unknown_client')
-    unsafe, unsafe_meta = gk.resolve_direct_llm_system_prompt(client='../joint_login')
+    unknown, unknown_meta = _mining_chat_prompts.resolve_direct_llm_system_prompt(client='unknown_client')
+    unsafe, unsafe_meta = _mining_chat_prompts.resolve_direct_llm_system_prompt(client='../joint_login')
 
     assert 'Chat QA Extract Prompt v20260905-base' in unknown
     assert 'Client Delta' not in unknown
@@ -55,7 +60,7 @@ def test_unknown_or_unsafe_client_falls_back_to_base():
 
 
 def test_generated_identity_prompt_is_not_duplicated_into_business_prompt():
-    prompt = gk.build_direct_llm_system_prompt(
+    prompt = _mining_chat_prompts.build_direct_llm_system_prompt(
         system_prompt='自动生成的同事名单和旧业务规则',
         client='payoneer_olive',
     )
@@ -65,7 +70,7 @@ def test_generated_identity_prompt_is_not_duplicated_into_business_prompt():
 
 
 def test_direct_llm_stats_expose_applied_prompt_identity():
-    model = gk.DirectLLMJsonRequest(api_key='test-key', client='wayfair')
+    model = _chat_generation_direct_json.DirectLLMJsonRequest(api_key='test-key', client='wayfair')
     stats = model.get_stats()
 
     assert stats['client'] == 'wayfair'

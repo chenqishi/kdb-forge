@@ -12,7 +12,7 @@ fi
 cd "$(dirname "$0")/../.."
 export PYTHONPATH="$(pwd)/src:${PYTHONPATH:-}"
 
-"${KDB_PYTHON:-python}" -m kdb.jobs.reports \
+"${KDB_PYTHON:-python}" -m kdb.entrypoints.scheduled.learning_report \
     --mysql-config=config/mysql_conn_config.json \
     --report-config=config/chatkonwledge_report_platform_map.txt \
     --data-dir=data/off_task_data \

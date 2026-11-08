@@ -2,14 +2,15 @@ import logging
 import json
 import traceback
 import copy
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import as_completed
 
 from kdb.retrieval.application.search_index_data_interface import SearchDataInterface
 from kdb.shared.clients.dify_tools import DifyWorkFlowRequest
 import time
 
 
-from kdb.shared.config.legacy_config import GLOBAL_CONFIG
+from kdb.shared.config.global_config import GLOBAL_CONFIG
 
 
 

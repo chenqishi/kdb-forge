@@ -51,7 +51,7 @@ mkdir -p data/chatknowledge/ log/
 
 # 运行批量聊天QA挖掘请求脚本
 CURRENT_STEP=batch_run_chatqa_request
-if ! "$PYTHON" -m kdb.jobs.chat_mining \
+if ! "$PYTHON" -m kdb.entrypoints.scheduled.chat_mining \
     data/chatknowledge/appid_record.txt \
     config/mysql_conn_config.json \
     ${start_time} \
@@ -63,7 +63,7 @@ fi
 
 end_time=$(date +"%Y%m%d%H%M%S") # 重新获取当前时间，以囊括上面刚生成的知识
 CURRENT_STEP=batch_gen_audit_data_and_send
-if ! "$PYTHON" -m kdb.jobs.audit_reports config/chatkonwledge_report_platform_map.txt config/config_for_search_index.json data/chatknowledge ${start_time} ${end_time} $flag >log/chatknowledge_report.log 2>&1; then
+if ! "$PYTHON" -m kdb.mining.chat.reports.audit_delivery config/chatkonwledge_report_platform_map.txt config/config_for_search_index.json data/chatknowledge ${start_time} ${end_time} $flag >log/chatknowledge_report.log 2>&1; then
     alert_failure "$CURRENT_STEP"
     exit 1
 fi

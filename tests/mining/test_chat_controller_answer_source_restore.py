@@ -1,3 +1,4 @@
+import kdb.mining.chat.workflows.qa.execution as chat_execution
 from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 # -*- coding: utf-8 -*-
 """Chat QA controller 恢复后的阶段契约。"""
@@ -8,8 +9,8 @@ import sys
 
 ROOT = str(_PROJECT_ROOT)
 
-from kdb.mining.pipelines import chat_qa as controller_module
-from kdb.mining.pipelines.chat_qa import ChatQAMiningTaskController
+import kdb.mining.chat.pipeline as controller_module
+from kdb.mining.chat.pipeline import ChatQAMiningTaskController
 
 
 class _StatusUpdater:
@@ -46,7 +47,7 @@ def test_quality_stage_runs_independent_review_model():
 
     cmd, stage = commands[0]
     assert stage == 'qa_quality'
-    assert '-m kdb.mining.quality.chat_qa_extract.reviewer review_batch' in cmd
+    assert '-m kdb.mining.chat.quality.reviewer review_batch' in cmd
     assert '--client=mercado' in cmd
     assert '--stats_file=/tmp/qa_review_stats.json' in cmd
     assert controller.status_updater.stages == [('task-restore', 'qa_quality')]
@@ -162,7 +163,7 @@ def test_command_uses_remaining_task_deadline(monkeypatch, tmp_path):
             calls[0][2].append(timeout)
             return self.returncode
 
-    monkeypatch.setattr(controller_module.subprocess, 'Popen', FakeProcess)
+    monkeypatch.setattr(chat_execution.subprocess, 'Popen', FakeProcess)
 
     assert controller._run_command('true', 'deadline_test') is True
     assert calls[0][2] == [50.0]

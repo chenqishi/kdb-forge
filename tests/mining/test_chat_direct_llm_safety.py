@@ -1,3 +1,4 @@
+import kdb.mining.chat.generation.direct_json as _chat_generation_direct_json
 from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 # -*- coding: utf-8 -*-
 """直连 LLM 的失败语义与调用统计。"""
@@ -9,7 +10,7 @@ import pytest
 
 ROOT = str(_PROJECT_ROOT)
 
-from kdb.mining.generation.chatknowledge import gen_knowledge_from_chat as gk
+import kdb.mining.chat.generation.direct_json as gk
 
 
 class _Response:
@@ -23,7 +24,7 @@ class _Response:
 
 
 def test_retry_exhaustion_raises_and_records_failed_calls(monkeypatch):
-    model = gk.DirectLLMJsonRequest(api_key='test-key', max_retries=2, timeout=1)
+    model = _chat_generation_direct_json.DirectLLMJsonRequest(api_key='test-key', max_retries=2, timeout=1)
     monkeypatch.setattr(
         gk.requests,
         'post',
@@ -43,7 +44,7 @@ def test_retry_exhaustion_raises_and_records_failed_calls(monkeypatch):
 
 
 def test_success_records_token_usage(monkeypatch):
-    model = gk.DirectLLMJsonRequest(api_key='test-key', max_retries=1, timeout=1)
+    model = _chat_generation_direct_json.DirectLLMJsonRequest(api_key='test-key', max_retries=1, timeout=1)
     monkeypatch.setattr(
         gk.requests,
         'post',
@@ -74,6 +75,6 @@ def test_missing_model_credential_is_a_hard_failure(monkeypatch):
         monkeypatch.delenv(name, raising=False)
     monkeypatch.setattr(gk, 'config', {})
 
-    model = gk.DirectLLMJsonRequest()
+    model = _chat_generation_direct_json.DirectLLMJsonRequest()
     with pytest.raises(RuntimeError, match='missing LLM api key'):
         model.validate_config()

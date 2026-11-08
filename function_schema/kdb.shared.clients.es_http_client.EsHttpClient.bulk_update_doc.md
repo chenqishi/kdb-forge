@@ -2,7 +2,7 @@
 
 ## Signature
 
-`EsHttpClient.bulk_update_doc(self, index: str, updates: List[Tuple[str, Dict[str, Any]]], batch_size: int=DEFAULT_BULK_BATCH) -> Dict[str, Any]`
+`bulk_update_doc(self, index: str, updates: List[Tuple[str, Dict[str, Any]]], batch_size: int=DEFAULT_BULK_BATCH) -> Dict[str, Any]`
 
 ## Description
 
@@ -35,4 +35,4 @@
 
 ## Source
 
-`src/kdb/shared/clients/es_http_client.py`。SQL 表/字段来自本契约已记录的真实结构资料或该实现中的查询；未附真实 DDL 的部分仅表示代码使用范围，不能视为已验证的完整表结构。
+`src/kdb/shared/clients/es_http_client.py`。SQL 字段依据保留在上面的 SQL 契约中；没有真实 DDL 的部分不宣称完整表结构已核验。

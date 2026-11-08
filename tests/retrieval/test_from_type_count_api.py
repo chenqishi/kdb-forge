@@ -1,3 +1,6 @@
+import kdb.retrieval.application.runtime as retrieval_runtime
+import kdb.retrieval.engines.providers.es7 as _engines_providers_es7
+import kdb.retrieval.engines.providers.opensearch2 as _engines_providers_opensearch2
 """Actual HTTP/business/factory/engine count contracts; only external clients replaced."""
 import asyncio
 import copy
@@ -6,7 +9,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from kdb.retrieval.engines import es_search_interface as factories
+import kdb.retrieval.engines.factory as factories
 from kdb.retrieval.engines.es8_search_interface import EsSearchInterfaceES8
 from tests.retrieval.test_es8_autocreate import fixture_service
 from tests.retrieval.test_es8_autocreate import post_query
@@ -90,7 +93,7 @@ def test_http_count_filters_and_dates(count_service, suffix, provider, params, e
     }
     assert clients["paas" if provider == "serverless" else "serverless"].count.call_count == 0
     assert engine.has_build_index == checked_before
-    assert not service.SEARCH_DATA_INTERFACE.embedding_tools.text2embedding.called
+    assert not retrieval_runtime.SEARCH_DATA_INTERFACE.embedding_tools.text2embedding.called
     assert_no_index_writes(clients)
 
 
@@ -187,17 +190,17 @@ def test_count_retry_recovers_complete_response(count_service, suffix, provider,
     assert_no_index_writes(clients)
 
 
-@pytest.mark.parametrize("version,kind", [("es7", factories.EsSearchInterfaceOri), ("opensearch2", factories.EsSearchInterfaceOpen)])
+@pytest.mark.parametrize("version,kind", [("es7", _engines_providers_es7.EsSearchInterfaceOri), ("opensearch2", _engines_providers_opensearch2.EsSearchInterfaceOpen)])
 def test_es7_and_opensearch_count_contract(count_service, monkeypatch, version, kind):
     service, _, clients = count_service
     client = clients["serverless"]
     client.info = Mock(return_value={"version": {"number": "7.10.0"}})
-    monkeypatch.setattr(factories, "Elasticsearch", Mock(return_value=client))
+    monkeypatch.setattr(_engines_providers_es7 if version == "es7" else _engines_providers_opensearch2, "Elasticsearch", Mock(return_value=client))
     factory = factories.EsSearchInterface(hosts=["http://fake.invalid:9200"], index_name="public_s",
         vector_fields={"indexes_embedding": 3}, es_version=version,
         extra_params={"auto_update_mapping": False})
     assert isinstance(factory._impl, kind)
-    service.SEARCH_DATA_INTERFACE.engine = factory
+    retrieval_runtime.SEARCH_DATA_INTERFACE.engine = factory
     # Capture endpoint calls independently of constructor mapping checks.
     client.create_requests.clear()
     client.indices.put_mapping.reset_mock()
@@ -219,7 +222,7 @@ def test_es7_and_opensearch_count_contract(count_service, monkeypatch, version, 
 
 def test_uninitialized_count_service(count_service):
     service, _, clients = count_service
-    service.SEARCH_DATA_INTERFACE = None
+    retrieval_runtime.SEARCH_DATA_INTERFACE = None
     response = asyncio.run(post_query(service, "/get_from_type_count", {"index_name": "public_s"}))
     assert response.json()["success"] is False and response.json()["count"] == 0
     response = asyncio.run(post_query(service, "/get_from_type_count", {"index_name": ""}))

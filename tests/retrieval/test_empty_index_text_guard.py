@@ -13,7 +13,7 @@ class TestSchemaTransFiltersBlankIndexTerms:
     """第二层：构造 indexes 时逐项滤空（列表非空 ≠ 元素非空）。"""
 
     def _build(self, **kw):
-        from kdb.mining.transformations.schema_trans import trans_doc_segment_to_search_data
+        from kdb.mining.common.schema.segment_records import trans_doc_segment_to_search_data
         info = {'keywords': ['报告'], 'phrases': [], 'topics': [],
                 'content': {'1': [{'type': 'text', 'text_content': '正文'}]},
                 'from_file_name': 'x.docx', 'index_file_name': 'x', 'pages': [1, 1]}
@@ -45,7 +45,7 @@ class TestParseIndexAnswerFiltersBlanks:
 
     def test_empty_phrases_line_yields_no_blank_entry(self):
         builder = pytest.importorskip(
-            'kdb.mining.generation.builders.knowlege_segment_builder_by_dify',
+            'kdb.mining.common.generation.segments',
             reason='需要 knowledge_clear_tool 等运行时依赖，缺失时跳过')
         answer = '[keywords]: 报告,流量\n[phrases]:\n[topic]: 怎么导出？'
         info = builder.parse_index_answer(answer, 'x.docx', [1, 1],

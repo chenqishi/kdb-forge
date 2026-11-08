@@ -1,6 +1,8 @@
 import jieba.analyse
 import numpy as np
-from typing import List, Dict, Tuple
+from typing import List
+from typing import Dict
+from typing import Tuple
 
 def normalize_scores(word_scores: List[Tuple[str, float]]) -> List[Tuple[str, float]]:
     """

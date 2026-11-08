@@ -6,10 +6,10 @@
 
 import pytest
 
-from kdb.mining.crawlers.web_crawl.wayfair_developer_portal_fetch import _is_full_html_document
-from kdb.mining.crawlers.web_crawl.wayfair_developer_portal_fetch import build_html_document
-from kdb.mining.crawlers.web_crawl.wayfair_developer_portal_fetch import parse_post_url
-from kdb.mining.crawlers.web_crawl.wayfair_developer_portal_fetch import richtext_to_html
+from kdb.mining.web.sources.wayfair_developer import _is_full_html_document
+from kdb.mining.web.sources.wayfair_developer import build_html_document
+from kdb.mining.web.sources.wayfair_developer import parse_post_url
+from kdb.mining.web.sources.wayfair_developer import richtext_to_html
 
 
 def text(value, marks=None):

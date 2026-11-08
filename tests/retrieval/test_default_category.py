@@ -1,3 +1,4 @@
+import kdb.retrieval.ingestion.prepare as ingestion_prepare
 from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 # -*- coding: utf-8 -*-
 """
@@ -13,7 +14,7 @@ import sys
 import pytest
 
 
-from kdb.retrieval.application import search_index_data_interface as sidi
+import kdb.retrieval.application.search_index_data_interface as sidi
 from kdb.retrieval.application.search_index_data_interface import SearchDataInterface
 
 
@@ -34,7 +35,7 @@ def interface(monkeypatch):
         'from_type_norm', 'category_infos', 'client', 'primary_category', 'dataset',
         'task_id', 'flag', 'multimodal_contents', 'index_name',
     }
-    monkeypatch.setattr(sidi, 'gen_keyword_by_title_content', lambda *a, **kw: [])
+    monkeypatch.setattr(ingestion_prepare, 'gen_keyword_by_title_content', lambda *a, **kw: [])
     return obj
 
 

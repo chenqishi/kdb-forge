@@ -2,7 +2,7 @@
 
 ## Signature
 
-`EsSearchInterfaceES8.update_index_map(self, index_name: str, new_mapping: Dict[str, Any]) -> bool`
+`update_index_map(self, index_name: str, new_mapping: Dict[str, Any]) -> bool`
 
 ## Description
 
@@ -54,7 +54,7 @@
 本函数对**已存在的索引**执行 `put_mapping` 前会先看 `self.auto_update_mapping`
 （配置项 `config_es_engine.json` 的 `extra_params.auto_update_mapping`，默认 `False`）。
 
-**默认关的理由**：全量 dry-kdb.mining.generation.run 显示放开后会一次性写到 66 个索引 ——
+**默认关的理由**：全量 dry-kdb.entrypoints.cli.generate_segments 显示放开后会一次性写到 66 个索引 ——
 `categorys_info` 66 个、`task_id`/`multimodal_contents` 各 59 个、
 `dataset`/`primary_category` 各 22 个、`image_indexes` 10 个，
 `test_knowledge` 一个索引就要补 12 个字段。而这些写操作发生在**检索热路径**上。
@@ -76,4 +76,4 @@
 
 ## Source
 
-`src/kdb/retrieval/engines/es8_search_interface.py`。SQL 表/字段来自本契约已记录的真实结构资料或该实现中的查询；未附真实 DDL 的部分仅表示代码使用范围，不能视为已验证的完整表结构。
+`src/kdb/retrieval/engines/es8_search_interface.py`。SQL 字段依据保留在上面的 SQL 契约中；没有真实 DDL 的部分不宣称完整表结构已核验。

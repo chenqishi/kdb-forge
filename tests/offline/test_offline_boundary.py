@@ -4,7 +4,8 @@ import subprocess
 import sys
 from pathlib import Path
 import pytest
-from offline_guard import OfflineBoundaryError,prepare_paths
+from offline_guard import OfflineBoundaryError
+from offline_guard import prepare_paths
 
 def test_connect_is_denied_before_network():
     with socket.socket() as connection:

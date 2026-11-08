@@ -10,11 +10,14 @@
 """
 
 import logging
-from typing import Any, Dict, List, Sequence
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Sequence
 
 import requests
 
-from kdb.shared.config.legacy_config import GLOBAL_CONFIG
+from kdb.shared.config.global_config import GLOBAL_CONFIG
 
 DEFAULT_ROLE_KEYS = ('peer', 'teacher', 'management')
 

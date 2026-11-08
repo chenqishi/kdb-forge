@@ -16,15 +16,14 @@ scripts/services/retrieval.sh --check config/config_for_search_index.json
 | `crawler.sh` | `--check` | `0.0.0.0:6001`，原 debug 行为保留；调用接口才开始抓取与清洗 |
 | `files.sh` | `--check --config config/minio_config.json --host 127.0.0.1 --port 8001` | 默认 `0.0.0.0:8000`；MinIO 配置。示例显式使用 8001，避免与代理端口冲突 |
 | `multilingual.sh` | `--check --model_path resources/models/lid.176.ftz --host 127.0.0.1 --port 8007` | 默认 `0.0.0.0:8007`；需要真实 fastText 包与可加载模型 |
-| `csat.sh` | `--check --mysql-config config/mysql_conn_config.json --auth-config config/csat_auth.json --port 7000` | `0.0.0.0:7000`；SQL 配置及 `{client: secret}` 认证 JSON |
 | `fastgpt_proxy.sh` | `--check` | `0.0.0.0:8000`，保留 reload 行为；配置 FastGPT 上游与认证 |
 
-也可在已安装包的环境使用模块入口；所有七服务均遵循同一命名方式：
+也可在已安装包的环境使用模块入口；六个核心服务使用下列模块命名方式：
 
 ```bash
-python -m kdb.services.retrieval.app config/config_for_search_index.json
-python -m kdb.services.off_task.app --script-dir "$PWD" --host 127.0.0.1 --port 6000
-python -m kdb.services.files.app --config config/minio_config.json --host 127.0.0.1 --port 8001
+python -m kdb.entrypoints.http.retrieval.app config/config_for_search_index.json
+python -m kdb.entrypoints.http.tasks.app --script-dir "$PWD" --host 127.0.0.1 --port 6000
+python -m kdb.entrypoints.http.files.app --config config/minio_config.json --host 127.0.0.1 --port 8001
 ```
 
 直接模块启动会执行真实初始化，应先用对应启动器检查资源。HTTP 监听、SQL/ES 初始化、任务子进程和对象存储写入属于真实运行行为。
@@ -43,10 +42,8 @@ python -m kdb.services.files.app --config config/minio_config.json --host 127.0.
 | `config_dify_simility.json.example` | `config/config_dify_simility.json`；实际相似度工作流配置 |
 | `mysql_conn_config.json.example` | `config/mysql_conn_config.json`；真实 SQL host/database/user/password |
 | `minio_config.json.example` | `config/minio_config.json`；对象存储 endpoint、访问密钥、region 与寻址方式 |
-| `csat_auth.json.example` | `config/csat_auth.json`；真实 `{client: secret}` 映射 |
 | `llm_config.json.example` | `config/llm_config.json`；启用的模型 provider、endpoint、key、模型与回退设置 |
 | `hardcoded_defaults.json.example` | **`private/runtime_config/hardcoded_defaults.json`**；按当前环境填入实际所需默认值，保留键与调用关系 |
-| `zhiqu_credentials.json.example` | `config/zhiqu_credentials.json`；仅配置当前启用的外部系统账号 |
 | `prompt_file_map.txt.example`、`chatkonwledge_report_platform_map.txt.example` | `config/` 下同名无 `.example` 文件；按当前客户和已有 Prompt/报告目标填写，示例记录为合成数据 |
 
 例如，仅准备检索模板时：
@@ -67,8 +64,20 @@ cp config/hardcoded_defaults.json.example private/runtime_config/hardcoded_defau
 
 Prompt 位于 `resources/prompts/`，共享路径工具为 `kdb.shared.config.paths`。模型、运行数据、输出、日志及缓存不随 Git 提交。任务配置中的客户、数据集和外部资源路径需要逐项核对。
 
-当前未补齐语言服务的真实 fastText 依赖/模型与 CSAT 真实认证配置。默认离线测试使用明确的模型/认证测试夹具，不能作为真实资源验收。
+当前未补齐语言服务的真实 fastText 依赖/模型。默认离线测试使用明确的模型/认证测试夹具，不能作为真实资源验收。
 
 可选本地 LLM 增强通过显式 `KDB_LLM_CLIENT_PATH` 加载兼容插件；插件需提供 `configure_providers` 及支持 `image_urls`、返回三元组的 `request_llm`。配置使用 `KDB_LLM_CONFIG`（兼容显式 `AGENTS_LLM_CONFIG`）。未配置时沿既有降级流程，不默认引用其他工作区的客户端或模型配置。
 
-缺口分析工具 `python -m kdb.mining.query_analysis.align_gap_queries` 与 `python -m kdb.mining.query_analysis.gap_material_coverage` 必须显式提供 `--gap-csv`，或设置 `KDB_GAP_CSV`；不从其他工作区寻找默认输入。
+缺口分析工具 `python -m kdb.mining.chat.query_analysis.align_gaps` 与 `python -m kdb.mining.chat.query_analysis.material_coverage` 必须显式提供 `--gap-csv`，或设置 `KDB_GAP_CSV`；不从其他工作区寻找默认输入。
+
+## 独立辅助项目与成对发布
+
+满意度、身份映射、独立运营统计与工作流评测位于 assistant-data-tools。版本配对为 assistant-data-tools 0.1.0 / kdb 0.2.0；辅助项目仅导入 kdb.shared，核心不导入辅助项目。
+
+辅助项目使用自己的 config、data、output，CSAT 启动与认证模板见该项目 README。消费者依赖的 config/zhiqu_assistant_id_map.json 和 config/zhiqu_sid_to_robots_{client}.json 必须与生产脚本迁到同一配置根。核心任务报表和挖掘调度仍留在本项目。
+
+部署时固定两个项目的版本或提交，分别准备真实配置；更新 CSAT 入口及映射 cron 的工作目录、解释器和输出路径后再切换调用，避免两套映射写入任务同时运行。回退时停止新调度，恢复旧入口及其原配置/产物目录。本次代码迁移不修改系统 cron、不部署、不启动真实服务。
+
+当前运行根与资源从源码项目目录解析。发布采用配对源码检出及可编辑安装，不宣称单独 wheel 已包含完整运行资源。
+
+远程聊天素材默认目录 `/root/dify/dify-on-wechat` 属于远端输入数据位置，保留在 chat/media 与 chat/sources/remote_messages；它不是本地代码依赖。可通过原 CHAT_IMAGE_REMOTE_ROOT 或 remote_path_root_dir 参数指定远端路径，不将远程数据目录重绑为本项目。

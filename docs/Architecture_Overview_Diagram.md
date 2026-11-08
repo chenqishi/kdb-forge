@@ -1,53 +1,67 @@
-# 项目架构
+# 业务架构与依赖方向
 
-`src/kdb` 是业务代码的唯一入口。七个 HTTP 服务、五条挖掘管道和定时任务直接引用包内模块；启动器使用 `python -m kdb.…`。
+主体分为知识检索、知识挖掘、多语言、公共模块。工程入口负责参数、HTTP 响应和生命周期，业务模块不得反向导入入口。下图箭头表示调用或依赖方向。
 
 ```mermaid
 flowchart TB
-  CLI[scripts/services · 显式 KDB_PYTHON] --> CHECK[本地依赖与资源预检]
-  CHECK --> S[七个 HTTP 服务]
-  S --> RET[retrieval · 检索服务]
-  S --> OFF[off_task · 任务队列]
-  S --> CRAWL[crawler · 网页处理]
-  S --> FILE[files · 文件访问]
-  S --> LANG[multilingual · 语言识别]
-  S --> CSAT[csat · 满意度报表]
-  S --> FAST[fastgpt_proxy · 上游代理]
-  OFF --> PIPE[mining/pipelines · 五条管道]
-  JOB[jobs · 定时任务] --> PIPE
-  PIPE --> STAGE[mining · 抽取、清洗、审核、入库]
-  RET --> APP[retrieval/application · SearchDataInterface]
-  STAGE --> APP
-  APP --> ENG[retrieval/engines · ES8.17 与索引路由]
-  APP --> SHARED[shared · 配置、客户端、文本、文件、类目]
-  STAGE --> SHARED
-  CRAWL --> STAGE
-  FILE --> SHARED
-  CSAT --> REPORT[reporting / integrations]
-  REPORT --> SHARED
-  FAST --> UP[FastGPT 上游]
-  LANG --> MODEL[fastText 与真实语言模型]
-  ENG --> ES[Elasticsearch 8.17]
-  SHARED --> EXT[SQL / LLM / MinIO / 类目接口]
+  ENTRY[工程接入层：HTTP / CLI / 定时入口]
+  ENTRY --> RET[知识检索 retrieval]
+  ENTRY --> TASK[知识挖掘：任务管理]
+  ENTRY --> LANG[多语言 multilingual]
+  ENTRY --> STORAGE[对象读取与上传]
+  TASK --> DOC[文档挖掘 document]
+  TASK --> WEB[网页挖掘 web]
+  TASK --> CHAT[对话挖掘 chat]
+  DOC --> COMMON[挖掘公共模块 common]
+  WEB --> COMMON
+  CHAT --> COMMON
+  DOC --> BRIDGE[检索桥 bridges/retrieval]
+  WEB --> BRIDGE
+  CHAT --> BRIDGE
+  BRIDGE --> RET
+  COMMON --> QUALITY[质量 / 去重 / schema / 解析切分 / LLM]
+  RET --> SHARED[顶层公共模块 shared]
+  QUALITY --> SHARED
+  LANG --> SHARED
+  STORAGE --> SHARED
+  SHARED --> INFRA[数据库 / 对象存储 / 模型客户端 / 配置 / 文件 / 文本]
+  AUX[独立项目 assistant-data-tools：满意度 / 身份映射 / 运营统计] --> SHARED
 ```
 
-| 目录 | 职责 |
+任务管理通过子进程启动管道 CLI，图中任务到管道的箭头包括运行时调用，不全是 Python import。`scripts/testing/architecture.py` 校验实际静态 import 方向和环；动态命令的入口另有离线断言。
+
+| 目录 | 职责与边界 |
 |---|---|
-| `services/` | HTTP 参数、响应、服务生命周期；对外沿用原业务协议 |
-| `retrieval/application/` | 检索、文档处理及通用业务兼容行为；SearchDataInterface 是唯一业务实现 |
-| `retrieval/engines/` | Elasticsearch 8.17 请求、索引路由、计数与维护接口 |
-| `mining/` | 五条管道及可组合的抽取、清洗、质量审核、任务阶段 |
-| `jobs/` | 定时批次入口与调度所需逻辑 |
-| `shared/` | 配置路径、外部客户端、类目、文件、文本等共用模块 |
-| `integrations/`、`reporting/` | 外部系统适配与统计报表 |
-| `resources/` | Prompt 等随代码发布的静态资源 |
-| `function_schema/` | 当前函数输入输出、SQL 字段及来源契约 |
-| `scripts/`、`tests/` | 运维入口与离线验证 |
+| `retrieval/application/` | 唯一 SearchDataInterface 门面、服务运行对象与业务查询 |
+| `retrieval/search/`、`ranking.py`、`statistics.py` | 查询、多查询、分页、分数整理与计数聚合 |
+| `retrieval/ingestion/`、`categories/`、`file_operations.py` | 数据准备、ID、入库去重、写入、类目与按文件操作 |
+| `retrieval/engines/` | ES8.17、索引路由、协议与初始化；engines/providers 保留原实现，工厂仍只允许 ES8.17 |
+| `retrieval/providers/` | 远端 FastGPT 请求，与底层引擎 provider 分开 |
+| `retrieval/maintenance/` | 审核、导出、迁移、修复与清理 |
+| `mining/tasks/` | 唯一队列状态、资源计数、SQL 记录、子进程、提交、估算与任务报表 |
+| `mining/document/`、`web/`、`chat/` | 各来源专属管道、阶段、数据读取与处理；网页导出在 web/exports |
+| `mining/common/` | 共用 llm、quality、deduplication、schema、parsing、segmentation、generation 等 |
+| `mining/bridges/retrieval.py` | 挖掘跨域访问检索的唯一模块；公共质检不依赖该桥或聊天抽取器 |
+| `multilingual/` | 模型加载、规则优先识别、标签转换与唯一模型状态 |
+| `shared/` | 通用存储、SQL、客户端、相似度、类目树、配置和文本文件处理，不导入业务域 |
+| `entrypoints/http/` | 六服务：retrieval、tasks、crawler、files、multilingual、fastgpt_proxy，保留原协议 |
+| `entrypoints/cli/`、`entrypoints/scheduled/` | 参数解析、命令注册、日志接线，业务函数在所属域 |
+| `operations/data_migration/` | SQL 迁移；ES 迁移属于 retrieval/maintenance |
 
-包内依赖使用 `kdb.*`，不依赖仓库根下的旧业务包。共享路径由 `kdb.shared.config.paths` 解析；静态资源从 `resources/` 读取，运行配置、日志、任务产物与缓存独立管理。
+## 公共能力的调用方向
 
-五条管道按各自控制器执行生成、质量处理、格式转换和入库阶段，使用任务目录中的文件交接。具体开关和失败处理依各管道实现；直接检索/入库 API 保留各自默认参数与索引选择行为，详见对应函数契约。
+聊天抽取和通用质检共用的 Prompt 加载、模型客户端及输出清理在 `mining/common/llm/`。两者均可调用这些公共函数，公共函数不导入抽取器或质检流程。聊天专用 Prompt 选择仍在 `chat/generation/`。
 
-对外服务只保留原业务接口。检索服务使用 `/search`、`/insert`、`/modify_knowledge*` 等既有路径；七个服务的参数、返回结构、默认值和原有认证行为保持一致。
+shared 只依赖自身和基础库；mining/common 不依赖 chat/document/web/tasks/bridges 的专项实现；retrieval 不依赖 mining 或入口。挖掘访问检索必须经过桥接模块。核心不导入 assistant_data_tools；独立项目只可导入 kdb.shared。默认离线测试检查这些约束。
 
-服务启动预检仅验证本地依赖、配置格式与资源存在。语言服务仍缺真实 fastText 依赖/模型，CSAT 仍缺真实认证配置；离线测试通过不能证明这些资源已就绪，也不代表真实后端或生产运行已经验收。
+## 状态与重复实现
+
+检索方法按职责拆分后仍绑定到同一个 SearchDataInterface 实例。五条管道保留各自控制器和调度规则，阶段函数继续使用原实例。队列、锁、停止标志和资源计数只由 mining/tasks/state.py 持有，详见[状态所有权](state_ownership.md)。
+
+完全相同的两份文档切分实现、两份深度爬取实现分别合并为一份。函数只有依赖和语义也一致时才合并：页面输出共用文件 I/O，但文档格式化保留图片地址，审阅格式化仅保留文本，两种 formatter 分开。
+
+本地数据集 ID 为 `retrieval/ingestion/raw_records.py::gen_local_dataset_record_id`；知识入库 ID 为 `retrieval/ingestion/identifiers.py::gen_data_id`。两者算法和用途不同，不能合并。正式批量入库仍关闭本地读取器的可选 ID 生成。
+
+## 独立辅助项目
+
+assistant-data-tools 管理满意度、身份映射、独立运营报表和工作流评测，使用自己的配置与产物目录，固定配对 assistant-data-tools 0.1.0 / kdb 0.2.0。六个核心服务与辅助项目的 CSAT 是独立部署单元；CSAT 的 URL、签名和返回保持原样。项目拆分不自动迁移系统 cron、私有配置或线上进程。

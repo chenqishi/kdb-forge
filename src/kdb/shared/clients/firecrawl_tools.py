@@ -14,7 +14,7 @@ import logging
 
 import requests
 
-from kdb.shared.config.legacy_config import GLOBAL_CONFIG
+from kdb.shared.config.global_config import GLOBAL_CONFIG
 
 DEFAULT_API_BASE = 'https://api.firecrawl.dev'
 DEFAULT_API_VERSION = 'v2'

@@ -1,3 +1,5 @@
+import kdb.mining.bridges.defaults as _mining_bridges_defaults
+import kdb.mining.bridges.retrieval as _mining_bridges_retrieval
 from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
@@ -15,7 +17,7 @@ import pytest
 
 PROJECT_ROOT = str(_PROJECT_ROOT)
 
-from kdb.mining.query_analysis import wayfair_unanswered_review as wur
+import kdb.mining.chat.query_analysis.unanswered_review as wur
 
 
 # ---------------------------------------------------------------------------
@@ -133,7 +135,7 @@ def test_search_knowledge_merges_by_id_keeping_max_score():
         'q2': [{'_id': 'a', 'title': 'A', 'content': 'ca', 'similarity': 0.9},
                {'_id': 'b', 'title': 'B', 'content': 'cb', 'similarity': 0.7}],
     })
-    docs = wur.search_knowledge(sdi, ['q1', 'q2'])
+    docs = _mining_bridges_retrieval.search_knowledge(sdi, ['q1', 'q2'])
     assert [d['_id'] for d in docs] == ['a', 'b']          # 按分数倒排
     assert docs[0]['similarity'] == 0.9                     # 保留最高分
     assert docs[0]['hit_by'] == ['q1', 'q2']                # 记录命中路径
@@ -143,12 +145,12 @@ def test_search_knowledge_survives_one_failing_variant():
     """某一路检索抛异常不应让整条 query 作废。"""
     sdi = _FakeSdi({'ok': [{'_id': 'a', 'title': 'A', 'content': '', 'similarity': 0.8}]},
                    fail_on=('bad',))
-    docs = wur.search_knowledge(sdi, ['bad', 'ok'])
+    docs = _mining_bridges_retrieval.search_knowledge(sdi, ['bad', 'ok'])
     assert [d['_id'] for d in docs] == ['a']
 
 
 def test_search_knowledge_returns_empty_when_nothing_found():
-    assert wur.search_knowledge(_FakeSdi({}), ['q']) == []
+    assert _mining_bridges_retrieval.search_knowledge(_FakeSdi({}), ['q']) == []
 
 
 # ---------------------------------------------------------------------------
@@ -326,7 +328,7 @@ def test_pick_query_text_falls_through_when_cleaning_empties_field():
 # ---------------------------------------------------------------------------
 
 def test_warn_when_reasoning_exhausts_max_tokens(caplog):
-    from kdb.mining.quality.chat_qa_extract import llm_client
+    import kdb.mining.common.llm.client as llm_client
     result = {
         'choices': [{'finish_reason': 'length', 'message': {'content': ''}}],
         'usage': {'completion_tokens': 30,
@@ -338,7 +340,7 @@ def test_warn_when_reasoning_exhausts_max_tokens(caplog):
 
 
 def test_no_warning_when_content_present(caplog):
-    from kdb.mining.quality.chat_qa_extract import llm_client
+    import kdb.mining.common.llm.client as llm_client
     result = {
         'choices': [{'finish_reason': 'length', 'message': {'content': 'x'}}],
         'usage': {'completion_tokens_details': {'reasoning_tokens': 30}},
@@ -350,7 +352,7 @@ def test_no_warning_when_content_present(caplog):
 
 def test_no_warning_for_normal_stop_with_empty_content(caplog):
     """finish_reason=stop 的空正文是另一类问题，不该报这条告警。"""
-    from kdb.mining.quality.chat_qa_extract import llm_client
+    import kdb.mining.common.llm.client as llm_client
     result = {'choices': [{'finish_reason': 'stop', 'message': {'content': ''}}],
               'usage': {'completion_tokens_details': {'reasoning_tokens': 10}}}
     with caplog.at_level('WARNING'):
@@ -359,7 +361,7 @@ def test_no_warning_for_normal_stop_with_empty_content(caplog):
 
 
 def test_deepseek_models_route_to_official_provider():
-    from kdb.mining.quality.chat_qa_extract import llm_client
+    import kdb.mining.common.llm.client as llm_client
     assert llm_client._detect_provider('deepseek-v4-flash') == 'deepseek'
     assert llm_client._detect_provider('deepseek-v4-pro') == 'deepseek'
     assert 'api.deepseek.com' in llm_client._PROVIDER_CONFIGS['deepseek']['api_url']
@@ -393,7 +395,7 @@ def test_thread_pool_map_preserves_input_order():
 def test_search_knowledge_does_not_mutate_caller_conditions():
     """search_data_by_query 会就地补 audit_result；并发下不能改到共享常量。"""
     import copy as _copy
-    before = _copy.deepcopy(wur.DEFAULT_CONDITION_DICTS)
+    before = _copy.deepcopy(_mining_bridges_defaults.DEFAULT_CONDITION_DICTS)
 
     class _MutatingSdi:
         def search_data_by_query(self, query, index_names=None, condition_dicts=None, size=10):
@@ -402,8 +404,8 @@ def test_search_knowledge_does_not_mutate_caller_conditions():
                 cond['_touched'] = True
             return [], 0
 
-    wur.search_knowledge(_MutatingSdi(), ['q'])
-    assert wur.DEFAULT_CONDITION_DICTS == before
+    _mining_bridges_retrieval.search_knowledge(_MutatingSdi(), ['q'])
+    assert _mining_bridges_defaults.DEFAULT_CONDITION_DICTS == before
 
 
 # ---------------------------------------------------------------------------

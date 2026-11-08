@@ -1,7 +1,9 @@
+import kdb.entrypoints.cli.index_upload as index_upload
+import kdb.entrypoints.cli.index_upload as _entrypoints_cli_index_upload
 import json
 
-from kdb.mining.pipelines.html_qa_segment import HtmlKgGenTaskController
-from kdb.retrieval.application import search_index_data_interface as search_module
+from kdb.mining.web.pipeline import HtmlKgGenTaskController
+import kdb.retrieval.application.search_index_data_interface as search_module
 
 
 def test_insert_data_cli_override_disables_only_llm(monkeypatch, tmp_path):
@@ -18,9 +20,9 @@ def test_insert_data_cli_override_disables_only_llm(monkeypatch, tmp_path):
             data["_id"] = "test-id"
             return True, "ok"
 
-    monkeypatch.setattr(search_module, "SearchDataInterface", FakeSearchDataInterface)
+    monkeypatch.setattr(index_upload, "SearchDataInterface", FakeSearchDataInterface)
 
-    result = search_module.insert_data_to_search_index(
+    result = _entrypoints_cli_index_upload.insert_data_to_search_index(
         str(data_file),
         "unused.json",
         index_name_assign="mercado_local",

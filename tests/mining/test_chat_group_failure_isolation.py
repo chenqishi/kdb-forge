@@ -1,3 +1,9 @@
+import kdb.mining.chat.generation.direct_json as _chat_generation_direct_json
+import kdb.mining.chat.identity as _mining_chat_identity
+import kdb.mining.chat.sources.robot_files as _chat_sources_robot_files
+import kdb.mining.chat.generation.direct_json as _chat_generation_direct_json
+import kdb.mining.chat.identity as _mining_chat_identity
+import kdb.mining.chat.sources.robot_files as _chat_sources_robot_files
 from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 # -*- coding: utf-8 -*-
 """answer-source Turn 链路的单群失败隔离。"""
@@ -10,7 +16,7 @@ import pytest
 
 ROOT = str(_PROJECT_ROOT)
 
-from kdb.mining.generation.chatknowledge import gen_knowledge_from_chat as gk
+import kdb.mining.chat.generation.batch as gk
 
 
 def _chat(send_user, content, ts):

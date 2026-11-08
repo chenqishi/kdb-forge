@@ -1,6 +1,7 @@
 import json
 import requests
-from typing import Union, List
+from typing import Union
+from typing import List
 import numpy as np
 import logging
 import time

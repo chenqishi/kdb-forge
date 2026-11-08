@@ -6,7 +6,9 @@ search_multi 双路召回 + inner_hits 瘦身的回归测试。
 2. recall_mode='dual' 时每索引发两个 body，BM25 路的 nested 必须 boost=0
 3. _cal_title_similarity 有 indexes_sims 时走 inner_hits，没有时回退本地算
 """
-import sys, types, json
+import sys
+import types
+import json
 from unittest import mock
 import pytest
 
@@ -14,15 +16,15 @@ if "elasticsearch" not in sys.modules:
     stub = types.ModuleType("elasticsearch"); stub.Elasticsearch = object
     sys.modules["elasticsearch"] = stub
 
-from kdb.retrieval.engines.es_search_interface import EsSearchInterfaceOri
-from kdb.retrieval.engines.es_search_interface import RECALL_MODE_LEGACY
-from kdb.retrieval.engines.es_search_interface import RECALL_MODE_DUAL
-from kdb.retrieval.engines.es_search_interface import RECALL_ROUTE_BM25
-from kdb.retrieval.engines.es_search_interface import RECALL_ROUTE_VECTOR
-from kdb.retrieval.engines.es_search_interface import _INNER_HITS_NAME
-from kdb.retrieval.engines.es_search_interface import RECALL_MODE_DEFAULT
-from kdb.retrieval.engines.es_search_interface import _SAFE_PAGE_BATCH as esi_SAFE
-import kdb.retrieval.engines.es_search_interface as _esi
+from kdb.retrieval.engines.providers.es7 import EsSearchInterfaceOri
+from kdb.retrieval.engines.factory import RECALL_MODE_LEGACY
+from kdb.retrieval.engines.providers.recall_settings import RECALL_MODE_DUAL
+from kdb.retrieval.engines.providers.es7 import RECALL_ROUTE_BM25
+from kdb.retrieval.engines.providers.es7 import RECALL_ROUTE_VECTOR
+from kdb.retrieval.engines.providers.es7 import _INNER_HITS_NAME
+from kdb.retrieval.engines.providers.recall_settings import RECALL_MODE_DEFAULT
+from kdb.retrieval.engines.providers.es7 import _SAFE_PAGE_BATCH as esi_SAFE
+import kdb.retrieval.engines.providers.es7 as _esi
 esi_time = _esi.time
 
 VEC = [0.1] * 1024

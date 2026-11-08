@@ -13,11 +13,11 @@ import pytest
 
 from openpyxl import Workbook
 
-from kdb.mining.transformations.schema_trans import classify_excel_upload
-from kdb.mining.transformations.schema_trans import map_excel_columns
-from kdb.mining.transformations.schema_trans import trans_review_excel_to_json_file
-from kdb.mining.transformations.schema_trans import trans_web_excel_to_json_file
-from kdb.mining.generation.processing.wordtotext import parse_excel_to_json
+from kdb.mining.common.schema.excel_import import classify_excel_upload
+from kdb.mining.common.schema.excel_import import map_excel_columns
+from kdb.mining.common.schema.review_import import trans_review_excel_to_json_file
+from kdb.mining.common.schema.review_import import trans_web_excel_to_json_file
+from kdb.mining.common.parsing.documents import parse_excel_to_json
 
 
 def _make_xlsx(path, headers, rows):

@@ -1,3 +1,6 @@
+import kdb.entrypoints.http.retrieval.models as retrieval_models
+import kdb.retrieval.application.runtime as retrieval_runtime
+import kdb.retrieval.ingestion.prepare as ingestion_prepare
 from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 """Original HTTP insert -> real business/factory/ES8 with offline ES boundaries."""
 import ast
@@ -15,8 +18,8 @@ import pytest
 
 from kdb.retrieval.engines.es8_client_router import IndexClientRouter
 from kdb.retrieval.engines.es8_search_interface import EsSearchInterfaceES8
-from kdb.retrieval.engines.es_search_interface import EsSearchInterface
-from kdb.retrieval.application import search_index_data_interface as business_module
+from kdb.retrieval.engines.factory import EsSearchInterface
+import kdb.retrieval.application.search_index_data_interface as business_module
 from tests.retrieval.test_es8_interface import FakeClient
 
 
@@ -33,7 +36,7 @@ def fixture_service(monkeypatch, tmp_path):
     embedding.text2embedding.return_value = np.asarray([1.0, 0.0, 0.0])
     monkeypatch.setattr(business_module, 'EmbeddingTools', Mock(return_value=embedding))
     monkeypatch.setattr(business_module.simility_tools, 'SimilityTools', Mock())
-    monkeypatch.setattr(business_module, 'gen_keyword_by_title_content', Mock(return_value=[{'word': 'fixture'}]))
+    monkeypatch.setattr(ingestion_prepare, 'gen_keyword_by_title_content', Mock(return_value=[{'word': 'fixture'}]))
     es_path = tmp_path / 'es.json'
     es_path.write_text(json.dumps({'es_version': '8.17', 'index_name': 'a',
         'vector_fields': {'indexes_embedding': 3}, 'default_provider': 'serverless',
@@ -44,12 +47,12 @@ def fixture_service(monkeypatch, tmp_path):
     business_path.write_text(json.dumps({'search_engine_config_path': str(es_path), 'check_duplicate': False}))
     iface = business_module.SearchDataInterface(config_path=str(business_path))
     assert isinstance(iface.engine, EsSearchInterface) and isinstance(iface.engine._impl, EsSearchInterfaceES8)
-    path = _PROJECT_ROOT / 'src/kdb/services/retrieval/app.py'
+    path = _PROJECT_ROOT / 'src/kdb/entrypoints/http/retrieval/app.py'
     spec = importlib.util.spec_from_file_location('_insert_extension_actual_service', path)
     module = importlib.util.module_from_spec(spec)
     monkeypatch.setitem(sys.modules, spec.name, module)
     spec.loader.exec_module(module)
-    module.SEARCH_DATA_INTERFACE = iface
+    retrieval_runtime.SEARCH_DATA_INTERFACE = iface
     return module, iface, clients
 
 
@@ -93,7 +96,7 @@ def test_api_insert_extension_reaches_real_engine(fixture_service, kind, index, 
 @pytest.mark.parametrize('defined', [None, ['ext_info', 'schema_tag']])
 def test_helper_default_schema_and_input_preservation(fixture_service, defined):
     service, _, _ = fixture_service
-    request = service.InsertRequest(**{'_id': 'fixture', 'index_names': 'a', 'refresh_imm': True,
+    request = retrieval_models.InsertRequest(**{'_id': 'fixture', 'index_names': 'a', 'refresh_imm': True,
         'is_need_llm': False, 'is_update_data': True, 'categoryId': '1', 'categoryName': 'sample',
         'ext_info': {'nested': {'items': [1, None]}, 'collision': 'inner'},
         'collision': 'outer', 'zero': 0, 'false_value': False, 'empty_list': [],
@@ -229,7 +232,7 @@ def test_request_models_remain_unchanged():
                                                  'Field(False, '
                                                  "description='是否允许插入新QA到ES，仅当为True且没有要修改的旧QA时才插入')")}}
     actual = {}
-    source = (_PROJECT_ROOT / 'src/kdb/services/retrieval/app.py').read_text(encoding='utf-8')
+    source = (_PROJECT_ROOT / 'src/kdb/entrypoints/http/retrieval/models.py').read_text(encoding='utf-8')
     for node in ast.parse(source).body:
         if isinstance(node, ast.ClassDef) and node.name.endswith('Request'):
             actual[node.name] = {}

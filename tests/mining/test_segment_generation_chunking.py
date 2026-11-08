@@ -33,8 +33,8 @@ except Exception:
     pil.__path__ = []
     _make_stub("PIL.Image", open=lambda *args, **kwargs: None)
 
-from kdb.mining.generation.builders.knowlege_segment_builder_by_dify import fill_uncovered_segments_in_chunk
-from kdb.mining.generation.builders.knowlege_segment_builder_by_dify import get_segment_knowledge_by_dify
+from kdb.mining.common.generation.segments import fill_uncovered_segments_in_chunk
+from kdb.mining.common.generation.segments import get_segment_knowledge_by_dify
 
 
 class DummySegmentDify:
@@ -68,7 +68,7 @@ def test_sparse_original_page_number_is_not_lost(tmp_path):
 
 
 def test_image_ocr_is_used_in_chunk_boundaries():
-    from kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent import build_page_chunks
+    from kdb.mining.common.generation.long_qa import build_page_chunks
     pages = {str(n): [{"type": "image", "is_valid": True,
                       "public_url": "https://example.com/slide.png",
                       "image_ocr": "文字" * 100}] for n in range(1, 4)}

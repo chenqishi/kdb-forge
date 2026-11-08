@@ -1,3 +1,4 @@
+import kdb.retrieval.application.runtime as retrieval_runtime
 from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 """Real old HTTP/business/factory/ES8 methods with external ES/embedding doubles."""
 import asyncio
@@ -11,13 +12,17 @@ from unittest.mock import Mock
 import httpx
 import numpy as np
 import pytest
-from elasticsearch import ApiError, BadRequestError, NotFoundError
-from elastic_transport import ApiResponseMeta, HttpHeaders, NodeConfig
+from elasticsearch import ApiError
+from elasticsearch import BadRequestError
+from elasticsearch import NotFoundError
+from elastic_transport import ApiResponseMeta
+from elastic_transport import HttpHeaders
+from elastic_transport import NodeConfig
 
-from kdb.retrieval.application import search_index_data_interface as business
+import kdb.retrieval.application.search_index_data_interface as business
 from kdb.retrieval.engines.es8_client_router import IndexClientRouter
 from kdb.retrieval.engines.es8_search_interface import EsSearchInterfaceES8
-from kdb.retrieval.engines.es_search_interface import EsSearchInterface
+from kdb.retrieval.engines.factory import EsSearchInterface
 from tests.retrieval.test_es8_interface import FakeClient
 
 
@@ -100,12 +105,12 @@ def fixture_service(monkeypatch, tmp_path):
     iface = business.SearchDataInterface(config_path=str(business_path))
     assert isinstance(iface.engine, EsSearchInterface)
     assert isinstance(iface.engine._impl, EsSearchInterfaceES8)
-    path = _PROJECT_ROOT / 'src/kdb/services/retrieval/app.py'
+    path = _PROJECT_ROOT / 'src/kdb/entrypoints/http/retrieval/app.py'
     spec = importlib.util.spec_from_file_location('_autocreate_actual_old_service', path)
     service = importlib.util.module_from_spec(spec)
     monkeypatch.setitem(sys.modules, spec.name, service)
     spec.loader.exec_module(service)
-    service.SEARCH_DATA_INTERFACE = iface
+    retrieval_runtime.SEARCH_DATA_INTERFACE = iface
     return service, iface.engine._impl, clients
 
 

@@ -6,7 +6,8 @@ ROOT = Path(__file__).resolve().parents[1]
 TESTING = str(ROOT / 'scripts/testing')
 if TESTING not in sys.path:
     sys.path.insert(0, TESTING)
-from offline_guard import install, prepare_paths
+from offline_guard import install
+from offline_guard import prepare_paths
 install(ROOT)
 prepare_paths(ROOT)
 

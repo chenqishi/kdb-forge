@@ -17,8 +17,8 @@ if "elasticsearch" not in sys.modules:
     stub.Elasticsearch = object
     sys.modules["elasticsearch"] = stub
 
-from kdb.retrieval.engines.es_search_interface import EsSearchInterfaceOri
-from kdb.retrieval.engines.es_search_interface import _mapping_config_equal
+from kdb.retrieval.engines.providers.es7 import EsSearchInterfaceOri
+from kdb.retrieval.engines.mapping_comparison import _mapping_config_equal
 
 
 # ---------- _mapping_config_equal ----------

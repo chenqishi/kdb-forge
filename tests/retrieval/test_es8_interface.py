@@ -223,7 +223,7 @@ def test_partial_shards_are_retried_then_fail(routed_clients, monkeypatch):
 
 
 def test_factory_selects_es8_without_auto_detect(monkeypatch):
-    import kdb.retrieval.engines.es_search_interface as legacy_module
+    import kdb.retrieval.engines.factory as legacy_module
 
     selected = {}
 

@@ -10,8 +10,10 @@ import logging
 import re
 import time
 from collections.abc import Mapping
-from typing import Any, Dict, List
-from .es_count_utils import complete_count
+from typing import Any
+from typing import Dict
+from typing import List
+from kdb.retrieval.engines.es_count_utils import complete_count
 
 logger = logging.getLogger(__name__)
 

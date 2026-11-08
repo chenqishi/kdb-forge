@@ -1,3 +1,8 @@
+import kdb.entrypoints.http.retrieval.routes as retrieval_routes
+import kdb.entrypoints.http.retrieval.models as retrieval_models
+import kdb.entrypoints.http.retrieval.models as _http_retrieval_models
+import kdb.entrypoints.http.retrieval.routes as _http_retrieval_routes
+import kdb.retrieval.application.queries as _retrieval_application_queries
 import importlib
 import asyncio
 import sys
@@ -26,7 +31,7 @@ def _install_import_stubs(monkeypatch):
 
 def test_search_response_preserves_trace_ids(monkeypatch):
     _install_import_stubs(monkeypatch)
-    module = importlib.import_module("kdb.services.retrieval.app")
+    module = importlib.import_module("kdb.entrypoints.http.retrieval.app")
 
     raw_result = [
         {
@@ -54,10 +59,10 @@ def test_search_response_preserves_trace_ids(monkeypatch):
     async def fake_query_remote_service(**kwargs):
         return raw_result, len(raw_result)
 
-    monkeypatch.setattr(module, "query_remote_service", fake_query_remote_service)
+    monkeypatch.setattr(retrieval_routes, "query_remote_service", fake_query_remote_service)
 
-    request = module.SearchRequest(text="refund", top_k=10)
-    response = asyncio.run(module.search(request))
+    request = _http_retrieval_models.SearchRequest(text="refund", top_k=10)
+    response = asyncio.run(_http_retrieval_routes.search(request))
     payload = response.model_dump()
 
     qa_item = payload["results"][0]
@@ -91,24 +96,24 @@ def test_search_result_carries_primary_category():
     消费方要用 primary_category.category_path（形如「业务地区-巴西」）给每条知识标注类目，
     否则全类目检索时 LLM 分不清哪条属于哪个站点。
     """
-    import kdb.services.retrieval.app as svc
+    import kdb.entrypoints.http.retrieval.app as svc
 
     pc = {"cate1_name": "业务地区", "cate2_name": "巴西",
           "category_path": "业务地区-巴西", "category_ids": ["208", "209"]}
     # qa 分支：有 title
-    qa = svc.SearchResult(**{"id": "1", "q": "标题", "a": "正文", "score": 1.0,
+    qa = _http_retrieval_models.SearchResult(**{"id": "1", "q": "标题", "a": "正文", "score": 1.0,
                              "primary_category": pc})
     assert qa.model_dump()["primary_category"]["category_path"] == "业务地区-巴西"
     # segment 分支：无 title（q 为空字符串）
-    seg = svc.SearchResult(**{"id": "2", "q": "", "content": "切片正文", "score": 1.0,
+    seg = _http_retrieval_models.SearchResult(**{"id": "2", "q": "", "content": "切片正文", "score": 1.0,
                               "primary_category": pc})
     assert seg.model_dump()["primary_category"]["category_path"] == "业务地区-巴西"
 
 
 def test_search_result_tolerates_missing_primary_category():
     """取不到类目时不能报错——老数据可能没有这个字段。"""
-    import kdb.services.retrieval.app as svc
-    r = svc.SearchResult(**{"id": "3", "q": "x", "score": 1.0, "primary_category": None})
+    import kdb.entrypoints.http.retrieval.app as svc
+    r = _http_retrieval_models.SearchResult(**{"id": "3", "q": "x", "score": 1.0, "primary_category": None})
     assert r.model_dump()["primary_category"] is None
 
 
@@ -119,5 +124,5 @@ def test_search_top_k_default_is_safe():
     线上实测同一 query 连打 8 次返回条数 628~1000 乱跳、探针缺失 4/8；
     top_k<=100 时条数恒定、零缺失。没显式传 top_k 的调用方一直在打大查询。
     """
-    import kdb.services.retrieval.app as svc
-    assert svc.SearchRequest(text="x").top_k <= 100
+    import kdb.entrypoints.http.retrieval.app as svc
+    assert _http_retrieval_models.SearchRequest(text="x").top_k <= 100

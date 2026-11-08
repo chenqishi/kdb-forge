@@ -7,7 +7,7 @@ import sys
 
 ROOT = str(_PROJECT_ROOT)
 
-from kdb.mining.quality.chat_qa_extract import reviewer as review_module
+import kdb.mining.chat.quality.reviewer as review_module
 
 
 def _candidate(**overrides):

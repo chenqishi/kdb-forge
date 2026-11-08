@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from kdb.mining.crawlers.web_crawl import web_batch_crawler
+import kdb.mining.web.crawlers.batch as web_batch_crawler
 
 
 def test_firecrawl_only_crawls_without_browser(tmp_path, monkeypatch):

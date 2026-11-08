@@ -16,7 +16,7 @@ import pytest
 
 def _stub_deps():
     """段落生成依赖 dify/config/knowledge_clear_tool，单测里全部打桩。"""
-    if 'kdb.mining.generation.builders.knowlege_segment_builder_by_dify' in sys.modules:
+    if 'kdb.mining.common.generation.segments' in sys.modules:
         return
 
 
@@ -24,7 +24,7 @@ _stub_deps()
 pytest.importorskip('fire')
 
 builder = pytest.importorskip(
-    'kdb.mining.generation.builders.knowlege_segment_builder_by_dify',
+    'kdb.mining.common.generation.segments',
     reason='需要 knowledge_clear_tool 等运行时依赖，缺失时跳过',
 )
 

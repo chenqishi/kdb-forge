@@ -1,3 +1,7 @@
+import kdb.mining.chat._batch_state as _mining_chat__batch_state
+import kdb.mining.chat.generation.answer_windows as _chat_generation_answer_windows
+import kdb.mining.chat.generation.output as _chat_generation_output
+import kdb.mining.chat.identity as _mining_chat_identity
 from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 # -*- coding: utf-8 -*-
 """历史 answer-source Turn 构建、Prompt 和质量兼容产物的恢复测试。"""
@@ -8,7 +12,7 @@ import sys
 
 ROOT = str(_PROJECT_ROOT)
 
-from kdb.mining.generation.chatknowledge import gen_knowledge_from_chat as gk
+import kdb.mining.chat.generation.batch as gk
 
 
 def _chat(send_user, content, ts, send_user_id=None):
@@ -21,58 +25,58 @@ def _chat(send_user, content, ts, send_user_id=None):
 
 
 def test_explicit_answer_source_overrides_contact_default():
-    role, reason = gk.infer_speaker_identity(
+    role, reason = _mining_chat_identity.infer_speaker_identity(
         '同事甲',
         answer_source_names={'同事甲'},
         contact_identity={
-            'role': gk.QUESTION_SOURCE_ROLE,
+            'role': _mining_chat__batch_state.QUESTION_SOURCE_ROLE,
             'reason': '通讯录默认外部联系人',
         },
     )
 
-    assert role == gk.COLLEAGUE_SOURCE_ROLE
+    assert role == _mining_chat__batch_state.COLLEAGUE_SOURCE_ROLE
     assert reason == '命中平台同事名单'
 
 
 def test_explicit_silent_contact_vetoes_stale_answer_source_name():
-    role, reason = gk.infer_speaker_identity(
+    role, reason = _mining_chat_identity.infer_speaker_identity(
         'Wayfair AI助理(运营指导)',
         answer_source_names={'Wayfair AI助理(运营指导)'},
         contact_identity={
-            'role': gk.UNKNOWN_SOURCE_ROLE,
+            'role': _mining_chat_identity.UNKNOWN_SOURCE_ROLE,
             'reason': '企业微信通讯录标记为静默',
         },
     )
 
-    assert role == gk.UNKNOWN_SOURCE_ROLE
+    assert role == _mining_chat_identity.UNKNOWN_SOURCE_ROLE
     assert reason == '企业微信通讯录标记为静默'
 
 
 def test_ai_keyword_vetoes_contact_and_stale_answer_source_name():
-    role, reason = gk.infer_speaker_identity(
+    role, reason = _mining_chat_identity.infer_speaker_identity(
         'Wayfair AI助理(运营指导)',
         answer_source_names={'Wayfair AI助理(运营指导)'},
         contact_identity={
-            'role': gk.COLLEAGUE_SOURCE_ROLE,
+            'role': _mining_chat__batch_state.COLLEAGUE_SOURCE_ROLE,
             'reason': '企业微信通讯录标记为同事',
         },
     )
 
-    assert role == gk.UNKNOWN_SOURCE_ROLE
+    assert role == _mining_chat_identity.UNKNOWN_SOURCE_ROLE
     assert reason == '发言人名称包含AI标识'
 
 
 def test_ai_keyword_filter_does_not_match_letters_inside_human_name():
-    assert gk.has_ai_speaker_keyword('Wayfair AI助理') is True
-    assert gk.has_ai_speaker_keyword('wayfair-ai-bot') is True
-    assert gk.has_ai_speaker_keyword('Aimee Hu') is False
-    assert gk.has_ai_speaker_keyword('Daisy') is False
+    assert _mining_chat_identity.has_ai_speaker_keyword('Wayfair AI助理') is True
+    assert _mining_chat_identity.has_ai_speaker_keyword('wayfair-ai-bot') is True
+    assert _mining_chat_identity.has_ai_speaker_keyword('Aimee Hu') is False
+    assert _mining_chat_identity.has_ai_speaker_keyword('Daisy') is False
 
 
 def test_answer_source_prompt_names_drop_ai_keyword_accounts():
     prompt = '# 你的同事如下\n"""\nWayfair AI助理(运营指导)\nWei Wang\n"""'
 
-    assert gk.extract_answer_source_names(prompt) == {'Wei Wang'}
+    assert _mining_chat_identity.extract_answer_source_names(prompt) == {'Wei Wang'}
 
 
 def test_ai_keyword_message_cannot_build_answer_turn():
@@ -82,7 +86,7 @@ def test_ai_keyword_message_cannot_build_answer_turn():
         _chat('Wei Wang', '在付款摘要中查看。', '2026-09-04 12:23:00', 'staff-1'),
     ]
 
-    turns = gk.build_answer_source_turns(
+    turns = _chat_generation_answer_windows.build_answer_source_turns(
         messages,
         answer_source_names={'Wayfair AI助理(运营指导)', 'Wei Wang'},
         platform='wayfair_test',
@@ -100,7 +104,7 @@ def test_answer_turn_uses_context_only_for_question_and_merges_same_sender():
         _chat('客户甲', '谢谢', '2026-07-27 13:43:20', 'customer-1'),
     ]
 
-    turns = gk.build_answer_source_turns(
+    turns = _chat_generation_answer_windows.build_answer_source_turns(
         messages,
         answer_source_names={'同事甲'},
         platform='mercado',
@@ -109,7 +113,7 @@ def test_answer_turn_uses_context_only_for_question_and_merges_same_sender():
     assert len(turns) == 1
     assert len(turns[0]['target_messages']) == 2
 
-    prompt = gk.build_answer_window_prompt(
+    prompt = _chat_generation_answer_windows.build_answer_window_prompt(
         'room-1',
         messages,
         turns[0],
@@ -130,7 +134,7 @@ def test_customer_message_closes_answer_turn():
         _chat('同事甲', '第二段答案', '2026-07-27 10:00:20', 'staff-1'),
     ]
 
-    turns = gk.build_answer_source_turns(
+    turns = _chat_generation_answer_windows.build_answer_source_turns(
         messages,
         answer_source_names={'同事甲'},
         platform='mercado',
@@ -151,7 +155,7 @@ def test_direct_quality_bucket_keeps_downstream_contract(tmp_path):
     )
     batch_file.write_text('robot\tmercado\tx\ty\t%s\n' % qa_file, encoding='utf-8')
 
-    gk.build_direct_llm_quality_batch(str(batch_file), str(output_batch))
+    _chat_generation_output.build_direct_llm_quality_batch(str(batch_file), str(output_batch))
 
     fields = output_batch.read_text(encoding='utf-8').strip().split('\t')
     quality_file = fields[-1]

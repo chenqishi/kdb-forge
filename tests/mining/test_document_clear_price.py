@@ -15,7 +15,7 @@ import pytest
 
 
 fitz = pytest.importorskip("fitz", reason="统计 PDF 需要 pymupdf")
-m = pytest.importorskip("kdb.mining.parsing.document_clear_price_access",
+m = pytest.importorskip("kdb.mining.tasks.estimation.document",
                         reason="需要 minio/config 依赖")
 
 

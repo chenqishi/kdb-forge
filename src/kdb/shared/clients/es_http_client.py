@@ -19,7 +19,12 @@ chat_qa_extract / quality_tools 等重依赖，所以抽到 commons 下共用。
 import json
 import logging
 import time
-from typing import Any, Dict, Iterator, List, Optional, Tuple
+from typing import Any
+from typing import Dict
+from typing import Iterator
+from typing import List
+from typing import Optional
+from typing import Tuple
 
 import requests
 from requests.adapters import HTTPAdapter

@@ -13,7 +13,7 @@ import sys
 import pytest
 
 
-supply = pytest.importorskip('kdb.retrieval.maintenance.supply_missing_field',
+supply = pytest.importorskip('kdb.retrieval.maintenance.supply_fields',
                              reason='依赖 elasticsearch 客户端，环境缺时跳过')
 
 

@@ -2,7 +2,7 @@
 
 ## Signature
 
-`EsSearchInterfaceES8.search_multi(self, query: Dict[str, Any], index_names: IndexNames=None, size: int=10, page_num: int=1, recall_mode: Optional[str]=None) -> Tuple[List[Dict[str, Any]], int]`
+`search_multi(self, query: Dict[str, Any], index_names: IndexNames=None, size: int=10, page_num: int=1, recall_mode: Optional[str]=None) -> Tuple[List[Dict[str, Any]], int]`
 
 ## Description
 
@@ -152,4 +152,4 @@ dual **不能给返回的文档加或减任何字段**，否则会影响下游�
 
 ## Source
 
-`src/kdb/retrieval/engines/es8_search_interface.py`。SQL 表/字段来自本契约已记录的真实结构资料或该实现中的查询；未附真实 DDL 的部分仅表示代码使用范围，不能视为已验证的完整表结构。
+`src/kdb/retrieval/engines/es8_search_interface.py`。SQL 字段依据保留在上面的 SQL 契约中；没有真实 DDL 的部分不宣称完整表结构已核验。

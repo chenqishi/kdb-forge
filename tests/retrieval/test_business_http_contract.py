@@ -1,3 +1,6 @@
+import kdb.entrypoints.http.retrieval.routes as retrieval_routes
+import kdb.entrypoints.http.retrieval.models as retrieval_models
+import kdb.retrieval.application.queries as _retrieval_application_queries
 """Lock the public business API independently of its internal module layout."""
 import copy
 import json
@@ -8,7 +11,7 @@ from fastapi.testclient import TestClient
 from pydantic import ValidationError
 import pytest
 
-from kdb.services.retrieval import app as service
+import kdb.entrypoints.http.retrieval.app as service
 
 
 CONTRACT_PATH = Path(__file__).resolve().parents[1] / "fixtures/business_retrieval_contract.json"
@@ -25,7 +28,7 @@ def test_openapi_matches_business_contract():
     ids=[f"{index}:{case['model']}" for index, case in enumerate(CONTRACT["models"])],
 )
 def test_request_models_match_business_contract(case):
-    model = getattr(service, case["model"])
+    model = getattr(retrieval_models, case["model"])
     expected = case["expected"]
     if expected["valid"]:
         result = model.model_validate(copy.deepcopy(case["input"]))
@@ -41,7 +44,7 @@ def test_request_models_match_business_contract(case):
 def test_search_preserves_business_wire_format(monkeypatch):
     case = CONTRACT["search_wire"]
     search = AsyncMock(return_value=(copy.deepcopy(case["backend_results"]), 1))
-    monkeypatch.setattr(service, "query_remote_service", search)
+    monkeypatch.setattr(retrieval_routes, "query_remote_service", search)
     response = TestClient(service.app).post("/search", json=case["request"])
     assert response.status_code == 200
     assert response.json() == case["response"]

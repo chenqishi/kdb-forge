@@ -1,39 +1,44 @@
 # KDB Forge
 
-知识库检索、知识挖掘和配套 HTTP 服务。正式代码集中在 `src/kdb`，检索后端为 Elasticsearch 8.17.x。
+知识检索、知识挖掘、多语言与公共能力。业务代码按职责组织，HTTP、CLI 和定时入口负责工程接线。对外沿用原业务协议，检索后端为 Elasticsearch 8.17.x。
 
 ```text
 src/kdb/
-  services/       七个原业务 HTTP 服务
-  retrieval/      应用接口、ES8 引擎和索引路由
-  mining/         五条挖掘管道与处理阶段
-  jobs/           定时任务
-  shared/         配置、客户端、类目、文本和文件
-  integrations/   外部系统适配
-  reporting/      统计报表
-scripts/          服务、任务、测试入口
+  retrieval/      知识检索：查询、排序、入库、类目、维护、引擎
+  mining/
+    tasks/        任务队列、状态、资源、进程、提交与任务报表
+    document/     文档与 Excel 挖掘
+    web/          网页抓取、处理与挖掘
+    chat/         对话读取、清洗、身份、生成与质量处理
+    common/       共用的 LLM、质量、去重、schema、解析与切分
+    bridges/      挖掘调用检索的唯一桥接处
+  multilingual/  语言规则、模型加载、识别与标签
+  shared/        对象存储、数据库、客户端、配置、类目、文本与文件
+  entrypoints/   HTTP / CLI / scheduled 工程入口
+  operations/    数据迁移等工程工具
+scripts/          启动器、调度脚本、离线检查
 resources/        Prompt 等静态资源
 config/           可提交的配置示例
-function_schema/  当前函数和 SQL 契约
+function_schema/  当前函数与 SQL 契约
 tests/            离线测试
-docs/             架构、接口和运行说明
+docs/             当前架构、接口和运行说明
 ```
 
-在独立 Python 环境安装包，然后运行默认离线检查：
+满意度、外部身份映射和独立运营统计已拆为 **assistant-data-tools** 项目。核心不依赖它；它固定依赖 `kdb==0.2.0` 的公共模块。两个项目的配置、产物与测试分别管理，见[运行配置](docs/runtime_configuration.md)。
+
+在独立 Python 环境安装包并执行离线检查：
 
 ```bash
 python -m pip install -e .
 ./run_offline_tests.sh -q
 ```
 
-辅助服务和完整测试还需要各自依赖；安装及验证边界见[测试说明](docs/testing.md)。配置示例不含有效凭据，真实配置、模型和运行数据不入 Git。
-
-服务启动器要求 `KDB_PYTHON` 为所选解释器的绝对路径，先执行本地预检：
+完整测试还需要[测试说明](docs/testing.md)中的依赖；上述安装不是所有抓取、模型和文件处理能力的生产安装清单。六个核心 HTTP 服务由启动器预检后运行，显式选择解释器：
 
 ```bash
 KDB_PYTHON=/absolute/path/to/venv/bin/python scripts/services/retrieval.sh --check config/config_for_search_index.json
 ```
 
-资源齐备后，使用相同参数去掉 `--check` 启动；也可在已安装环境中直接执行 `python -m kdb.services.retrieval.app config/config_for_search_index.json`。七服务参数见[运行配置](docs/runtime_configuration.md)。语言服务尚缺真实 fastText 依赖/模型，CSAT 尚缺真实认证配置，不能据离线测试视为可运行。
+资源齐备后去掉 `--check` 启动。真实配置、凭据、模型与运行数据不入 Git。离线测试不能证明真实资源已就绪。
 
-[架构](docs/Architecture_Overview_Diagram.md) · [HTTP API](docs/api.md) · [挖掘与任务队列](docs/pipelines.md) · [ES8 路由](docs/es8_retrieval.md) · [函数契约索引](function_schema/current_index.md)
+[业务架构](docs/Architecture_Overview_Diagram.md) · [HTTP API](docs/api.md) · [挖掘与任务队列](docs/pipelines.md) · [状态所有权](docs/state_ownership.md) · [ES8 路由](docs/es8_retrieval.md) · [函数契约](function_schema/current_index.md)

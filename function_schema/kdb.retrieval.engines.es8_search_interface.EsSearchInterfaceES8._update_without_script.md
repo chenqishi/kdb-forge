@@ -2,7 +2,7 @@
 
 ## Signature
 
-`EsSearchInterfaceES8._update_without_script(self, client: Any, indexes: Sequence[str], query: Dict[str, Any], update_fields: Dict[str, Any], requests_per_second: int, conflicts: str) -> Dict[str, Any]`
+`_update_without_script(self, client: Any, indexes: Sequence[str], query: Dict[str, Any], update_fields: Dict[str, Any], requests_per_second: int, conflicts: str) -> Dict[str, Any]`
 
 ## Inputs
 
@@ -24,4 +24,4 @@ Serialization uses elasticsearch.serializer.JSONSerializer (the same class expor
 
 ## Source
 
-`src/kdb/retrieval/engines/es8_search_interface.py`。SQL 表/字段来自本契约已记录的真实结构资料或该实现中的查询；未附真实 DDL 的部分仅表示代码使用范围，不能视为已验证的完整表结构。
+`src/kdb/retrieval/engines/es8_search_interface.py`。SQL 字段依据保留在上面的 SQL 契约中；没有真实 DDL 的部分不宣称完整表结构已核验。

@@ -1,4 +1,4 @@
-# test_openapi_matches_business_contract
+# tests.retrieval.test_business_http_contract.test_openapi_matches_business_contract
 
 ## Inputs
 
@@ -14,4 +14,4 @@ None.
 
 ## Source
 
-`tests/retrieval/test_business_http_contract.py`.
+`tests/retrieval/test_business_http_contract.py`。SQL 字段依据保留在上面的 SQL 契约中；没有真实 DDL 的部分不宣称完整表结构已核验。

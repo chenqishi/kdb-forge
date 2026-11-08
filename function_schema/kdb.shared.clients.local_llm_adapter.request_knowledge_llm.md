@@ -6,7 +6,6 @@
 
 ## Inputs
 
-Existing function signature and business inputs are unchanged. Read together with the pre-existing function contract indexed by its original source prefix.
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
@@ -22,7 +21,6 @@ Existing function signature and business inputs are unchanged. Read together wit
 
 ## Outputs
 
-Only dependency imports and canonical project/source/resource locations change. Runtime interfaces, business request parameters, output data, error/exit behavior and initialization timing remain those of the existing implementation. Service task launch and optional LLM plugin details are defined in off_task_app.* and local_llm_adapter.* contracts.
 
 | 类型 | 说明 |
 |------|------|
@@ -30,7 +28,7 @@ Only dependency imports and canonical project/source/resource locations change. 
 
 ## SQL
 
-No query, field, table, scoring or data mutation change. No backend or subprocess was kdb.mining.generation.run during migration validation.
+本函数无直接 SQL 语句；外部存储/模型行为见 Outputs 与调用模块的契约。
 
 ## Description
 
@@ -49,4 +47,4 @@ No query, field, table, scoring or data mutation change. No backend or subproces
 
 ## Source
 
-`src/kdb/shared/clients/local_llm_adapter.py`。SQL 表/字段来自本契约已记录的真实结构资料或该实现中的查询；未附真实 DDL 的部分仅表示代码使用范围，不能视为已验证的完整表结构。
+`src/kdb/shared/clients/local_llm_adapter.py`。SQL 字段依据保留在上面的 SQL 契约中；没有真实 DDL 的部分不宣称完整表结构已核验。

@@ -1,3 +1,5 @@
+import kdb.entrypoints.cli.index_upload as index_upload
+import kdb.entrypoints.cli.index_upload as _entrypoints_cli_index_upload
 # -*- coding: utf-8 -*-
 """insert_data_to_search_index 的 check_duplicate 开关。
 
@@ -14,7 +16,7 @@ import pytest
 @pytest.fixture
 def captured(monkeypatch, tmp_path):
     """替换掉 SearchDataInterface，只记录 insert_data 收到的参数。"""
-    from kdb.retrieval.application import search_index_data_interface as mod
+    import kdb.retrieval.application.search_index_data_interface as mod
 
     calls = []
 
@@ -27,7 +29,7 @@ def captured(monkeypatch, tmp_path):
             data.setdefault('_id', 'fake_id')  # 真实实现会在这里回填 _id
             return (True, '')
 
-    monkeypatch.setattr(mod, 'SearchDataInterface', FakeInterface)
+    monkeypatch.setattr(index_upload, 'SearchDataInterface', FakeInterface)
 
     data_file = tmp_path / 'data.txt'
     data_file.write_text(
@@ -38,13 +40,13 @@ def captured(monkeypatch, tmp_path):
 
 def test_default_keeps_config_behaviour(captured):
     mod, calls, data_file = captured
-    mod.insert_data_to_search_index(data_file=data_file, config_path='cfg.json', index_name_assign='wayfair')
+    _entrypoints_cli_index_upload.insert_data_to_search_index(data_file=data_file, config_path='cfg.json', index_name_assign='wayfair')
     assert calls[0]['check_duplicate'] is None, '不传时必须是 None，交给配置文件决定'
 
 
 def test_false_disables_dedup(captured):
     mod, calls, data_file = captured
-    mod.insert_data_to_search_index(data_file=data_file, config_path='cfg.json',
+    _entrypoints_cli_index_upload.insert_data_to_search_index(data_file=data_file, config_path='cfg.json',
                                     index_name_assign='wayfair', check_duplicate=False)
     assert calls[0]['check_duplicate'] is False
 
@@ -52,20 +54,20 @@ def test_false_disables_dedup(captured):
 def test_string_false_from_cli_is_coerced(captured):
     """fire 命令行传进来的是字符串。"""
     mod, calls, data_file = captured
-    mod.insert_data_to_search_index(data_file=data_file, config_path='cfg.json',
+    _entrypoints_cli_index_upload.insert_data_to_search_index(data_file=data_file, config_path='cfg.json',
                                     index_name_assign='wayfair', check_duplicate='False')
     assert calls[0]['check_duplicate'] is False
 
 
 def test_string_true_from_cli_is_coerced(captured):
     mod, calls, data_file = captured
-    mod.insert_data_to_search_index(data_file=data_file, config_path='cfg.json',
+    _entrypoints_cli_index_upload.insert_data_to_search_index(data_file=data_file, config_path='cfg.json',
                                     index_name_assign='wayfair', check_duplicate='True')
     assert calls[0]['check_duplicate'] is True
 
 
 def test_chat_review_gate_only_attempts_accepted_high(monkeypatch, tmp_path):
-    from kdb.retrieval.application import search_index_data_interface as mod
+    import kdb.retrieval.application.search_index_data_interface as mod
 
     inserted = []
 
@@ -78,7 +80,7 @@ def test_chat_review_gate_only_attempts_accepted_high(monkeypatch, tmp_path):
             data.setdefault('_id', 'fake-' + data['title'])
             return (True, '')
 
-    monkeypatch.setattr(mod, 'SearchDataInterface', FakeInterface)
+    monkeypatch.setattr(index_upload, 'SearchDataInterface', FakeInterface)
     data_file = tmp_path / 'reviewed.jsonl'
     rows = [
         {'title': 'accept-high', 'content': 'a', 'data_type': 'qa', 'platform': 'payoneer_olive',
@@ -91,7 +93,7 @@ def test_chat_review_gate_only_attempts_accepted_high(monkeypatch, tmp_path):
     data_file.write_text('\n'.join(json.dumps(row) for row in rows) + '\n', encoding='utf-8')
     result_file = tmp_path / 'insert_result.json'
 
-    stats = mod.insert_data_to_search_index(
+    stats = _entrypoints_cli_index_upload.insert_data_to_search_index(
         data_file=str(data_file),
         config_path='cfg.json',
         index_name_assign='payoneer_olive',

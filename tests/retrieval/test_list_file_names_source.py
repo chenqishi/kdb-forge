@@ -1,3 +1,4 @@
+import kdb.retrieval.application.runtime as retrieval_runtime
 """HTTP request through real business code; only aggregation is replaced."""
 import asyncio
 from unittest.mock import Mock
@@ -46,7 +47,7 @@ def test_http_source_filter(fixture_service, monkeypatch, index_name, params, so
         index_name, {"bool": {"must": filters}}, "ext_info.from_file_name.keyword",
         size=50, sub_aggs={"by_type": {"terms": {"field": "data_type", "size": 10}}})
     # Listing all sources must not expand preview/delete scope.
-    delete_query = service.SEARCH_DATA_INTERFACE._build_file_query(["a.pdf"])
+    delete_query = retrieval_runtime.SEARCH_DATA_INTERFACE._build_file_query(["a.pdf"])
     assert {"terms": {"from_type_norm": ["document", "html", "manual"]}} in delete_query["bool"]["must"]
 
 

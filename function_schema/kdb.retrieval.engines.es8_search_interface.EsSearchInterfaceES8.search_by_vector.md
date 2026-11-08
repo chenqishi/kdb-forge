@@ -2,7 +2,7 @@
 
 ## Signature
 
-`EsSearchInterfaceES8.search_by_vector(self, query_vector: List[float], vector_field: str, size: int=10, min_score: float=0.0, return_score: bool=False, extra_query: Optional[Dict[str, Any]]=None, index_names: IndexNames=None) -> Any`
+`search_by_vector(self, query_vector: List[float], vector_field: str, size: int=10, min_score: float=0.0, return_score: bool=False, extra_query: Optional[Dict[str, Any]]=None, index_names: IndexNames=None) -> Any`
 
 ## Inputs
 
@@ -18,4 +18,4 @@ query vector、vector field、size/min_score、return_score、extra_query、目�
 
 ## Source
 
-`src/kdb/retrieval/engines/es8_search_interface.py`。SQL 表/字段来自本契约已记录的真实结构资料或该实现中的查询；未附真实 DDL 的部分仅表示代码使用范围，不能视为已验证的完整表结构。
+`src/kdb/retrieval/engines/es8_search_interface.py`。SQL 字段依据保留在上面的 SQL 契约中；没有真实 DDL 的部分不宣称完整表结构已核验。

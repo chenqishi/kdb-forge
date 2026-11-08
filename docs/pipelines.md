@@ -1,18 +1,18 @@
 # 挖掘管道与任务队列
 
-五条正式管道位于 `kdb.mining.pipelines`，通过模块启动，使用当前解释器和明确的运行目录：
+五条管道的业务实现分别归入 document、web、chat，通过工程入口启动，使用当前解释器和明确的运行目录：
 
 | `task_type` | 模块 |
 |---|---|
-| `document_qa_mining` | `kdb.mining.pipelines.document_qa` |
-| `document_qa_segment_mining` | `kdb.mining.pipelines.document_qa_segment` |
-| `chat_qa_mining` | `kdb.mining.pipelines.chat_qa` |
-| `html_qa_segment_mining` | `kdb.mining.pipelines.html_qa_segment` |
-| `excel_qa_segment_upload` | `kdb.mining.pipelines.excel_qa_segment_upload` |
+| `document_qa_mining` | `kdb.entrypoints.cli.mining.document_qa` |
+| `document_qa_segment_mining` | `kdb.entrypoints.cli.mining.document_qa_segment` |
+| `chat_qa_mining` | `kdb.entrypoints.cli.mining.chat_qa` |
+| `html_qa_segment_mining` | `kdb.entrypoints.cli.mining.html_qa_segment` |
+| `excel_qa_segment_upload` | `kdb.entrypoints.cli.mining.excel_qa_segment_upload` |
 
 ```bash
-python -m kdb.mining.pipelines.document_qa_segment --script-dir "$PWD" --task-id TASK_ID --task-info '{"files":[],"index_name":"dedicated_test_index"}'
-python -m kdb.mining.pipelines.run_local_mining --tasks-file /absolute/path/to/tasks.json --workers 3
+python -m kdb.entrypoints.cli.mining.document_qa_segment --script-dir "$PWD" --task-id TASK_ID --task-info '{"files":[],"index_name":"dedicated_test_index"}'
+python -m kdb.mining.tasks.submission.local_batch --tasks-file /absolute/path/to/tasks.json --workers 3
 ```
 
 示例展示参数形式，空文件列表不会产生有效任务。真实 `task_info` 应来自调用方或已有数据，不能猜测字段格式。配置、输入、任务状态与输出均按实际运行目录解析；本地批量入口可使用 `KDB_PYTHON` 覆盖解释器。管道会调用真实 SQL、模型、抓取、对象存储和 ES，不能直接运行当离线 smoke。
@@ -41,8 +41,8 @@ python -m kdb.mining.pipelines.run_local_mining --tasks-file /absolute/path/to/t
 
 业务上下文构建与通用质量后处理失败时，这两条管道会沿现有逻辑降级跳过，不能将启用开关视为完整质量验收。其他管道及直接入库 API 各自保留原有参数、默认索引与处理规则。
 
-聊天 QA 的本地抽取/质量模块从 `resources/prompts/mining/chat_qa_extract/` 读取通用模板及匹配 client 的模板；模板选择、答案来源处理和字段格式分别以 `kdb.mining.quality.chat_qa_extract`、`kdb.mining.generation.chatknowledge.gen_knowledge_from_chat` 及其函数契约为准。
+聊天 QA 的本地抽取/质量模块从 `resources/prompts/mining/chat_qa_extract/` 读取通用模板及匹配 client 的模板；模板选择、答案来源处理和字段格式分别以 `kdb.mining.chat.generation.extractor`、`kdb.mining.common.quality`、`kdb.mining.chat.generation.batch` 及其函数契约为准。
 
 ## 定时入口
 
-定时逻辑位于 `kdb.jobs`，由 `scripts/scheduled/` 启动；主要入口为 `chat_mining.sh`、`auto_audit_all_indexes.sh`、`chat_learning_report.sh`。脚本保留锁、日志、水位和退出码语义，真实运行前配置解释器与当前运行资源。修改代码不会自动注册 cron 或启动任务。
+定时接线位于 `kdb.entrypoints.scheduled`，业务实现位于 mining/tasks、mining/chat/reports 与 retrieval/maintenance，由 `scripts/scheduled/` 启动；主要入口为 `chat_mining.sh`、`auto_audit_all_indexes.sh`、`chat_learning_report.sh`。脚本保留锁、日志、水位和退出码语义，真实运行前配置解释器与当前运行资源。修改代码不会自动注册 cron 或启动任务。

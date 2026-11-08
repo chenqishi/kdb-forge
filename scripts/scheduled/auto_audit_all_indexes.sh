@@ -13,7 +13,7 @@ audit_stamp=$(date +%Y%m%d%H%M%S)
 # Remain in the foreground so flock covers the entire run and cron can see its
 # real exit status. Exit 75 means another run already owns the lock.
 exec flock -n -E 75 log/auto_audit.lock "$audit_python" \
-    -m kdb.jobs.auto_audit \
+    -m kdb.entrypoints.scheduled.auto_audit \
     --search-config "$audit_config" --index "$audit_index" \
     --from-type-norm "document,html" --hours 24 \
     >>"log/auto_audit_all.log.$audit_stamp" 2>&1

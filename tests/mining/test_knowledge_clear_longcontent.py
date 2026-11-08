@@ -28,14 +28,14 @@ except ImportError:
     pil.__path__ = []
     _make_stub("PIL.Image", open=lambda *args, **kwargs: None)
 
-from kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent import build_page_chunks
-from kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent import clear_pdf_json_content
-from kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent import fallback_page_segments
-from kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent import normalize_segments_in_chunk
-from kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent import add_quality_info_to_qa_json
-from kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent import parse_answer
-from kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent import parse_dify_segment
-from kdb.mining.generation.processing.knowledge_clear_by_dify_model_longcontent import split_segment_for_qa
+from kdb.mining.common.generation.long_qa import build_page_chunks
+from kdb.mining.common.generation.long_qa import clear_pdf_json_content
+from kdb.mining.common.generation.long_qa import fallback_page_segments
+from kdb.mining.common.generation.long_qa import normalize_segments_in_chunk
+from kdb.mining.common.generation.long_qa import add_quality_info_to_qa_json
+from kdb.mining.common.generation.long_qa import parse_answer
+from kdb.mining.common.generation.long_qa import parse_dify_segment
+from kdb.mining.common.generation.long_qa import split_segment_for_qa
 
 
 class DummyDify:

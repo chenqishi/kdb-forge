@@ -14,7 +14,7 @@ import sys
 import pytest
 
 
-wordtotext = pytest.importorskip('kdb.mining.generation.processing.wordtotext',
+wordtotext = pytest.importorskip('kdb.mining.common.parsing.documents',
                                  reason='wordtotext 依赖 docx/fitz，环境缺时跳过')
 
 

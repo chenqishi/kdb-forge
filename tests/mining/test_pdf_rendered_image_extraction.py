@@ -35,7 +35,7 @@ except ImportError:
     pil.__path__ = []
     _make_stub("PIL.Image", open=None)
 
-from kdb.mining.generation.processing.wordtotext import _extract_rendered_pdf_images
+from kdb.mining.common.parsing.documents import _extract_rendered_pdf_images
 
 
 class FakePage:
@@ -72,7 +72,7 @@ def test_extract_rendered_pdf_images_writes_only_image_blocks(tmp_path):
 
 def test_image_only_pdf_renders_pages_omitted_by_image_blocks(tmp_path, monkeypatch):
     import json
-    from kdb.mining.generation.processing import wordtotext
+    import kdb.mining.common.parsing.documents as wordtotext
 
     class Pixmap:
         width, height = 1920, 1080

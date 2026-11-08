@@ -1,5 +1,5 @@
 # ElasticSearch
-elasticsearch==7.10
+elasticsearch>=8.17,<8.18
 
 # Web框架和服务器
 fastapi>=0.100.0

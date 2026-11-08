@@ -1,3 +1,4 @@
+import kdb.mining.common.llm.text_output as _common_llm_text_output
 from kdb.shared.config.paths import PROJECT_ROOT as _PROJECT_ROOT
 # -*- coding: utf-8 -*-
 """
@@ -13,9 +14,9 @@ import pytest
 
 ROOT = str(_PROJECT_ROOT)
 
-from kdb.mining.quality.chat_qa_extract import qa_extractor
-from kdb.mining.quality.chat_qa_extract import quality_filter
-from kdb.shared.text import qa_text_tools
+import kdb.mining.chat.generation.extractor as qa_extractor
+import kdb.mining.common.quality.filter as quality_filter
+import kdb.mining.common.schema.qa_model_output as qa_text_tools
 
 
 def _qa_text(n, start=1):
@@ -32,13 +33,13 @@ def _qa_text(n, start=1):
     ('', ''),
 ])
 def test_clear_think(raw, expected):
-    assert qa_extractor.clear_think(raw) == expected
+    assert _common_llm_text_output.clear_think(raw) == expected
 
 
 def test_clear_think_keeps_unpaired_tag():
     """只有半个标签时不做删除，避免误删正文"""
     raw = '答案里提到了 <think> 这个词'
-    assert qa_extractor.clear_think(raw) == raw
+    assert _common_llm_text_output.clear_think(raw) == raw
 
 
 # --- 分块切分 -------------------------------------------------------------

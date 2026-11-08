@@ -1,4 +1,4 @@
-# test_search_preserves_business_wire_format
+# tests.retrieval.test_business_http_contract.test_search_preserves_business_wire_format
 
 ## Inputs
 
@@ -14,4 +14,4 @@ None.
 
 ## Source
 
-`tests/retrieval/test_business_http_contract.py`.
+`tests/retrieval/test_business_http_contract.py`。SQL 字段依据保留在上面的 SQL 契约中；没有真实 DDL 的部分不宣称完整表结构已核验。

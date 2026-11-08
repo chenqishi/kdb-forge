@@ -1,1 +1,0 @@
-"""Mechanically migrated project package."""

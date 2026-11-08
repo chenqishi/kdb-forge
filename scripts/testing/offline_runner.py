@@ -3,7 +3,8 @@ import json
 import os
 from pathlib import Path
 import sys
-from offline_guard import install, prepare_paths
+from offline_guard import install
+from offline_guard import prepare_paths
 
 ROOT = Path(__file__).resolve().parents[2]
 os.environ['PYTEST_DISABLE_PLUGIN_AUTOLOAD'] = '1'
@@ -27,14 +28,14 @@ GROUPS = {
         'test_excel_qa_segment_upload_control', 'test_generic_mining_context',
     ]] + [
         'tests/retrieval/test_insert_check_duplicate_arg.py',
-        'tests/jobs/test_chat_batch_watermark_safety.py',
+        'tests/mining/tasks/test_chat_batch_watermark_safety.py',
         'tests/services/test_file_access_service_timeout.py',
     ],
-    'audit': ['tests/jobs/' + name + '.py' for name in [
+    'audit': ['tests/retrieval/maintenance/' + name + '.py' for name in [
         'test_auto_audit_time_threshold', 'test_auto_audit_unified', 'test_auto_audit_update_by_query',
     ]],
-    'jobs': ['tests/jobs'],
-    'integrations': ['tests/integrations'],
+    'jobs': ['tests/mining/tasks'],
+    'integrations': ['tests/mining/common', 'tests/mining/web', 'tests/retrieval/maintenance'],
     'shared': ['tests/shared'],
     'services': ['tests/services'],
 }
@@ -58,7 +59,7 @@ else:
     raise SystemExit('Unknown group; choose ' + ','.join([*GROUPS, 'all', 'explicit']))
 excluded = [
     'tests/mining/test_excel_qa_segment_upload_control.py::test_run_command_list_preserves_space_containing_argument',
-    'tests/jobs/test_auto_audit_unified.py::test_shell_wrapper_preserves_status_logs_and_lock',
+    'tests/retrieval/maintenance/test_auto_audit_unified.py::test_shell_wrapper_preserves_status_logs_and_lock',
 ]
 for node in excluded:
     print('[offline] explicitly deselected (requires real subprocess): ' + node, flush=True)

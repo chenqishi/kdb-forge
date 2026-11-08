@@ -13,7 +13,7 @@ from_type=$7
 audit_root=$(CDPATH= cd "$(dirname "$0")/../.." && pwd)
 export PYTHONPATH="$audit_root/src:${PYTHONPATH:-}"
 
-PYTHON=${KDB_PYTHON:-python} 
-"$PYTHON" -m kdb.retrieval.application.search_index_data_interface gen_audit_data --index_name=$index_name --config_path=$es_config_file --audit_result=$audit_result --quality_level=$quality_level --from_type=$from_type 1>$data_dir/audit_data_${flag}.txt 
-"$PYTHON" -m kdb.mining.transformations.schema_trans trans_es_data_to_excel --es_data_file=$data_dir/audit_data_${flag}.txt --output_file=$data_dir/audit_data_excel_${index_name}_${flag}.xlsx --headers=_id,title,content --is_need_trans_column=true
+PYTHON=${KDB_PYTHON:-python}
+"$PYTHON" -m kdb.entrypoints.cli.retrieval gen_audit_data --index_name=$index_name --config_path=$es_config_file --audit_result=$audit_result --quality_level=$quality_level --from_type=$from_type 1>$data_dir/audit_data_${flag}.txt
+"$PYTHON" -m kdb.entrypoints.cli.schema trans_es_data_to_excel --es_data_file=$data_dir/audit_data_${flag}.txt --output_file=$data_dir/audit_data_excel_${index_name}_${flag}.xlsx --headers=_id,title,content --is_need_trans_column=true
 

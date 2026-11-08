@@ -2,7 +2,7 @@
 
 ## Signature
 
-`DifyWorkFlowRequest.request_dify(self, paragraph, other_inputs=None)`
+`request_dify(self, paragraph, other_inputs=None)`
 
 ## Description
 
@@ -23,7 +23,7 @@
 
 ## 行为
 
-- 请求地址为 `{api_base}/workflows/kdb.mining.generation.run`。
+- 请求地址为 `{api_base}/workflows/kdb.entrypoints.cli.generate_segments`。
 - 请求模式为 blocking。
 - HTTP timeout 使用实例初始化时传入的 `timeout`，默认 600 秒。
 - 非 200、Dify failed、请求异常会按 `max_retries` 重试。
@@ -34,4 +34,4 @@ No SQL access.
 
 ## Source
 
-`src/kdb/shared/clients/dify_tools.py`。SQL 表/字段来自本契约已记录的真实结构资料或该实现中的查询；未附真实 DDL 的部分仅表示代码使用范围，不能视为已验证的完整表结构。
+`src/kdb/shared/clients/dify_tools.py`。SQL 字段依据保留在上面的 SQL 契约中；没有真实 DDL 的部分不宣称完整表结构已核验。

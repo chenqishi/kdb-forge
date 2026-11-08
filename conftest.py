@@ -4,6 +4,7 @@ import sys
 ROOT=Path(__file__).resolve().parent
 sys.dont_write_bytecode=True
 sys.path.insert(0,str(ROOT/'scripts/testing'))
-from offline_guard import install,prepare_paths
+from offline_guard import install
+from offline_guard import prepare_paths
 install(ROOT)
 OFFLINE_TEST_METADATA=prepare_paths(ROOT)

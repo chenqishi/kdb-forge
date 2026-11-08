@@ -15,11 +15,20 @@ import numbers
 import time
 from collections import OrderedDict
 from types import SimpleNamespace
-from typing import Any, Dict, Iterator, List, Mapping, Optional, Sequence, Tuple, Union
+from typing import Any
+from typing import Dict
+from typing import Iterator
+from typing import List
+from typing import Mapping
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
-from .es8_client_router import IndexClientRouter
-from .es_count_utils import complete_count
-from .es_maintenance import EngineMaintenanceMixin, run_native_update
+from kdb.retrieval.engines.es8_client_router import IndexClientRouter
+from kdb.retrieval.engines.es_count_utils import complete_count
+from kdb.retrieval.engines.es_maintenance import EngineMaintenanceMixin
+from kdb.retrieval.engines.es_maintenance import run_native_update
 
 logger = logging.getLogger(__name__)
 

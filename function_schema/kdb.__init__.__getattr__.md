@@ -18,4 +18,4 @@ None. Attribute lookup does not create a service instance or query a backend.
 
 ## Source
 
-`src/kdb/__init__.py`.
+`src/kdb/__init__.py`。SQL 字段依据保留在上面的 SQL 契约中；没有真实 DDL 的部分不宣称完整表结构已核验。

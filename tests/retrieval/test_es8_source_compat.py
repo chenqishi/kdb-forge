@@ -4,7 +4,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from kdb.retrieval.engines.es_search_interface import EsSearchInterfaceOri
+from kdb.retrieval.engines.providers.es7 import EsSearchInterfaceOri
 from kdb.retrieval.application.search_index_data_interface import SearchDataInterface
 from tests.retrieval.test_es8_interface import routed_clients
 

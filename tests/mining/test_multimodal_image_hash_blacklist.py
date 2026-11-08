@@ -35,9 +35,9 @@ except Exception:
         construct_multimodel_undestanding_content=lambda content, results: content,
     )
 _stub_if_import_fails("kdb.shared.clients.dify_tools", DIfyWorkFlowMlutiVisionRequest=object)
-_stub_if_import_fails("kdb.integrations.data_control.minio_tools", MinioTools=object)
+_stub_if_import_fails("kdb.shared.storage.minio", MinioTools=object)
 
-from kdb.mining.parsing.multimodal_process import MultimodalProcess
+from kdb.mining.common.multimodal.process import MultimodalProcess
 
 
 def test_repeated_image_hash_blacklist_skips_before_ocr(tmp_path):

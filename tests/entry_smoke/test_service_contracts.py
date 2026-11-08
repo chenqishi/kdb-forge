@@ -1,3 +1,6 @@
+import kdb.retrieval.application.runtime as retrieval_runtime
+import kdb.entrypoints.http.retrieval.bootstrap as _http_retrieval_bootstrap
+import kdb.retrieval.application.runtime as _retrieval_application_runtime
 """Current public service and lifecycle contracts under replaced I/O boundaries."""
 import asyncio
 import importlib
@@ -13,7 +16,7 @@ def test_public_application_export_keeps_category_behavior():
 
 
 def test_retrieval_keeps_all_twelve_post_routes():
-    service = importlib.import_module("kdb.services.retrieval.app")
+    service = importlib.import_module("kdb.entrypoints.http.retrieval.app")
     expected = {
         "/search", "/web_search", "/get_from_type_count", "/insert", "/delete",
         "/get_value_collection", "/list_file_names", "/preview_delete_by_file",
@@ -25,21 +28,21 @@ def test_retrieval_keeps_all_twelve_post_routes():
 
 
 def test_service_lifespan_constructs_both_real_factory_roles(monkeypatch):
-    module = importlib.import_module("kdb.services.retrieval.app")
+    module = importlib.import_module("kdb.entrypoints.http.retrieval.app")
     interface = SimpleNamespace(engine=Mock())
     modifier = object()
     initialize = Mock(return_value=interface)
     modify_factory = Mock(return_value=modifier)
-    monkeypatch.setattr(module, "SEARCH_DATA_INTERFACE", None)
-    monkeypatch.setattr(module, "MODIFY_KNOWLEDGE_HANDLE", None)
-    monkeypatch.setattr(module, "init_config", initialize)
-    monkeypatch.setattr(module, "ModifyKnowledge", modify_factory)
-    monkeypatch.setattr(module.sys, "argv", ["kdb.services.retrieval.app", "isolated-test-config.json"])
+    monkeypatch.setattr(retrieval_runtime, "SEARCH_DATA_INTERFACE", None)
+    monkeypatch.setattr(retrieval_runtime, "MODIFY_KNOWLEDGE_HANDLE", None)
+    monkeypatch.setattr(_http_retrieval_bootstrap, "init_config", initialize)
+    monkeypatch.setattr(_http_retrieval_bootstrap, "ModifyKnowledge", modify_factory)
+    monkeypatch.setattr(module.sys, "argv", ["kdb.entrypoints.http.retrieval.app", "isolated-test-config.json"])
 
     async def run():
-        async with module.lifespan(module.app):
-            assert module.SEARCH_DATA_INTERFACE is interface
-            assert module.MODIFY_KNOWLEDGE_HANDLE is modifier
+        async with _http_retrieval_bootstrap.lifespan(module.app):
+            assert retrieval_runtime.SEARCH_DATA_INTERFACE is interface
+            assert retrieval_runtime.MODIFY_KNOWLEDGE_HANDLE is modifier
 
     asyncio.run(run())
     initialize.assert_called_once_with("isolated-test-config.json")

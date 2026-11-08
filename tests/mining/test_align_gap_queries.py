@@ -8,7 +8,7 @@ import sys
 
 PROJECT_ROOT = str(_PROJECT_ROOT)
 
-from kdb.mining.query_analysis import align_gap_queries as agq
+import kdb.mining.chat.query_analysis.align_gaps as agq
 
 
 def test_normalize_strips_punct_and_case():

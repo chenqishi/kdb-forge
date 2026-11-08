@@ -12,7 +12,8 @@ import json
 import logging
 import os
 import sys
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
 # Legacy explicit overrides remain accepted; there is no external default checkout.
 DEFAULT_AGENTS_ROOT = os.environ.get("AGENTS_PROJECT_ROOT")

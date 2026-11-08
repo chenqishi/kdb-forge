@@ -17,8 +17,8 @@ import pytest
 
 PROJECT_ROOT = str(_PROJECT_ROOT)
 
-from kdb.mining.query_analysis import gap_material_coverage as gmc
-from kdb.mining.crawlers.web_crawl import bol_partner_portal_fetch as bol
+import kdb.mining.chat.query_analysis.material_coverage as gmc
+import kdb.mining.web.sources.bol_partner as bol
 
 
 # ---------------------------------------------------------------------------

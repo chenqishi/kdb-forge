@@ -2,7 +2,7 @@
 
 ## Signature
 
-`EsSearchInterfaceES8._conditional_update_responses(self, binding: SimpleNamespace, names: Sequence[str], query: Dict[str, Any], update_fields: Dict[str, Any], requests_per_second: int, conflicts: str) -> Iterator[Dict[str, Any]]`
+`_conditional_update_responses(self, binding: SimpleNamespace, names: Sequence[str], query: Dict[str, Any], update_fields: Dict[str, Any], requests_per_second: int, conflicts: str) -> Iterator[Dict[str, Any]]`
 
 ## Inputs
 
@@ -22,4 +22,4 @@ Inputs: validated provider binding, original physical indexes, raw query, ordere
 
 ## Source
 
-`src/kdb/retrieval/engines/es8_search_interface.py`。SQL 表/字段来自本契约已记录的真实结构资料或该实现中的查询；未附真实 DDL 的部分仅表示代码使用范围，不能视为已验证的完整表结构。
+`src/kdb/retrieval/engines/es8_search_interface.py`。SQL 字段依据保留在上面的 SQL 契约中；没有真实 DDL 的部分不宣称完整表结构已核验。

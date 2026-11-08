@@ -1,4 +1,4 @@
-from kdb.mining.pipelines.html_qa_segment import HtmlKgGenTaskController
+from kdb.mining.web.pipeline import HtmlKgGenTaskController
 
 
 class _StatusUpdater:

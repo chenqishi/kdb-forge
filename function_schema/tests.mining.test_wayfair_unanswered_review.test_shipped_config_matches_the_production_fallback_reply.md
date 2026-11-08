@@ -18,4 +18,4 @@
 
 ## Source
 
-`tests/mining/test_wayfair_unanswered_review.py`。所列 SQL 表字段来自此实现的参数化查询；未取得额外 DDL，不宣称完整表结构已核验。
+`tests/mining/test_wayfair_unanswered_review.py`。SQL 字段依据保留在上面的 SQL 契约中；没有真实 DDL 的部分不宣称完整表结构已核验。

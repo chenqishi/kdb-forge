@@ -9,7 +9,7 @@ from types import SimpleNamespace
 
 from openpyxl import Workbook
 
-from kdb.mining.pipelines.excel_qa_segment_upload import ExcelQASegmentUploadController
+from kdb.mining.document.pipelines.excel import ExcelQASegmentUploadController
 
 
 class _StatusUpdaterStub:
@@ -169,7 +169,7 @@ def test_stage_2_5_image_process_writes_processed_output(tmp_path, monkeypatch):
         stdout.write('{"title": "q", "content": "a", "image_indexes": [{"text": "img"}]}\n')
         return SimpleNamespace(returncode=0)
 
-    monkeypatch.setattr("kdb.mining.pipelines.excel_qa_segment_upload.subprocess.run", fake_run)
+    monkeypatch.setattr("kdb.mining.document.workflows.excel.stages.subprocess.run", fake_run)
 
     assert controller.stage_2_5_process_images()
     assert captured["shell"] is False

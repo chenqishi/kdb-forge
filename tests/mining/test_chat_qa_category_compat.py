@@ -7,7 +7,7 @@ import types
 
 ROOT = str(_PROJECT_ROOT)
 
-from kdb.mining.transformations.schema_trans import trans_qa_to_search_data
+from kdb.mining.common.schema.qa_records import trans_qa_to_search_data
 
 
 def test_payoneer_olive_model_platform_becomes_category_name():

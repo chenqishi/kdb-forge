@@ -14,10 +14,10 @@ import sys
 
 ROOT = str(_PROJECT_ROOT)
 
-from kdb.mining.transformations.schema_trans import merge_segment_content
-from kdb.mining.transformations.schema_trans import restore_image_placeholders
-from kdb.mining.transformations.schema_trans import strip_image_placeholders
-from kdb.mining.transformations.schema_trans import IMAGE_PLACEHOLDER_GUIDE
+from kdb.mining.common.schema.document_content import merge_segment_content
+from kdb.mining.common.schema.image_placeholders import restore_image_placeholders
+from kdb.mining.common.schema.image_placeholders import strip_image_placeholders
+from kdb.mining.common.schema.document_content import IMAGE_PLACEHOLDER_GUIDE
 
 URL_A = 'https://file.marsmind.cc/kgmultimodal/knowledge/multimodal/default/20260807/aaa.png'
 URL_B = 'https://file.marsmind.cc/kgmultimodal/knowledge/multimodal/default/20260807/bbb.png'
@@ -106,7 +106,7 @@ def test_invalid_image_skipped_in_placeholder_mode():
 
 # --------------------------------------------------------------------------- 幻觉 URL 清理
 
-from kdb.mining.transformations.schema_trans import strip_hallucinated_image_urls
+from kdb.mining.common.schema.image_placeholders import strip_hallucinated_image_urls
 
 
 def test_strip_hallucinated_image_url():

@@ -5,7 +5,7 @@ import json
 
 import pytest
 
-from kdb.shared.clients import firecrawl_tools
+import kdb.shared.clients.firecrawl_tools as firecrawl_tools
 from kdb.shared.clients.firecrawl_tools import FirecrawlScraper
 from kdb.shared.clients.firecrawl_tools import build_cookie_headers
 from kdb.shared.clients.firecrawl_tools import fetch_firecrawl_content

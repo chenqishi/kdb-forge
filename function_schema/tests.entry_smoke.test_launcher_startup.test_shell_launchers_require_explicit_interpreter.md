@@ -15,7 +15,7 @@
 ## Description
 
 Inputs: synthetic pytest config/model/auth and patched ES/SQL/serve/thread boundaries.
-Outputs: kdb.mining.generation.run canonical service modules with unchanged business argv, cwd, route set, host/port/workers and initialization counts. Preflight execs the selected interpreter with -m and the canonical module name. No socket, subprocess or real SQL/model/LLM execution.
+Outputs: kdb.entrypoints.cli.generate_segments canonical service modules with unchanged business argv, cwd, route set, host/port/workers and initialization counts. Preflight execs the selected interpreter with -m and the canonical module name. No socket, subprocess or real SQL/model/LLM execution.
 SQL: pool construction is replaced with a recording fixture.
 Source: tests/entry_smoke/test_launcher_startup.py
 
@@ -25,4 +25,4 @@ Source: tests/entry_smoke/test_launcher_startup.py
 
 ## Source
 
-`tests/entry_smoke/test_launcher_startup.py`。SQL 表/字段来自本契约已记录的真实结构资料或该实现中的查询；未附真实 DDL 的部分仅表示代码使用范围，不能视为已验证的完整表结构。
+`tests/entry_smoke/test_launcher_startup.py`。SQL 字段依据保留在上面的 SQL 契约中；没有真实 DDL 的部分不宣称完整表结构已核验。

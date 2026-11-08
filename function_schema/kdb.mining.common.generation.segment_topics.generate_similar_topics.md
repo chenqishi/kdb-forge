@@ -1,0 +1,87 @@
+# kdb.mining.common.generation.segment_topics.generate_similar_topics
+
+## Signature
+
+`generate_similar_topics(content, existing_texts, count=10, model_name=None, provider=None)`
+
+## Purpose
+
+给一条段落知识生成「用户可能怎么问」的相似语义问法，用于补进 `indexes[]` 提升向量召回。
+
+动机：段落自带的 topics 用的是官方译法（曝光量 / 会话 / 列表(listing) / 报告中心），
+向量 top100 仍进不去，换成「如何下载报告中心的报告」能排到 #2 —— 差距全在问法上。
+
+## Inputs
+
+- `content` (str): 段落正文（已去掉 `[multimodal_prefix]` 图片占位）。
+- `existing_texts` (list[str]): 该段落 `indexes[]` 里已有的文本，用于让模型避开重复。
+- `count` (int): 期望生成条数，默认 10。
+- `model_name` / `provider` (str|None): 透传 `kdb.shared.clients.local_llm_adapter.request_knowledge_llm`。
+
+## Outputs
+
+- `list[str]`: 去重、去空、剔除与 `existing_texts` 完全相同项后的问法列表。
+  模型不可用或解析失败时返回 `[]`（调用方按跳过处理，不中断批次）。
+
+## SQL
+
+No SQL access.
+
+## 同模块 expand_term_variants（2026-09-02 补）
+
+`expand_term_variants(topics, existing_texts=None, max_variants_per_topic=3) -> list[str]`
+
+模型即便拿到术语对照表也常常照抄文档词，所以在模型产出之后再做一遍**确定性替换**。
+
+| 问法 | 相似度 |
+|---|---|
+| 列表的流量数据在哪看？（模型原句） | 0.710 ❌ |
+| 链接的流量数据在哪看？（名词替换） | 0.848 ✅ |
+| **链接的流量数据怎么导出？（名词+动词）** | **0.987** ✅ |
+
+规则：
+
+- `TERM_VARIANTS` 名词表：列表/SKU→链接·产品链接，会话量→流量·访客数，总曝光量→曝光量·流量
+- `ACTION_VARIANTS` 动词表：在哪看/怎么查/怎么统计→怎么导出·怎么下载
+- **长词优先**：`会话 ⊂ 会话量`，不先挡住短词会产出「流量量」这种残句
+- 候选排序：名词+动词都换过的排最前，其次纯名词、纯动词
+- 去掉「（会话量）」这类夹注——官方词留在句子里会拉低与口语 query 的相似度
+- 每条原问法最多产 `max_variants_per_topic` 条变体；去重且不与已有 `indexes` 文本重复
+
+这些文本只进 `indexes[]` 用于向量匹配，不展示给用户，所以机械替换带来的轻微生硬可以接受。
+
+## 同模块 build_object_metric_topics（2026-09-02 补）
+
+`build_object_metric_topics(content, existing_texts=None, max_topics=12) -> list[str]`
+
+文档只写指标术语（"会话量计算规则"），卖家问的是**对象 + 口语指标 + 动作**
+（"链接的流量数据怎么导出？"）。这一步跨不过去，因为原句里既没有对象词也没有动作词，
+单纯替换救不了：
+
+| 问法 | 对 query「如何导出链接流量数据」 |
+|---|---|
+| 会话量怎么统计计算？（文档原句） | 0.539 |
+| 流量怎么统计计算？（仅指标替换） | 0.727 |
+| 链接的流量怎么统计计算？（+对象） | 0.838 |
+| **链接的流量数据怎么导出？（+对象+动作）** | **0.987** |
+
+做法：扫段落**正文**里出现过的指标词，拼 `对象 × 口语指标 × 动作` 的网格。
+
+- `METRIC_TERMS`：总曝光量/曝光量→曝光，会话量→流量·访客，转化率→转化，点击量→点击，加入购物车率→加购
+- `OBJECT_TERMS`：产品链接、链接
+- `METRIC_TEMPLATES`：`{obj}的{metric}数据怎么导出？`、`{obj}的{metric}数据在哪看？`
+- **只用正文里真的出现过的指标**，不谈流量的段落一条都不产
+- 长词优先：命中"总曝光量"后不再按"曝光量"重复产
+- 模板在最外层循环：先让每个指标都拿到"怎么导出"，再回头补"在哪看"，
+  否则 `max_topics` 会被前一两个指标吃满
+
+### 为什么需要这一层
+
+报告中心这篇文章里，**导出步骤在段1、流量指标在段2，没有任何一段同时包含两者**，
+所以没有哪条模型问法能天然覆盖"导出+链接+流量"。检索侧不需要一段回答全部，
+只需要相关段落进 top-k：段2 拿到"链接的流量数据在哪看？"(0.848) 就足以压过
+当时的竞争文档 (0.757)。
+
+## Source
+
+`src/kdb/mining/common/generation/segment_topics.py`。SQL 字段依据保留在上面的 SQL 契约中；没有真实 DDL 的部分不宣称完整表结构已核验。

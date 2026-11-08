@@ -14,7 +14,7 @@ import sys
 
 ROOT = str(_PROJECT_ROOT)
 
-from kdb.mining.generation.processing import knowledge_clear_by_dify_model_longcontent as kc
+import kdb.mining.common.generation.long_qa as kc
 
 
 class _FakeDify(object):

@@ -7,16 +7,13 @@ from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
-ENTRYPOINTS = {name: 'kdb.services.' + name + '.app' for name in (
-    'retrieval', 'off_task', 'crawler', 'files', 'multilingual', 'csat', 'fastgpt_proxy',
-)}
+ENTRYPOINTS = {'retrieval': 'kdb.entrypoints.http.retrieval.app', 'off_task': 'kdb.entrypoints.http.tasks.app', 'crawler': 'kdb.entrypoints.http.crawler.app', 'files': 'kdb.entrypoints.http.files.app', 'multilingual': 'kdb.entrypoints.http.multilingual.app', 'fastgpt_proxy': 'kdb.entrypoints.http.fastgpt_proxy.app'}
 DEPENDENCIES = {
     'retrieval': ['fastapi', 'pydantic', 'uvicorn', 'httpx', 'requests', 'numpy', 'jieba', 'elasticsearch'],
     'off_task': ['flask', 'mysql.connector', 'psutil', 'fitz', 'boto3', 'botocore', 'docx', 'docx2pdf', 'PyPDF2', 'PIL', 'requests'],
     'crawler': ['flask', 'pydantic', 'requests', 'bs4', 'tkinter'],
     'files': ['flask', 'requests', 'boto3', 'botocore'],
     'multilingual': ['flask', 'fasttext'],
-    'csat': ['flask', 'mysql.connector'],
     'fastgpt_proxy': ['fastapi', 'pydantic', 'uvicorn', 'httpx'],
 }
 
@@ -97,7 +94,7 @@ def check(service, argv):
             if not version_text.startswith('8.17.'):
                 report['errors'].append('elasticsearch_8_17_required')
     # Original argparse --help exits before reading its runtime resources.
-    if '--help' in argv and service in {'off_task', 'files', 'multilingual', 'csat'}:
+    if '--help' in argv and service in {'off_task', 'files', 'multilingual'}:
         report['warnings'].append('Legacy --help requested; runtime resources not required for help.')
         report['ok'] = not report['errors']
         return report
@@ -118,7 +115,7 @@ def check(service, argv):
     elif service == 'off_task':
         script_root = Path(option(argv, '--script-dir', str(ROOT)))
         if not (ROOT / 'src/kdb/mining/pipelines').is_dir():
-            report['errors'].append('missing_pipeline_source:kdb.mining.pipelines')
+            report['errors'].append('missing_pipeline_source:kdb.entrypoints.cli.mining')
         read_config(script_root / 'config/mysql_conn_config.json', 'mysql_config', report, ['host', 'database', 'user', 'password'])
         resource = option(argv, '--resource-config')
         if resource is not None:
@@ -131,13 +128,6 @@ def check(service, argv):
         config = read_config(selected, 'minio_config', report)
         if any(not config.get(field) for field in ['endpoint_url', 'access_key', 'secret_key']):
             report['warnings'].append('Original MinioTools default fields/private defaults will supply omitted connection fields; no client or auth validation performed.')
-    elif service == 'csat':
-        read_config(option(argv, '--mysql-config'), 'mysql_config', report, ['host', 'database', 'user', 'password'])
-        auth = read_config(option(argv, '--auth-config'), 'csat_auth', report)
-        if auth and not all(isinstance(value, str) and value for value in auth.values()):
-            report['errors'].append('invalid_csat_auth_entries')
-        elif not auth:
-            report['errors'].append('missing_csat_auth_entries')
     elif service == 'multilingual':
         path = Path(option(argv, '--model_path', str(ROOT / 'resources/models/lid.176.ftz')))
         report['resources'].append({'role': 'fasttext_model', 'path': str(path), 'exists': path.is_file()})

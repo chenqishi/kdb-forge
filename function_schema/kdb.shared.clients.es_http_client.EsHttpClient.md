@@ -18,7 +18,7 @@ ES / OpenSearch 的裸 HTTP 客户端，提供 search / count / search_after 分
 _bulk 局部更新。给「不能碰 mapping 的只读脚本」和「只更新单个字段的回补脚本」共用。
 
 原先这个类内嵌在 `data_control_tools/relabel_qa_quality_by_llm.py` 里，
-`src/kdb/integrations/data_control/export_qa_to_excel.py` 也需要它，而 relabel 那个文件顶层 import 了
+`src/kdb/retrieval/maintenance/qa_export.py` 也需要它，而 relabel 那个文件顶层 import 了
 `chat_qa_extract` / `quality_tools` 等重依赖（且未纳入 git），所以抽到 `commons/` 下。
 relabel 脚本现在 `from kdb.shared.clients.es_http_client import EsHttpClient`，逻辑未变。
 
@@ -73,4 +73,4 @@ relabel 脚本现在 `from kdb.shared.clients.es_http_client import EsHttpClient
 
 ## Source
 
-`src/kdb/shared/clients/es_http_client.py`。SQL 表/字段来自本契约已记录的真实结构资料或该实现中的查询；未附真实 DDL 的部分仅表示代码使用范围，不能视为已验证的完整表结构。
+`src/kdb/shared/clients/es_http_client.py`。SQL 字段依据保留在上面的 SQL 契约中；没有真实 DDL 的部分不宣称完整表结构已核验。

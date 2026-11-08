@@ -1,3 +1,8 @@
+import kdb.shared.storage.runtime_state as file_runtime
+import kdb.multilingual.runtime as language_runtime
+import kdb.retrieval.application.runtime as retrieval_runtime
+import kdb.retrieval.engines.bootstrap as engine_bootstrap
+import kdb.retrieval.application.runtime as _retrieval_application_runtime
 """Original startup code, with only server/external/thread boundaries substituted."""
 import asyncio
 import importlib
@@ -6,7 +11,8 @@ import json
 from pathlib import Path
 import runpy
 import sys
-from types import ModuleType, SimpleNamespace
+from types import ModuleType
+from types import SimpleNamespace
 from unittest.mock import Mock
 
 import pytest
@@ -86,8 +92,6 @@ def test_preflight_missing_auth_and_model_are_not_created(monkeypatch, tmp_path)
     module = load_preflight()
     monkeypatch.setattr(module, 'probe_module', lambda name: {'module': name, 'available': True})
     missing = tmp_path / 'absent'
-    report = module.check('csat', ['--mysql-config', str(missing), '--auth-config', str(missing)])
-    assert not report['ok'] and 'missing_file:csat_auth' in report['errors']
     report = module.check('multilingual', ['--model_path', str(missing)])
     assert not report['ok'] and 'missing_or_empty_fasttext_model' in report['errors']
     assert not missing.exists()
@@ -118,15 +122,15 @@ def test_shell_launchers_require_explicit_interpreter():
 def test_retrieval_module_main_initializes_then_worker_lifespan_once(monkeypatch, tmp_path):
     application = importlib.import_module('kdb.retrieval.application.search_index_data_interface')
     modifier = importlib.import_module('kdb.retrieval.modification.modify_knowledge')
-    service = importlib.import_module('kdb.services.retrieval.app')
+    service = importlib.import_module('kdb.entrypoints.http.retrieval.app')
     es_calls, dify_calls, serve = [], [], []
     def fake_engine(**kwargs):
         es_calls.append(kwargs)
         return SimpleNamespace(index_name='test_index')
-    monkeypatch.setattr(application, 'EsSearchInterface', fake_engine)
+    monkeypatch.setattr(engine_bootstrap, 'EsSearchInterface', fake_engine)
     monkeypatch.setattr(modifier, 'DifyWorkFlowRequest', lambda **kwargs: dify_calls.append(set(kwargs)) or SimpleNamespace())
-    monkeypatch.setattr(service, 'SEARCH_DATA_INTERFACE', None)
-    monkeypatch.setattr(service, 'MODIFY_KNOWLEDGE_HANDLE', None)
+    monkeypatch.setattr(retrieval_runtime, 'SEARCH_DATA_INTERFACE', None)
+    monkeypatch.setattr(retrieval_runtime, 'MODIFY_KNOWLEDGE_HANDLE', None)
     embedding = write_json(tmp_path / 'embedding.json', {'DASHSCOPE_API_KEY': 'synthetic-only'})
     engine = write_json(tmp_path / 'engine.json', {'es_version': '8.17'})
     config = write_json(tmp_path / 'search.json', {'search_engine_config_path': engine, 'embedding_config_path': embedding, 'simility_config_path': ''})
@@ -135,23 +139,25 @@ def test_retrieval_module_main_initializes_then_worker_lifespan_once(monkeypatch
         serve.append((target, kwargs))
         loaded = importlib.import_module(target.split(':')[0])
         assert any(route.path == '/search' for route in loaded.app.routes)
+        retrieval_runtime.SEARCH_DATA_INTERFACE = None
+        retrieval_runtime.MODIFY_KNOWLEDGE_HANDLE = None
         async def worker_lifecycle():
             async with loaded.lifespan(loaded.app):
-                assert loaded.SEARCH_DATA_INTERFACE is not None
+                assert retrieval_runtime.SEARCH_DATA_INTERFACE is not None
             async with loaded.lifespan(loaded.app):
-                assert loaded.SEARCH_DATA_INTERFACE is not None
+                assert retrieval_runtime.SEARCH_DATA_INTERFACE is not None
         asyncio.run(worker_lifecycle())
     monkeypatch.setattr(uvicorn, 'run', fake_uvicorn)
     monkeypatch.setenv('SEARCH_SERVICE_WORKERS', '2')
-    namespace = run_service(monkeypatch, tmp_path, 'kdb.services.retrieval.app', [config])
-    assert namespace['SEARCH_DATA_INTERFACE'] is not None
+    namespace = run_service(monkeypatch, tmp_path, 'kdb.entrypoints.http.retrieval.app', [config])
+    assert namespace['runtime_state'].SEARCH_DATA_INTERFACE is not None
     assert len(es_calls) == 2  # Parent __main__ + one modeled worker import/lifespan.
     assert len(dify_calls) == 4  # Recall + modify constructor per initialized interface.
-    assert serve == [('kdb.services.retrieval.app:app', {'host': '0.0.0.0', 'port': 8003, 'reload': False, 'workers': 2})]
+    assert serve == [('kdb.entrypoints.http.retrieval.app:app', {'host': '0.0.0.0', 'port': 8003, 'reload': False, 'workers': 2})]
 
 
 def test_off_task_module_main_registers_workers_without_running_them(monkeypatch, tmp_path):
-    connector = importlib.import_module('kdb.shared.clients.mysql_connector')
+    connector = importlib.import_module('kdb.shared.database.mysql')
     pools, threads = [], []
     class Pool:
         def __init__(self, **kwargs):
@@ -172,38 +178,22 @@ def test_off_task_module_main_registers_workers_without_running_them(monkeypatch
     script_dir = tmp_path / 'workspace'
     script_dir.mkdir(parents=True)
     write_json(script_dir / 'config/mysql_conn_config.json', {'host': 'synthetic', 'database': 'synthetic', 'user': 'synthetic', 'password': 'synthetic'})
-    namespace = run_service(monkeypatch, tmp_path, 'kdb.services.off_task.app', ['--script-dir', str(script_dir), '--port', '19000', '--host', '127.0.0.1', '--max-concurrency', '3'])
+    namespace = run_service(monkeypatch, tmp_path, 'kdb.entrypoints.http.tasks.app', ['--script-dir', str(script_dir), '--port', '19000', '--host', '127.0.0.1', '--max-concurrency', '3'])
     assert len(pools) == 1 and sorted(threads) == ['monitor_tasks', 'task_worker']
-    assert namespace['task_queue'].qsize() == 0 and namespace['task_pid_mapping'] == {}
+    assert namespace['runtime_state'].task_queue.qsize() == 0 and namespace['runtime_state'].task_pid_mapping == {}
     assert serve[0][2] == {'host': '127.0.0.1', 'port': 19000, 'debug': False, 'threaded': True}
-    assert namespace['max_total_concurrency'] == 10  # Original missing resource config resets to default.
+    assert namespace['runtime_state'].max_total_concurrency == 10  # Original missing resource config resets to default.
 
 
 def test_files_module_main_loads_cli_config_before_serve(monkeypatch, tmp_path):
     serve = record_flask(monkeypatch)
     path = write_json(tmp_path / 'minio.json', {'endpoint_url': 'http://synthetic.invalid', 'access_key': 'synthetic', 'secret_key': 'synthetic'})
-    namespace = run_service(monkeypatch, tmp_path, 'kdb.services.files.app', ['--config', path, '--host', '127.0.0.1', '--port', '19001'])
-    assert namespace['CONFIG_PATH'] == Path(path)
+    namespace = run_service(monkeypatch, tmp_path, 'kdb.entrypoints.http.files.app', ['--config', path, '--host', '127.0.0.1', '--port', '19001'])
+    assert file_runtime.CONFIG_PATH == Path(path)
     assert serve[0][2] == {'host': '127.0.0.1', 'port': 19001, 'debug': False, 'threaded': True}
     assert any(rule.rule == '/upload' for rule in serve[0][0].url_map.iter_rules())
 
 
-def test_csat_module_main_reads_auth_and_constructs_sql_pool(monkeypatch, tmp_path):
-    connector = importlib.import_module('kdb.shared.clients.mysql_connector')
-    pools = []
-    class Pool:
-        def __init__(self, **kwargs):
-            pools.append(set(kwargs))
-        def _remove_connections(self):
-            pass
-    monkeypatch.setattr(connector, 'MySQLConnectionPool', Pool)
-    monkeypatch.setattr(connector, 'atexit', SimpleNamespace(register=lambda callback: None))
-    serve = record_flask(monkeypatch)
-    mysql = write_json(tmp_path / 'mysql.json', {'host': 'synthetic', 'database': 'synthetic', 'user': 'synthetic', 'password': 'synthetic'})
-    auth = write_json(tmp_path / 'auth.json', {'synthetic': 'synthetic-only'})
-    namespace = run_service(monkeypatch, tmp_path, 'kdb.services.csat.app', ['--mysql-config', mysql, '--auth-config', auth, '--port', '19002'])
-    assert len(pools) == 1 and namespace['client_secrets'] == {'synthetic': 'synthetic-only'}
-    assert serve[0][2] == {'host': '0.0.0.0', 'port': 19002}
 
 
 def test_multilingual_module_main_loads_model_dependency_then_serve(monkeypatch, tmp_path):
@@ -215,8 +205,8 @@ def test_multilingual_module_main_loads_model_dependency_then_serve(monkeypatch,
     serve = record_flask(monkeypatch)
     model = tmp_path / 'synthetic-model.ftz'
     model.write_bytes(b'synthetic model fixture, not a real fasttext model')
-    namespace = run_service(monkeypatch, tmp_path, 'kdb.services.multilingual.app', ['--model_path', str(model), '--host', '127.0.0.1', '--port', '19003'])
-    assert calls == [str(model)] and namespace['model'] is not None
+    namespace = run_service(monkeypatch, tmp_path, 'kdb.entrypoints.http.multilingual.app', ['--model_path', str(model), '--host', '127.0.0.1', '--port', '19003'])
+    assert calls == [str(model)] and language_runtime.model is not None
     assert serve[0][2] == {'host': '127.0.0.1', 'port': 19003, 'debug': False}
 
 
@@ -225,13 +215,13 @@ def test_multilingual_module_main_missing_model_fails_without_serve(monkeypatch,
     monkeypatch.setitem(sys.modules, 'fasttext', dependency)
     serve = record_flask(monkeypatch)
     with pytest.raises(SystemExit) as caught:
-        run_service(monkeypatch, tmp_path, 'kdb.services.multilingual.app', ['--model_path', str(tmp_path / 'absent.ftz')])
+        run_service(monkeypatch, tmp_path, 'kdb.entrypoints.http.multilingual.app', ['--model_path', str(tmp_path / 'absent.ftz')])
     assert caught.value.code == 1 and serve == []
 
 
 def test_crawler_module_main_constructs_processor_and_serves(monkeypatch, tmp_path):
     serve = record_flask(monkeypatch)
-    namespace = run_service(monkeypatch, tmp_path, 'kdb.services.crawler.app', [])
+    namespace = run_service(monkeypatch, tmp_path, 'kdb.entrypoints.http.crawler.app', [])
     processor = namespace['logic_processer']
     assert processor.atom_parser is not None and processor.dataset_builder is not None
     assert serve[0][2] == {'host': '0.0.0.0', 'port': 6001, 'debug': True}
@@ -245,5 +235,5 @@ def test_fastgpt_module_main_keeps_uvicorn_contract(monkeypatch, tmp_path):
         assert any(route.path == '/search' for route in loaded.app.routes)
         calls.append((target, kwargs))
     monkeypatch.setattr(uvicorn, 'run', fake_uvicorn)
-    run_service(monkeypatch, tmp_path, 'kdb.services.fastgpt_proxy.app', [])
-    assert calls == [('kdb.services.fastgpt_proxy.app:app', {'host': '0.0.0.0', 'port': 8000, 'reload': True})]
+    run_service(monkeypatch, tmp_path, 'kdb.entrypoints.http.fastgpt_proxy.app', [])
+    assert calls == [('kdb.entrypoints.http.fastgpt_proxy.app:app', {'host': '0.0.0.0', 'port': 8000, 'reload': True})]
