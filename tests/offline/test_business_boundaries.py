@@ -20,8 +20,8 @@ def test_launchers_and_task_commands_resolve_to_executable_modules():
         tree = ast.parse((ROOT / rel).read_text())
         modules.update(n.value for n in ast.walk(tree) if isinstance(n, ast.Constant)
                        and isinstance(n.value, str) and n.value.startswith('kdb.entrypoints.cli.'))
-    assert len(preflight['ENTRYPOINTS']) == 6
-    assert len(modules) >= 11
+    assert set(preflight['ENTRYPOINTS']) == {'retrieval', 'off_task', 'files', 'multilingual'}
+    assert len(modules) >= 9
     for module in modules:
         path = ROOT / 'src' / (module.replace('.', '/') + '.py')
         assert path.is_file(), module

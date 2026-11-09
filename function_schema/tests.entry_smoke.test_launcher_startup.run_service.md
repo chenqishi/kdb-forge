@@ -15,7 +15,7 @@
 ## Description
 
 Inputs: synthetic pytest config/model/auth and patched ES/SQL/serve/thread boundaries.
-Outputs: kdb.entrypoints.cli.generate_segments canonical service modules with unchanged business argv, cwd, route set, host/port/workers and initialization counts. Preflight execs the selected interpreter with -m and the canonical module name. No socket, subprocess or real SQL/model/LLM execution.
+Outputs: executes the requested service as __main__ with unchanged argv and patched external boundaries. Temporarily removes only that entry module from sys.modules and its parent package attribute; restores both original bindings in finally, including after failure. Shared business/runtime modules remain loaded so their patched state and identity are preserved. No warning suppression, socket, subprocess or real SQL/model/LLM execution.
 SQL: pool construction is replaced with a recording fixture.
 Source: tests/entry_smoke/test_launcher_startup.py
 

@@ -30,8 +30,8 @@ import jieba.analyse
 def get_keyword_list(text, topK=5):    
     keywords = jieba.analyse.extract_tags(text, topK=topK)
     return keywords
-# 把index操作集成在这个文件有点不合理，index跟基础平台无关，跟业务数据来源更强相关
-def get_fastgpt_index(query, answer, plat_form=None):
+# 纯本地索引词生成，与远端平台无关；仅调整名称，保留原关键词规则。
+def build_qa_index_terms(query, answer, plat_form=None):
     """
     """
     indexes = []
@@ -45,7 +45,7 @@ def get_fastgpt_index(query, answer, plat_form=None):
         indexes.append(keywords)        
     return indexes
 
-def get_fastgpt_index_cdiscount(seg_topic, segment, title, topics):
+def build_cdiscount_index_terms(seg_topic, segment, title, topics):
     """
     """
     indexes = []

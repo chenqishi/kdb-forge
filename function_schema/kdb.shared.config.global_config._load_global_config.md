@@ -11,6 +11,7 @@
 ## Outputs
 
 委托 load_global_config 深复制默认值、读取本项目 config/global_config.json 并浅覆盖；异常回退。
+默认值仅保留现用配置；已停用平台的上游默认地址已移除。外部配置覆盖和异常回退算法不变。
 
 ## SQL
 

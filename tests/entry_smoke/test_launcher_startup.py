@@ -37,7 +37,24 @@ def run_service(monkeypatch, tmp_path, module, args):
     """Exercise the public module entry point with external serving replaced."""
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(sys, 'argv', [module, *args])
-    return runpy.run_module(module, run_name='__main__', alter_sys=False)
+    # Only the entry module is isolated; shared business/runtime state stays intact.
+    parent_name, _, attribute = module.rpartition('.')
+    parent = importlib.import_module(parent_name)
+    missing = object()
+    cached_module = sys.modules.pop(module, missing)
+    cached_attribute = getattr(parent, attribute, missing)
+    if cached_attribute is not missing:
+        delattr(parent, attribute)
+    try:
+        return runpy.run_module(module, run_name='__main__', alter_sys=False)
+    finally:
+        sys.modules.pop(module, None)
+        if cached_module is not missing:
+            sys.modules[module] = cached_module
+        if cached_attribute is not missing:
+            setattr(parent, attribute, cached_attribute)
+        elif hasattr(parent, attribute):
+            delattr(parent, attribute)
 
 
 def record_flask(monkeypatch):
@@ -101,8 +118,6 @@ def test_preflight_preserves_original_config_fallbacks(monkeypatch, tmp_path):
     module = load_preflight()
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(module, 'probe_module', lambda name: {'module': name, 'available': True})
-    fastgpt = module.check('fastgpt_proxy', [])
-    assert fastgpt['ok'] and any('fallback is active' in warning for warning in fastgpt['warnings'])
     empty_minio = write_json(tmp_path / 'minio.json', {})
     files = module.check('files', ['--config', empty_minio])
     assert files['ok'] and any('MinioTools default fields' in warning for warning in files['warnings'])
@@ -151,6 +166,7 @@ def test_retrieval_module_main_initializes_then_worker_lifespan_once(monkeypatch
     monkeypatch.setenv('SEARCH_SERVICE_WORKERS', '2')
     namespace = run_service(monkeypatch, tmp_path, 'kdb.entrypoints.http.retrieval.app', [config])
     assert namespace['runtime_state'].SEARCH_DATA_INTERFACE is not None
+    assert importlib.import_module('kdb.entrypoints.http.retrieval.app') is service
     assert len(es_calls) == 2  # Parent __main__ + one modeled worker import/lifespan.
     assert len(dify_calls) == 4  # Recall + modify constructor per initialized interface.
     assert serve == [('kdb.entrypoints.http.retrieval.app:app', {'host': '0.0.0.0', 'port': 8003, 'reload': False, 'workers': 2})]
@@ -178,6 +194,14 @@ def test_off_task_module_main_registers_workers_without_running_them(monkeypatch
     script_dir = tmp_path / 'workspace'
     script_dir.mkdir(parents=True)
     write_json(script_dir / 'config/mysql_conn_config.json', {'host': 'synthetic', 'database': 'synthetic', 'user': 'synthetic', 'password': 'synthetic'})
+    preflight = load_preflight()
+    monkeypatch.setattr(preflight, 'probe_module', lambda name: {'available': True})
+    # Runtime config lives elsewhere; source checks must still use the migrated project.
+    for service in preflight.ENTRYPOINTS:
+        report = preflight.check(service, ['--script-dir', str(script_dir)])
+        assert Path(report['entrypoint_source']).is_file()
+        if service == 'off_task':
+            assert report['ok'], report['errors']
     namespace = run_service(monkeypatch, tmp_path, 'kdb.entrypoints.http.tasks.app', ['--script-dir', str(script_dir), '--port', '19000', '--host', '127.0.0.1', '--max-concurrency', '3'])
     assert len(pools) == 1 and sorted(threads) == ['monitor_tasks', 'task_worker']
     assert namespace['runtime_state'].task_queue.qsize() == 0 and namespace['runtime_state'].task_pid_mapping == {}
@@ -217,23 +241,3 @@ def test_multilingual_module_main_missing_model_fails_without_serve(monkeypatch,
     with pytest.raises(SystemExit) as caught:
         run_service(monkeypatch, tmp_path, 'kdb.entrypoints.http.multilingual.app', ['--model_path', str(tmp_path / 'absent.ftz')])
     assert caught.value.code == 1 and serve == []
-
-
-def test_crawler_module_main_constructs_processor_and_serves(monkeypatch, tmp_path):
-    serve = record_flask(monkeypatch)
-    namespace = run_service(monkeypatch, tmp_path, 'kdb.entrypoints.http.crawler.app', [])
-    processor = namespace['logic_processer']
-    assert processor.atom_parser is not None and processor.dataset_builder is not None
-    assert serve[0][2] == {'host': '0.0.0.0', 'port': 6001, 'debug': True}
-
-
-def test_fastgpt_module_main_keeps_uvicorn_contract(monkeypatch, tmp_path):
-    import uvicorn
-    calls = []
-    def fake_uvicorn(target, **kwargs):
-        loaded = importlib.import_module(target.split(':')[0])
-        assert any(route.path == '/search' for route in loaded.app.routes)
-        calls.append((target, kwargs))
-    monkeypatch.setattr(uvicorn, 'run', fake_uvicorn)
-    run_service(monkeypatch, tmp_path, 'kdb.entrypoints.http.fastgpt_proxy.app', [])
-    assert calls == [('kdb.entrypoints.http.fastgpt_proxy.app:app', {'host': '0.0.0.0', 'port': 8000, 'reload': True})]

@@ -8,16 +8,15 @@ flowchart TB
   ENTRY --> RET[知识检索 retrieval]
   ENTRY --> TASK[知识挖掘：任务管理]
   ENTRY --> LANG[多语言 multilingual]
-  ENTRY --> STORAGE[对象读取与上传]
+  ENTRY --> FILES[files HTTP：对象访问入口]
+  FILES --> STORAGE[shared/storage：对象读取与上传]
   TASK --> DOC[文档挖掘 document]
   TASK --> WEB[网页挖掘 web]
   TASK --> CHAT[对话挖掘 chat]
   DOC --> COMMON[挖掘公共模块 common]
   WEB --> COMMON
   CHAT --> COMMON
-  DOC --> BRIDGE[检索桥 bridges/retrieval]
-  WEB --> BRIDGE
-  CHAT --> BRIDGE
+  CHAT --> BRIDGE[检索衔接 mining/bridges/retrieval]
   BRIDGE --> RET
   COMMON --> QUALITY[质量 / 去重 / schema / 解析切分 / LLM]
   RET --> SHARED[顶层公共模块 shared]
@@ -30,21 +29,22 @@ flowchart TB
 
 任务管理通过子进程启动管道 CLI，图中任务到管道的箭头包括运行时调用，不全是 Python import。`scripts/testing/architecture.py` 校验实际静态 import 方向和环；动态命令的入口另有离线断言。
 
+当前检索桥只有对话域的未回复问题复盘调用：用问题改写检索现有知识，再判断知识覆盖情况。document/web 当前没有调用该桥，图中不画这些依赖。files HTTP 属于工程入口，shared/storage 属于公共能力。
+
 | 目录 | 职责与边界 |
 |---|---|
 | `retrieval/application/` | 唯一 SearchDataInterface 门面、服务运行对象与业务查询 |
 | `retrieval/search/`、`ranking.py`、`statistics.py` | 查询、多查询、分页、分数整理与计数聚合 |
 | `retrieval/ingestion/`、`categories/`、`file_operations.py` | 数据准备、ID、入库去重、写入、类目与按文件操作 |
 | `retrieval/engines/` | ES8.17、索引路由、协议与初始化；engines/providers 保留原实现，工厂仍只允许 ES8.17 |
-| `retrieval/providers/` | 远端 FastGPT 请求，与底层引擎 provider 分开 |
 | `retrieval/maintenance/` | 审核、导出、迁移、修复与清理 |
 | `mining/tasks/` | 唯一队列状态、资源计数、SQL 记录、子进程、提交、估算与任务报表 |
-| `mining/document/`、`web/`、`chat/` | 各来源专属管道、阶段、数据读取与处理；网页导出在 web/exports |
+| `mining/document/`、`web/`、`chat/` | 各来源专属管道、阶段、数据读取与处理 |
 | `mining/common/` | 共用 llm、quality、deduplication、schema、parsing、segmentation、generation 等 |
 | `mining/bridges/retrieval.py` | 挖掘跨域访问检索的唯一模块；公共质检不依赖该桥或聊天抽取器 |
 | `multilingual/` | 模型加载、规则优先识别、标签转换与唯一模型状态 |
 | `shared/` | 通用存储、SQL、客户端、相似度、类目树、配置和文本文件处理，不导入业务域 |
-| `entrypoints/http/` | 六服务：retrieval、tasks、crawler、files、multilingual、fastgpt_proxy，保留原协议 |
+| `entrypoints/http/` | 四服务：retrieval、tasks、files、multilingual，保留原协议 |
 | `entrypoints/cli/`、`entrypoints/scheduled/` | 参数解析、命令注册、日志接线，业务函数在所属域 |
 | `operations/data_migration/` | SQL 迁移；ES 迁移属于 retrieval/maintenance |
 
@@ -64,4 +64,4 @@ shared 只依赖自身和基础库；mining/common 不依赖 chat/document/web/t
 
 ## 独立辅助项目
 
-assistant-data-tools 管理满意度、身份映射、独立运营报表和工作流评测，使用自己的配置与产物目录，固定配对 assistant-data-tools 0.1.0 / kdb 0.2.0。六个核心服务与辅助项目的 CSAT 是独立部署单元；CSAT 的 URL、签名和返回保持原样。项目拆分不自动迁移系统 cron、私有配置或线上进程。
+assistant-data-tools 管理满意度、身份映射、独立运营报表和工作流评测，使用自己的配置与产物目录，固定配对 assistant-data-tools 0.1.0 / kdb 0.2.0。四个核心服务与辅助项目的 CSAT 是独立部署单元；CSAT 的 URL、签名和返回保持原样。项目拆分不自动迁移系统 cron、私有配置或线上进程。

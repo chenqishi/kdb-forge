@@ -7,14 +7,12 @@ from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
-ENTRYPOINTS = {'retrieval': 'kdb.entrypoints.http.retrieval.app', 'off_task': 'kdb.entrypoints.http.tasks.app', 'crawler': 'kdb.entrypoints.http.crawler.app', 'files': 'kdb.entrypoints.http.files.app', 'multilingual': 'kdb.entrypoints.http.multilingual.app', 'fastgpt_proxy': 'kdb.entrypoints.http.fastgpt_proxy.app'}
+ENTRYPOINTS = {'retrieval': 'kdb.entrypoints.http.retrieval.app', 'off_task': 'kdb.entrypoints.http.tasks.app', 'files': 'kdb.entrypoints.http.files.app', 'multilingual': 'kdb.entrypoints.http.multilingual.app'}
 DEPENDENCIES = {
-    'retrieval': ['fastapi', 'pydantic', 'uvicorn', 'httpx', 'requests', 'numpy', 'jieba', 'elasticsearch'],
+    'retrieval': ['fastapi', 'pydantic', 'uvicorn', 'requests', 'numpy', 'jieba', 'elasticsearch'],
     'off_task': ['flask', 'mysql.connector', 'psutil', 'fitz', 'boto3', 'botocore', 'docx', 'docx2pdf', 'PyPDF2', 'PIL', 'requests'],
-    'crawler': ['flask', 'pydantic', 'requests', 'bs4', 'tkinter'],
     'files': ['flask', 'requests', 'boto3', 'botocore'],
     'multilingual': ['flask', 'fasttext'],
-    'fastgpt_proxy': ['fastapi', 'pydantic', 'uvicorn', 'httpx'],
 }
 
 
@@ -78,7 +76,7 @@ def check(service, argv):
               'sys_base_prefix': getattr(sys, 'base_prefix', sys.prefix),
               'interpreter_realpath': str(Path(sys.executable).resolve()), 'cwd': str(Path.cwd()),
               'entrypoint': ENTRYPOINTS[service],
-              'entrypoint_source': str(ROOT / 'src/kdb/services' / service / 'app.py'),
+              'entrypoint_source': str(ROOT / 'src' / (ENTRYPOINTS[service].replace('.', '/') + '.py')),
               'checks_are_local_only': True, 'dependencies': [], 'resources': [],
               'errors': [], 'warnings': ['Presence checks do not prove backend/auth/model validity.']}
     if sys.version_info < (3, 9):
@@ -98,7 +96,7 @@ def check(service, argv):
         report['warnings'].append('Legacy --help requested; runtime resources not required for help.')
         report['ok'] = not report['errors']
         return report
-    if service in {'retrieval', 'off_task', 'crawler', 'files', 'fastgpt_proxy'}:
+    if service in {'retrieval', 'off_task', 'files'}:
         read_config(ROOT / 'private/runtime_config/hardcoded_defaults.json', 'private_defaults', report)
     if service == 'retrieval':
         primary = argv[0] if argv else None
@@ -114,7 +112,7 @@ def check(service, argv):
                         report['errors'].append('engine_config_index_name_and_vector_fields_required')
     elif service == 'off_task':
         script_root = Path(option(argv, '--script-dir', str(ROOT)))
-        if not (ROOT / 'src/kdb/mining/pipelines').is_dir():
+        if not (ROOT / 'src/kdb/entrypoints/cli/mining').is_dir():
             report['errors'].append('missing_pipeline_source:kdb.entrypoints.cli.mining')
         read_config(script_root / 'config/mysql_conn_config.json', 'mysql_config', report, ['host', 'database', 'user', 'password'])
         resource = option(argv, '--resource-config')
@@ -133,12 +131,6 @@ def check(service, argv):
         report['resources'].append({'role': 'fasttext_model', 'path': str(path), 'exists': path.is_file()})
         if not path.is_file() or path.stat().st_size == 0:
             report['errors'].append('missing_or_empty_fasttext_model')
-    elif service == 'fastgpt_proxy':
-        config = Path('config/config.json')
-        if config.is_file():
-            read_config(config, 'fastgpt_config', report, ['knowledge_base_url'])
-        else:
-            report['warnings'].append('Original FastGPT built-in upstream/private-default API key fallback is active; no config file, upstream auth validation or request was performed.')
     report['ok'] = not report['errors']
     return report
 

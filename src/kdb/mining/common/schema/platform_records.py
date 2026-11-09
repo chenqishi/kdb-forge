@@ -23,8 +23,8 @@ import traceback
 import codecs
 from datetime import datetime
 from datetime import timedelta
-from kdb.mining.common.schema.index_terms import get_fastgpt_index
-from kdb.mining.common.schema.index_terms import get_fastgpt_index_cdiscount
+from kdb.mining.common.schema.index_terms import build_qa_index_terms
+from kdb.mining.common.schema.index_terms import build_cdiscount_index_terms
 
 def add_attrs_and_indexs(data_file, plat_form='None'):
     with open(data_file, 'r', encoding='utf-8') as f:
@@ -36,7 +36,7 @@ def add_attrs_and_indexs(data_file, plat_form='None'):
             attrs = ''
             if plat_form:
                 attrs += f'平台:{plat_form}'
-            indexes = get_fastgpt_index(query, answer, plat_form)            
+            indexes = build_qa_index_terms(query, answer, plat_form)
             print('\t'.join([query, answer, attrs, '|'.join(indexes)]))
 
 def process_data_cdiscount(data_file):
@@ -56,7 +56,7 @@ def process_data_cdiscount(data_file):
                 continue
             seg_topic, segment, title, topics = line.split('\t')
             
-            indexes = get_fastgpt_index_cdiscount(seg_topic, segment, title, topics)
+            indexes = build_cdiscount_index_terms(seg_topic, segment, title, topics)
             if plat_form:
                 attrs += f'平台:{plat_form}'
             print('\t'.join([seg_topic, segment, attrs, '|'.join(indexes)]))

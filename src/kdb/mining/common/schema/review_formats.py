@@ -269,7 +269,7 @@ def batch_select_high_quality_qa_to_json(batch_file, field_num=6, platform_field
                     for qa in qa_list:
                         from_file_name = qa.get('from_file_name', '')
                         file_name = get_index_file_name(from_file_name)
-                        trans_info = {'title': qa['q'], 'content': qa['a'], 'document_name': file_name} # document_name 用于在fastgpt下建立不同的document
+                        trans_info = {'title': qa['q'], 'content': qa['a'], 'document_name': file_name} # document_name 保留来源文件分组
                         if platform:
                             trans_info['platform'] = platform
                         print(json.dumps(trans_info, ensure_ascii=False))
@@ -304,7 +304,7 @@ def batch_select_high_quality_qa_and_white_answer_to_json(batch_file, white_name
                             continue
                         if qa['quality'] not in white_name_dict.get(platform, {}).get('permissions', set()):
                             continue
-                        trans_info = {'title': qa['q'], 'content': qa['a'], 'document_name': file_name} # document_name 用于在fastgpt下建立不同的document
+                        trans_info = {'title': qa['q'], 'content': qa['a'], 'document_name': file_name} # document_name 保留来源文件分组
                         if platform:
                             trans_info['platform'] = platform
                         print(json.dumps(trans_info, ensure_ascii=False))

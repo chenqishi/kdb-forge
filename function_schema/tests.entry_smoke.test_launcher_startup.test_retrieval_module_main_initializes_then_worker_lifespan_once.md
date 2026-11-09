@@ -14,10 +14,7 @@
 
 ## Description
 
-Inputs: synthetic pytest config/model/auth and patched ES/SQL/serve/thread boundaries.
-Outputs: kdb.entrypoints.cli.generate_segments canonical service modules with unchanged business argv, cwd, route set, host/port/workers and initialization counts. Preflight execs the selected interpreter with -m and the canonical module name. No socket, subprocess or real SQL/model/LLM execution.
-SQL: pool construction is replaced with a recording fixture.
-Source: tests/entry_smoke/test_launcher_startup.py
+Run the retrieval CLI with recording factories and a modeled worker lifespan. Assert retained initialization counts, route/host/port/workers, repeated lifespan idempotence and restoration of the previously imported canonical app module. The entry module is isolated; shared runtime state and patches stay intact.
 
 ## SQL
 

@@ -26,14 +26,14 @@ docs/             当前架构、接口和运行说明
 
 满意度、外部身份映射和独立运营统计已拆为 **assistant-data-tools** 项目。核心不依赖它；它固定依赖 `kdb==0.2.0` 的公共模块。两个项目的配置、产物与测试分别管理，见[运行配置](docs/runtime_configuration.md)。
 
-在独立 Python 环境安装包并执行离线检查：
+在独立 Python 环境安装包和测试依赖后执行离线检查。完整前提见[测试说明](docs/testing.md)；`test` 安装组覆盖 Python 测试依赖，系统组件另行准备：
 
 ```bash
-python -m pip install -e .
+python -m pip install -e ".[test]"
 ./run_offline_tests.sh -q
 ```
 
-完整测试还需要[测试说明](docs/testing.md)中的依赖；上述安装不是所有抓取、模型和文件处理能力的生产安装清单。六个核心 HTTP 服务由启动器预检后运行，显式选择解释器：
+仅安装检索可用 `python -m pip install -e .`；其他服务使用 `.[files]`、`.[tasks]`、`.[web]`、`.[multilingual]` 等安装组，见[运行配置](docs/runtime_configuration.md)。测试依赖不包含真实模型、浏览器及认证。四个核心 HTTP 服务由启动器预检后运行，显式选择解释器：
 
 ```bash
 KDB_PYTHON=/absolute/path/to/venv/bin/python scripts/services/retrieval.sh --check config/config_for_search_index.json

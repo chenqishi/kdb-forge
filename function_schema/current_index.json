@@ -1,5 +1,5 @@
 {
-  "contract_count": 533,
+  "contract_count": 532,
   "modules": [
     {
       "source_file": "scripts/scheduled/chat_mining.sh",
@@ -114,19 +114,6 @@
         {
           "symbol": "insert_data_to_search_index",
           "schema_file": "function_schema/kdb.entrypoints.cli.index_upload.insert_data_to_search_index.md"
-        }
-      ]
-    },
-    {
-      "source_file": "src/kdb/entrypoints/http/fastgpt_proxy/app.py",
-      "contracts": [
-        {
-          "symbol": "module",
-          "schema_file": "function_schema/kdb.entrypoints.http.fastgpt_proxy.app.module.md"
-        },
-        {
-          "symbol": "query_remote_service",
-          "schema_file": "function_schema/kdb.entrypoints.http.fastgpt_proxy.app.query_remote_service.md"
         }
       ]
     },
@@ -861,11 +848,37 @@
       ]
     },
     {
+      "source_file": "src/kdb/mining/common/schema/index_terms.py",
+      "contracts": [
+        {
+          "symbol": "build_cdiscount_index_terms",
+          "schema_file": "function_schema/kdb.mining.common.schema.index_terms.build_cdiscount_index_terms.md"
+        },
+        {
+          "symbol": "build_qa_index_terms",
+          "schema_file": "function_schema/kdb.mining.common.schema.index_terms.build_qa_index_terms.md"
+        }
+      ]
+    },
+    {
       "source_file": "src/kdb/mining/common/schema/page_export.py",
       "contracts": [
         {
           "symbol": "write_page_content",
           "schema_file": "function_schema/kdb.mining.common.schema.page_export.write_page_content.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/common/schema/platform_records.py",
+      "contracts": [
+        {
+          "symbol": "add_attrs_and_indexs",
+          "schema_file": "function_schema/kdb.mining.common.schema.platform_records.add_attrs_and_indexs.md"
+        },
+        {
+          "symbol": "process_data_cdiscount",
+          "schema_file": "function_schema/kdb.mining.common.schema.platform_records.process_data_cdiscount.md"
         }
       ]
     },
@@ -2185,15 +2198,6 @@
       ]
     },
     {
-      "source_file": "src/kdb/retrieval/providers/fastgpt.py",
-      "contracts": [
-        {
-          "symbol": "request_completion",
-          "schema_file": "function_schema/kdb.retrieval.providers.fastgpt.request_completion.md"
-        }
-      ]
-    },
-    {
       "source_file": "src/kdb/retrieval/search/multi_query.py",
       "contracts": [
         {
@@ -2397,14 +2401,6 @@
         {
           "symbol": "run_service",
           "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.run_service.md"
-        },
-        {
-          "symbol": "test_crawler_module_main_constructs_processor_and_serves",
-          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.test_crawler_module_main_constructs_processor_and_serves.md"
-        },
-        {
-          "symbol": "test_fastgpt_module_main_keeps_uvicorn_contract",
-          "schema_file": "function_schema/tests.entry_smoke.test_launcher_startup.test_fastgpt_module_main_keeps_uvicorn_contract.md"
         },
         {
           "symbol": "test_files_module_main_loads_cli_config_before_serve",
@@ -2664,6 +2660,15 @@
       ]
     },
     {
+      "source_file": "tests/offline/test_dependency_groups.py",
+      "contracts": [
+        {
+          "symbol": "module",
+          "schema_file": "function_schema/tests.offline.test_dependency_groups.module.md"
+        }
+      ]
+    },
+    {
       "source_file": "tests/offline/test_offline_boundary.py",
       "contracts": [
         {
@@ -2905,10 +2910,6 @@
     {
       "source_file": "tests/services/test_extracted_business_adapters.py",
       "contracts": [
-        {
-          "symbol": "test_fastgpt_transport_and_http_error_contract",
-          "schema_file": "function_schema/tests.services.test_extracted_business_adapters.test_fastgpt_transport_and_http_error_contract.md"
-        },
         {
           "symbol": "test_language_rule_precedes_unchanged_model_fallback",
           "schema_file": "function_schema/tests.services.test_extracted_business_adapters.test_language_rule_precedes_unchanged_model_fallback.md"

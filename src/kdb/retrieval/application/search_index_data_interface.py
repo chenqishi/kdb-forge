@@ -1,3 +1,13 @@
+# 公开方法导航：下方均绑定到同一个 SearchDataInterface/self，不另建引擎或缓存。
+# 查询：search_data / search_data_by_query / search_data_by_multi_query / web_search_data
+#       → retrieval/search；相似度计算 → retrieval/ranking.py。
+# 入库：insert_data / batch_insert_data / process_one_data / update_data / delete_data
+#       → retrieval/ingestion；类目加载、映射与推断 → retrieval/categories。
+# 文件操作：list_file_names / resolve_file_name / preview_delete_by_file / delete_by_file
+#       → retrieval/file_operations.py；计数与聚合 → retrieval/statistics.py。
+# 多模态展示 → retrieval/presentation；引擎构建 → retrieval/engines/bootstrap.py。
+# 参数、返回与 SQL 契约见 function_schema/current_index.md 中的对应实现。
+
 from kdb.retrieval.engines.protocol import SearchEngine
 from kdb.shared.clients.embedding_tools import AliEmbedding as EmbeddingTools
 import json

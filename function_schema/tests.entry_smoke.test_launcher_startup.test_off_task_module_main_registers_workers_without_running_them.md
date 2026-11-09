@@ -17,6 +17,7 @@
 Inputs: synthetic pytest config/model/auth and patched ES/SQL/serve/thread boundaries.
 Outputs: kdb.entrypoints.cli.generate_segments canonical service modules with unchanged business argv, cwd, route set, host/port/workers and initialization counts. Preflight execs the selected interpreter with -m and the canonical module name. No socket, subprocess or real SQL/model/LLM execution.
 SQL: pool construction is replaced with a recording fixture.
+Before module startup, exercise the real local preflight against synthetic runtime config and the actual canonical source tree. All four reported entrypoint files must exist; the task preflight must accept the migrated CLI directory. Dependency probes are isolated and no external connection is made.
 Source: tests/entry_smoke/test_launcher_startup.py
 
 ## SQL

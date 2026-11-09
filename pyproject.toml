@@ -11,7 +11,47 @@ dependencies = [
     "elasticsearch>=8.17,<8.18",
     "fastapi>=0.100",
     "pydantic>=2,<3",
-    "uvicorn",
+    "uvicorn[standard]>=0.20",
+    "requests>=2.28",
+    "numpy>=1.21",
+    "jieba",
+    "fire>=0.5",
+    "urllib3",
+]
+
+[project.optional-dependencies]
+database = ["mysql-connector-python>=8.0"]
+storage = ["boto3==1.38.46", "botocore"]
+documents = [
+    "kdb[storage,database]==0.2.0",
+    "PyMuPDF>=1.24.3,<2",
+    "PyPDF2",
+    "docx2pdf>=0.1.8",
+    "python-docx>=1.2.0",
+    "openpyxl==3.1.5",
+    "openpyxl-image-loader==1.0.5",
+    "pandas>=1.5",
+    "Pillow",
+]
+files = ["kdb[storage]==0.2.0", "Flask==3.1.2"]
+tasks = ["kdb[database,documents]==0.2.0", "Flask==3.1.2", "psutil==7.1.0"]
+web = [
+    "kdb[database,documents]==0.2.0",
+    "Flask==3.1.2",
+    "beautifulsoup4",
+    "selenium",
+    "playwright",
+]
+chat = ["kdb[database,documents]==0.2.0", "paramiko", "rapidfuzz==3.9.6"]
+multilingual = ["Flask==3.1.2", "fasttext==0.9.3", "numpy<2"]
+analysis = ["kdb[chat]==0.2.0", "faiss-cpu==1.8.0", "numpy<2"]
+all = ["kdb[files,tasks,web,chat,multilingual,analysis]==0.2.0", "python-multipart>=0.0.5"]
+test = [
+    "kdb[files,tasks,web,chat]==0.2.0",
+    "httpx>=0.24",
+    "pytest>=8,<10",
+    "packaging",
+    "tomli; python_version < '3.11'",
 ]
 
 [tool.setuptools.packages.find]

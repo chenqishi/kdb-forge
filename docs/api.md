@@ -1,6 +1,6 @@
 # HTTP API
 
-六个核心服务按各自端口运行，CSAT 位于独立 assistant-data-tools 项目。核心接口以 `src/kdb/entrypoints/http/` 的实际请求模型和路由为准；FastAPI 服务可通过自身 `/docs`、`/openapi.json` 查看完整模型。启动方式见[运行配置](runtime_configuration.md)。
+四个核心服务按各自端口运行，CSAT 位于独立 assistant-data-tools 项目。核心接口以 `src/kdb/entrypoints/http/` 的实际请求模型和路由为准；FastAPI 服务可通过自身 `/docs`、`/openapi.json` 查看完整模型。启动方式见[运行配置](runtime_configuration.md)。
 
 ## 知识检索服务
 
@@ -36,11 +36,9 @@
 | 服务 | 接口 | 主要语义 |
 |---|---|---|
 | off_task | `/start_task`、`/task_info`、`/stop_task`、`/restart_task`、`/health`、`/task_access` | 排队、查询、停止、重启及成本估计，见[管道说明](pipelines.md) |
-| crawler | `POST /process_params` | 接收抓取/处理参数，进入真实网页知识处理流程 |
 | files | `GET|HEAD /<bucket>/<object_path>`、`POST /upload`、`POST /upload_from_url`、`GET /health` | 对象读取与上传；upload 为表单，upload_from_url 为 URL 拉取上传 |
 | multilingual | `POST /lang_predict`、`GET /health` | fastText 与语言规则识别，需真实模型 |
 | csat（独立项目） | `POST /csat_report`、`POST /inner_csat_report`、`POST /inner_external_user_id_map` | 满意度及用户映射查询 |
-| fastgpt_proxy | `POST /search` | 请求 FastGPT chat/completions 上游，非 ES 检索入口 |
 
 CSAT `/csat_report` 请求包含 `start_time`、`end_time`、`channel_type`、`client`、`timestamp`、`signature`；时间戳为 Unix 秒，签名为 `md5(secret + timestamp)`，允许时差 300 秒，可选 `include_chat_detail`。内部两个查询接口沿现有无签名协议，仅应置于相应的内部网络边界。用户映射请求含 `client/start_time/end_time`，可选 `user_id`。
 

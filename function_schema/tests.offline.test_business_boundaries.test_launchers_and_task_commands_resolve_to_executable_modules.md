@@ -10,7 +10,7 @@
 
 ## Outputs
 
-六个 HTTP 入口与任务命令对应现存可执行模块，CLI 保留 __main__ 入口。
+四个 HTTP 入口（retrieval、off_task、files、multilingual）与任务命令对应现存可执行模块；显式校验现用服务集合，CLI 保留 __main__ 入口。
 
 ## SQL
 

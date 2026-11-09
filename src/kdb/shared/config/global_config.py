@@ -28,8 +28,6 @@ from datetime import timedelta
 
 # 默认配置
 _DEFAULT_CONFIG = {
-    'fastgpt_api_base': 'http://120.77.147.247:4000',
-    #'fastgpt_api_base': 'http://120.79.121.72:4000',
     'dify_api_base': 'http://120.77.147.247:5001/v1',
     'data_file_base_url': 'http://120.77.147.247:8001',
     'dify_api_key_forward_nomix': _private_value('187f68ca2839812b58e86173'), # forward:转发群,不区分发送对象， normal:普通群,分发送对象, mix:多平台混合，需要进行平台识别, nomix:单平台，不需要平台识别
