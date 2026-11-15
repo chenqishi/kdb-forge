@@ -12,7 +12,7 @@ INLINE_LINK = re.compile(
 
 
 def test_current_document_relative_links_exist():
-    documents = [ROOT / name for name in ('README.md', 'AGENTS.md', 'MEMORY.md')]
+    documents = [ROOT / name for name in ('README.md', 'AGENTS.md', 'CLAUDE.md', 'MEMORY.md')]
     documents.extend(sorted((ROOT / 'docs').rglob('*.md')))
     errors = []
     checked = 0

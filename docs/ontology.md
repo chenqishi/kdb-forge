@@ -8,6 +8,8 @@
 
 ## 怎样读这个模型
 
+平台入口为 [AGENTS.md](../AGENTS.md) 与 [CLAUDE.md](../CLAUDE.md)。先用任务关键词检索本体，读命中的能力/协作/回归行，再展开相关代码和契约；只有全面架构审查等确有需要的任务才全文读取。不要把本体、全部契约或历史报告预先自动导入上下文。
+
 “知识入库”是业务能力，`retrieval/ingestion` 是实现模块，`POST /insert` 是提供该能力的工程入口。三者分别回答“做什么”“在哪里实现”“怎样被调用”，不能仅用目录名称代替业务含义。
 
 本体只使用以下关系：
@@ -133,4 +135,6 @@
 
 新增能力沿用“业务归属、职责、实现位置、调用关系、维护边界”记录即可。图中箭头只画有依据的关系；未落地的设计明确标为建议。阅读顺序是本体定位职责 → 源码与函数契约确认行为 → 选择受影响入口与测试；遇到不一致先核对源码，不用文档补造业务事实。
 
-默认离线套件中的[文档链接检查](../tests/offline/test_document_links.py)验证 README、AGENTS、MEMORY 和 docs 下 Markdown 行内相对链接的本地目标是否存在；不检查外网和标题锚点。提交本体和导航修改时一并暂存新增文档，并核对暂存差异，避免本地存在但干净检出遗漏。
+默认离线套件中的[文档链接检查](../tests/offline/test_document_links.py)验证 README、AGENTS、CLAUDE、MEMORY 和 docs 下 Markdown 行内相对链接的本地目标是否存在；不检查外网和标题锚点。提交本体和导航修改时一并暂存新增文档，并核对暂存差异，避免本地存在但干净检出遗漏。
+
+上下文获取方式参考 Anthropic 的[按需检索与逐步展开](https://www.anthropic.com/research/effective-context-engineering-for-ai-agents)、[Claude Code 文件加载规则](https://code.claude.com/docs/en/memory)和[长任务 harness 的进度恢复](https://www.anthropic.com/research/effective-harnesses-for-long-running-agents)。本仓库采用短规则常驻、详细资料按需检索、摘要与 Git 差异恢复进度；自动导入的文件仍占用上下文，拆分成多个自动导入文件不能减少载入量。

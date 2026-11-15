@@ -44,7 +44,7 @@ KDB_OFFLINE_OUTPUT_DIR=/absolute/path/to/test-output ./run_offline_tests.sh -q -
 
 默认测试检查业务依赖方向、静态 import 环、任务 CLI 定位及状态唯一持有者。CSAT 启动和认证测试在独立 assistant-data-tools 执行，不再计入核心套件。两个项目均使用离线守卫。
 
-默认套件还包含[文档链接检查](../tests/offline/test_document_links.py)：流式扫描 README、AGENTS、MEMORY 与 docs 下 Markdown 的行内相对链接，检查本地文件或目录存在且位于仓库内；跳过代码围栏、外部 URL 和标题锚点，不验证完整 Markdown 语法或外部链接。CI 若运行默认离线命令会同时执行此检查；当前仓库未配置独立 CI 工作流。单独运行可用：
+默认套件还包含[文档链接检查](../tests/offline/test_document_links.py)：流式扫描 README、AGENTS、CLAUDE、MEMORY 与 docs 下 Markdown 的行内相对链接，检查本地文件或目录存在且位于仓库内；跳过代码围栏、外部 URL 和标题锚点，不验证完整 Markdown 语法、平台特有导入语法或外部链接。CI 若运行默认离线命令会同时执行此检查；当前仓库未配置独立 CI 工作流。单独运行可用：
 
 ```bash
 ./run_offline_tests.sh --group explicit tests/offline/test_document_links.py -q

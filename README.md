@@ -41,6 +41,6 @@ KDB_PYTHON=/absolute/path/to/venv/bin/python scripts/services/retrieval.sh --che
 
 资源齐备后去掉 `--check` 启动。真实配置、凭据、模型与运行数据不入 Git。离线测试不能证明真实资源已就绪。
 
-修改需求先从[代码库本体](docs/ontology.md)定位业务职责、实现模块、调用关系与维护边界，再查对应源码和函数契约。
+AI 维护入口：[Codex / 共享规则](AGENTS.md)、[Claude Code](CLAUDE.md)。按规则先检索[代码库本体](docs/ontology.md)的相关业务行，定位职责、实现模块和调用关系，再按需读取对应源码及函数契约；无需预先加载全部文档。
 
 [代码库本体](docs/ontology.md) · [业务架构](docs/Architecture_Overview_Diagram.md) · [HTTP API](docs/api.md) · [挖掘与任务队列](docs/pipelines.md) · [状态所有权](docs/state_ownership.md) · [ES8 路由](docs/es8_retrieval.md) · [函数契约](function_schema/current_index.md)
