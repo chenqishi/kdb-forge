@@ -6,19 +6,21 @@
 
 ## Inputs
 
-现有参数签名：`self`。控制器继续从 task_info、script_dir、任务文件读取原有字段；不改变默认值或参数位置。
+控制器 self，使用 task_id、status_updater、index_input_file_path、index_name，以及 `_get_index_config_path()` 返回的配置路径。输入文件必须存在；结构化图片处理成功后 index_input_file_path 为 image_processed_json_file_path，否则沿用 json_file_path。
 
 ## Outputs
 
-阶段3：插入索引
+先更新阶段为 index_insert；文件或配置缺失返回 False。调用 `_run_command(cmd, 'insert_index')` 后按结果返回 True/False；try 块内异常记录并返回 False。状态更新位于 try 之前，其异常不由本函数捕获。
 
 ## 路径和子进程契约
 
-正式入口使用当前解释器 `sys.executable -m kdb.*`；仅替换旧脚本定位，不修改子命令、业务 argv、重定向、阶段顺序、工作目录、成功/失败返回及异常处理。环境经 `kdb.shared.config.paths.subprocess_env` 继承，仅前置当前 src 到 PYTHONPATH。聊天控制器继续加载可选 LLM env、独立进程组、任务总超时与 TERM/KILL 规则。日志预览仅有界读取头500字符/尾1000字符。
+使用 argv 列表，保留含空格路径：`sys.executable -m kdb.entrypoints.cli.retrieval insert_data_to_search_index --data_file=<index_input_file_path> --config_path=<配置路径> --is_update_data=1 --index_name_assign=<index_name>`。阶段由 ExcelQASegmentUploadController.run_all_stages 调度，实际命令执行交给控制器的 `_run_command`。
+
+回归见 `tests/mining/test_excel_qa_segment_upload_control.py` 的 stage_3 测试；替换命令执行和状态更新，不启动真实任务、不写 ES。
 
 ## SQL / ES
 
-本次仅迁移代码入口，无新增 SQL 或 ES 字段。任务状态更新仍经 TaskStatusUpdater，原任务表 dops_task_kggen_info 及 task_id/task_stage/run_status/task_result 等字段不变；索引写入仍由现有 insert_data_to_search_index 接收相同 argv。上下文构建在原开关启用时经现有实现读取 data_chat_history，SQL 与字段遵循被调用函数原 schema。
+本函数不直接执行 SQL 或 ES 请求；任务阶段更新委托 status_updater.update_task_stage，沿其已有 SQL 契约；索引写入委托 insert_data_to_search_index，沿其入库参数和写入契约。这里不声明完整数据库表结构已核验。
 
 ## Public bindings
 

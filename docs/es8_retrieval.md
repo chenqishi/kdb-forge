@@ -2,6 +2,8 @@
 
 检索后端及 Python SDK 均为 Elasticsearch 8.17.x，PaaS 和 Serverless 使用同一实现。配置中的 `legacy` 召回模式是 ES8 单路融合模式的兼容别名，不表示支持 ES7。
 
+以上为项目声明的支持范围。[工厂](../src/kdb/retrieval/engines/factory.py)仍保留 ES7/OpenSearch provider 的选择分支；ES8 实现的版本校验不等于工厂禁止所有旧分支，保留代码也不代表旧后端已完成兼容性验收。
+
 ## 引擎配置
 
 `config/config_es_engine.json.example` 提供当前字段。单集群可使用 `hosts`、`username`、`password`；多集群使用命名 provider 与索引路由：

@@ -1,6 +1,7 @@
 # KDB Forge 开发约定
 
 - 先读 `README.md`、`docs/Architecture_Overview_Diagram.md` 与 `MEMORY.md` 中相关操作指针。架构变化同步更新架构图。
+- 按 [代码库本体](docs/ontology.md) 定位需求所属能力、实现位置与调用关系；调整业务职责、模块关系或依赖边界时同步维护。知识数据增长不新增本体条目，函数细节继续由 `function_schema` 维护；本体中的扩展建议不能当作已实现行为。
 - 正式业务代码位于 `src/kdb`，内部依赖使用 `kdb.*`，CLI 使用 `python -m kdb.…`。不新增仓库根下的业务副本、旧包别名或跨仓库路径注入。
 - 修改函数前，先按 `function_schema/current_index.md` 查阅对应模块的 Inputs、Outputs、SQL 契约；修改后同步更新 `function_schema/<当前模块完整前缀>.<函数名>.md`。新增函数先补契约。
 - SQL 契约写明实际表、读取/写入字段及可获得的表结构来源。缺少表结构或外部接口/数据格式依据时先确认，不能推测。

@@ -11,7 +11,7 @@ src/kdb/
     web/          网页抓取、处理与挖掘
     chat/         对话读取、清洗、身份、生成与质量处理
     common/       共用的 LLM、质量、去重、schema、解析与切分
-    bridges/      挖掘调用检索的唯一桥接处
+    bridges/      挖掘在 Python 内调用检索的桥接处
   multilingual/  语言规则、模型加载、识别与标签
   shared/        对象存储、数据库、客户端、配置、类目、文本与文件
   entrypoints/   HTTP / CLI / scheduled 工程入口
@@ -41,4 +41,6 @@ KDB_PYTHON=/absolute/path/to/venv/bin/python scripts/services/retrieval.sh --che
 
 资源齐备后去掉 `--check` 启动。真实配置、凭据、模型与运行数据不入 Git。离线测试不能证明真实资源已就绪。
 
-[业务架构](docs/Architecture_Overview_Diagram.md) · [HTTP API](docs/api.md) · [挖掘与任务队列](docs/pipelines.md) · [状态所有权](docs/state_ownership.md) · [ES8 路由](docs/es8_retrieval.md) · [函数契约](function_schema/current_index.md)
+修改需求先从[代码库本体](docs/ontology.md)定位业务职责、实现模块、调用关系与维护边界，再查对应源码和函数契约。
+
+[代码库本体](docs/ontology.md) · [业务架构](docs/Architecture_Overview_Diagram.md) · [HTTP API](docs/api.md) · [挖掘与任务队列](docs/pipelines.md) · [状态所有权](docs/state_ownership.md) · [ES8 路由](docs/es8_retrieval.md) · [函数契约](function_schema/current_index.md)

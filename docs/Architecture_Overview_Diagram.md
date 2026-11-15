@@ -2,6 +2,8 @@
 
 主体分为知识检索、知识挖掘、多语言、公共模块。工程入口负责参数、HTTP 响应和生命周期，业务模块不得反向导入入口。下图箭头表示调用或依赖方向。
 
+需求到业务能力、实现位置与维护边界的映射见[代码库本体](ontology.md)；本图展示整体组织和依赖。
+
 ```mermaid
 flowchart TB
   ENTRY[工程接入层：HTTP / CLI / 定时入口]
@@ -36,12 +38,13 @@ flowchart TB
 | `retrieval/application/` | 唯一 SearchDataInterface 门面、服务运行对象与业务查询 |
 | `retrieval/search/`、`ranking.py`、`statistics.py` | 查询、多查询、分页、分数整理与计数聚合 |
 | `retrieval/ingestion/`、`categories/`、`file_operations.py` | 数据准备、ID、入库去重、写入、类目与按文件操作 |
-| `retrieval/engines/` | ES8.17、索引路由、协议与初始化；engines/providers 保留原实现，工厂仍只允许 ES8.17 |
+| `retrieval/presentation/` | 入库 content 的多模态组装与检索返回 URL 展示；死链维护保留另一份有空值差异的重建实现，修改时联动检查 |
+| `retrieval/engines/` | 项目声明支持 ES8.17、索引路由、协议与初始化；工厂仍保留 ES7/OpenSearch provider 选择分支，保留代码不代表旧后端已验收 |
 | `retrieval/maintenance/` | 审核、导出、迁移、修复与清理 |
 | `mining/tasks/` | 唯一队列状态、资源计数、SQL 记录、子进程、提交、估算与任务报表 |
 | `mining/document/`、`web/`、`chat/` | 各来源专属管道、阶段、数据读取与处理 |
 | `mining/common/` | 共用 llm、quality、deduplication、schema、parsing、segmentation、generation 等 |
-| `mining/bridges/retrieval.py` | 挖掘跨域访问检索的唯一模块；公共质检不依赖该桥或聊天抽取器 |
+| `mining/bridges/retrieval.py` | 挖掘在 Python 内导入检索的唯一模块；公共质检不依赖该桥或聊天抽取器 |
 | `multilingual/` | 模型加载、规则优先识别、标签转换与唯一模型状态 |
 | `shared/` | 通用存储、SQL、客户端、相似度、类目树、配置和文本文件处理，不导入业务域 |
 | `entrypoints/http/` | 四服务：retrieval、tasks、files、multilingual，保留原协议 |
@@ -52,7 +55,7 @@ flowchart TB
 
 聊天抽取和通用质检共用的 Prompt 加载、模型客户端及输出清理在 `mining/common/llm/`。两者均可调用这些公共函数，公共函数不导入抽取器或质检流程。聊天专用 Prompt 选择仍在 `chat/generation/`。
 
-shared 只依赖自身和基础库；mining/common 不依赖 chat/document/web/tasks/bridges 的专项实现；retrieval 不依赖 mining 或入口。挖掘访问检索必须经过桥接模块。核心不导入 assistant_data_tools；独立项目只可导入 kdb.shared。默认离线测试检查这些约束。
+shared 只依赖自身和基础库；mining/common 不依赖 chat/document/web/tasks/bridges 的专项实现；retrieval 不依赖 mining 或入口。挖掘对检索的 Python 导入必须经过桥接模块；管道另通过子进程启动检索 CLI 入库，调用链见本体说明。核心不导入 assistant_data_tools；独立项目只可导入 kdb.shared。默认离线测试检查静态导入约束，动态入口另行验证。
 
 ## 状态与重复实现
 

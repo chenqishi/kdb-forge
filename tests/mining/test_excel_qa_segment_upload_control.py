@@ -5,6 +5,8 @@ import sys
 import types
 import pytest
 from types import SimpleNamespace
+from pathlib import Path
+from unittest.mock import Mock
 
 
 from openpyxl import Workbook
@@ -176,3 +178,69 @@ def test_stage_2_5_image_process_writes_processed_output(tmp_path, monkeypatch):
     assert captured["cmd"][0] == sys.executable
     assert controller.index_input_file_path == controller.image_processed_json_file_path
     assert os.path.exists(controller.image_processed_json_file_path)
+
+
+@pytest.mark.parametrize('use_processed_input', [False, True], ids=['original', 'image-processed'])
+def test_stage_3_insert_uses_selected_input_and_update_policy(tmp_path, use_processed_input):
+    controller = _make_controller(tmp_path)
+    Path(controller.json_file_path).write_text('{"content":"original"}\n', encoding='utf-8')
+    Path(controller.image_processed_json_file_path).write_text(
+        '{"content":"image processed"}\n', encoding='utf-8',
+    )
+    selected_input = (controller.image_processed_json_file_path
+                      if use_processed_input else controller.json_file_path)
+    controller.index_input_file_path = selected_input
+    controller.index_name = 'test_index'
+    config_path = str(tmp_path / 'index config.json')
+    controller._get_index_config_path = Mock(return_value=config_path)
+    controller._run_command = Mock(return_value=True)
+
+    assert controller.stage_3_insert_index() is True
+
+    controller._get_index_config_path.assert_called_once_with()
+    controller._run_command.assert_called_once_with([
+        sys.executable, '-m', 'kdb.entrypoints.cli.retrieval',
+        'insert_data_to_search_index',
+        f'--data_file={selected_input}',
+        f'--config_path={config_path}',
+        '--is_update_data=1',
+        '--index_name_assign=test_index',
+    ], 'insert_index')
+    assert controller.status_updater.stages == [(controller.task_id, 'index_insert')]
+
+
+@pytest.mark.parametrize('missing', ['input', 'config'])
+def test_stage_3_missing_input_or_config_does_not_run(tmp_path, missing):
+    controller = _make_controller(tmp_path)
+    # The raw file exists even when the selected processed file is missing.
+    Path(controller.json_file_path).write_text('{}\n', encoding='utf-8')
+    if missing == 'input':
+        controller.index_input_file_path = controller.image_processed_json_file_path
+    controller.index_name = 'test_index'
+    controller._get_index_config_path = Mock(
+        return_value=None if missing == 'config' else str(tmp_path / 'index config.json'),
+    )
+    controller._run_command = Mock()
+
+    assert controller.stage_3_insert_index() is False
+
+    controller._run_command.assert_not_called()
+    if missing == 'input':
+        controller._get_index_config_path.assert_not_called()
+    else:
+        controller._get_index_config_path.assert_called_once_with()
+    assert controller.status_updater.stages == [(controller.task_id, 'index_insert')]
+
+
+@pytest.mark.parametrize('execution_failure', ['exit', 'exception'])
+def test_stage_3_failed_command_returns_false(tmp_path, execution_failure):
+    controller = _make_controller(tmp_path)
+    Path(controller.json_file_path).write_text('{}\n', encoding='utf-8')
+    controller.index_name = 'test_index'
+    controller._get_index_config_path = Mock(return_value=str(tmp_path / 'index config.json'))
+    controller._run_command = Mock(return_value=False)
+    if execution_failure == 'exception':
+        controller._run_command.side_effect = RuntimeError('synthetic command failure')
+
+    assert controller.stage_3_insert_index() is False
+    controller._run_command.assert_called_once()

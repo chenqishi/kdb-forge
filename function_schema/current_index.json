@@ -1,5 +1,5 @@
 {
-  "contract_count": 532,
+  "contract_count": 538,
   "modules": [
     {
       "source_file": "scripts/scheduled/chat_mining.sh",
@@ -2531,6 +2531,18 @@
         {
           "symbol": "test_stage_2_5_image_process_writes_processed_output",
           "schema_file": "function_schema/tests.mining.test_excel_qa_segment_upload_control.test_stage_2_5_image_process_writes_processed_output.md"
+        },
+        {
+          "symbol": "test_stage_3_failed_command_returns_false",
+          "schema_file": "function_schema/tests.mining.test_excel_qa_segment_upload_control.test_stage_3_failed_command_returns_false.md"
+        },
+        {
+          "symbol": "test_stage_3_insert_uses_selected_input_and_update_policy",
+          "schema_file": "function_schema/tests.mining.test_excel_qa_segment_upload_control.test_stage_3_insert_uses_selected_input_and_update_policy.md"
+        },
+        {
+          "symbol": "test_stage_3_missing_input_or_config_does_not_run",
+          "schema_file": "function_schema/tests.mining.test_excel_qa_segment_upload_control.test_stage_3_missing_input_or_config_does_not_run.md"
         }
       ]
     },
@@ -2665,6 +2677,15 @@
         {
           "symbol": "module",
           "schema_file": "function_schema/tests.offline.test_dependency_groups.module.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/offline/test_document_links.py",
+      "contracts": [
+        {
+          "symbol": "test_current_document_relative_links_exist",
+          "schema_file": "function_schema/tests.offline.test_document_links.test_current_document_relative_links_exist.md"
         }
       ]
     },
@@ -2879,6 +2900,19 @@
         {
           "symbol": "test_invalid_source_type",
           "schema_file": "function_schema/tests.retrieval.test_list_file_names_source.test_invalid_source_type.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/retrieval/test_multimodal_content_assembly.py",
+      "contracts": [
+        {
+          "symbol": "test_join_multimodal_contents_preserves_order_and_addresses",
+          "schema_file": "function_schema/tests.retrieval.test_multimodal_content_assembly.test_join_multimodal_contents_preserves_order_and_addresses.md"
+        },
+        {
+          "symbol": "test_join_multimodal_empty_text_retains_distinct_maintenance_behavior",
+          "schema_file": "function_schema/tests.retrieval.test_multimodal_content_assembly.test_join_multimodal_empty_text_retains_distinct_maintenance_behavior.md"
         }
       ]
     },
