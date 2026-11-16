@@ -2,7 +2,7 @@
 
 ## Signature
 
-`update_data_value(self, index_name: str, update_value_dict: Dict[str, Any], conditions: List[Dict[str, Any]]) -> bool`
+`update_data_value(self, index_name: str, update_value_dict: Dict[str, Any], conditions: List[Dict[str, Any]]) -> int`
 
 ## Inputs
 
@@ -10,11 +10,11 @@
 
 ## Outputs
 
-批量更新是否成功。
+原样返回 ES8 引擎确认的更新条数（非负整数，包含成功的同值写入）；0 是成功结果。引擎异常原样传播，不转换成布尔值。
 
 ## SQL
 
-无；写 Elasticsearch update_by_query。
+无；经 ES8 引擎写 Elasticsearch，使用原生 update_by_query 或 Serverless PIT/bulk 路径。
 
 ## Public bindings
 

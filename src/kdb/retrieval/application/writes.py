@@ -16,30 +16,25 @@ async def update_by_condition_service(index_name: str, update_fields: Dict[str, 
         update_fields: 要更新的字段和值的映射
         conditions: 查询条件列表
     Returns:
-        tuple: (是否成功, 更新的文档数量, 消息)
+        tuple: (是否成功, 更新的文档数量, 消息)；0 条也是成功，失败时计数不可用。
     """
     try:
         logger.info(f"update_by_condition_service params: index_name={index_name}, update_fields={update_fields}, conditions={conditions}")
 
         # 调用SearchDataInterface的条件更新方法
-        success = runtime_state.SEARCH_DATA_INTERFACE.update_data_value(
+        updated_count = runtime_state.SEARCH_DATA_INTERFACE.update_data_value(
             index_name=index_name,
             update_value_dict=update_fields,
             conditions=conditions
         )
 
-        if success:
-            message = "条件更新操作完成"
-            logger.info(message)
-            return True, 0, message
-        else:
-            message = "条件更新失败"
-            logger.error(message)
-            return False, 0, message
+        message = "条件更新操作完成"
+        logger.info("%s，更新了 %d 个文档", message, updated_count)
+        return True, updated_count, message
 
     except Exception as e:
         tb = traceback.format_exc()
-        message = f"条件更新异常: {str(e)}"
+        message = f"条件更新异常: {str(e)}；可能已有部分更新成功，不会自动回滚"
         logger.error(message)
         logger.error(f"traceback: {tb}")
         return False, 0, message

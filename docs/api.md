@@ -17,9 +17,11 @@
 | `POST /list_file_names` | `index_name`；可选 `keyword`、`size=200`、`from_type_norm` | 文件名列表、类型统计及数量 |
 | `POST /preview_delete_by_file` | `index_name`、`file_names`，可选 `match_mode`、`data_types`、`audit_results`、`sample_size` | 只读，返回总数、文件分布、类型、样例与告警 |
 | `POST /delete_by_file` | 与预览一致，去掉 `sample_size` | 写 JSONL 快照并软删，返回实际数量及 `snapshot_path` |
-| `POST /update_by_condition` | `index_name`、`update_fields`、`conditions` | 条件 AND 更新；以实际 `success/message` 与后端结果判断 |
+| `POST /update_by_condition` | `index_name`、`update_fields`、`conditions` | 条件 AND 更新；`success=true` 时 `updated_count` 是实际更新条数，含同值写入；0 条也成功 |
 | `POST /modify_knowledge_direct_update` | `es_index`、`new_query_info`；可选旧知识、检索问题、`allow_insert` | 模型修改流程，返回是否有纠错及修改条目 |
 | `POST /modify_knowledge` | 同上，需 `old_query_info`，可选 `write_db_id` | 模型召回/修改流程 |
+
+条件更新发生冲突、超时或不完整响应时返回 `success=false`，此时 `updated_count=0` 是未获得完整计数的占位值；`message` 提示可能已有部分写入，不代表全部未写入或已回滚。
 
 检索示例：
 

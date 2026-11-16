@@ -1140,10 +1140,10 @@ class EsSearchInterfaceES8(EngineMaintenanceMixin):
         sorted_values = sorted(values, key=lambda item: item["doc_count"], reverse=True)
         return {"field_name": field_name, "unique_count": len(sorted_values), "total_docs": sum(item["doc_count"] for item in sorted_values), "top_values": sorted_values[:10], "all_values": sorted_values}
 
-    def update_value(self, index_name: IndexNames, update_value_dict: Dict[str, Any], conditions: List[Dict[str, Any]]) -> bool:
-        """按原条件更新；Serverless使用无脚本且有版本保护的写入。"""
+    def update_value(self, index_name: IndexNames, update_value_dict: Dict[str, Any], conditions: List[Dict[str, Any]]) -> int:
+        """返回各索引组确认的更新条数（含同值写入）；0 成功，失败抛异常。"""
         if not update_value_dict:
-            return True
+            return 0
         # 旧 update_value 的 conditions 是 AND 关系；search_multi 的 attribute list
         # 才是 OR 关系，不能直接复用同一个 list 解析入口。
         condition_clauses: List[Dict[str, Any]] = []
@@ -1152,18 +1152,15 @@ class EsSearchInterfaceES8(EngineMaintenanceMixin):
             condition_clauses.extend(clauses)
         query = {"bool": {"must": condition_clauses}} if condition_clauses else {"match_all": {}}
         groups = self._group_indexes(index_name)
-        try:
-            for binding, names in groups:
-                for response in self._conditional_update_responses(
-                    binding, names, query, update_value_dict, 500, "abort",
-                ):
-                    if response.get("failures") or response.get("version_conflicts"):
-                        logger.error("ES8 update_value incomplete: indexes=%s", names)
-                        return False
-        except Exception:
-            logger.exception("ES8 update_value failed: index=%s", index_name)
-            return False
-        return True
+        updated_count = 0
+        for binding, names in groups:
+            for response in self._conditional_update_responses(
+                binding, names, query, update_value_dict, 500, "abort",
+            ):
+                if response.get("failures") or response.get("version_conflicts"):
+                    raise RuntimeError("ES8 条件更新存在失败或版本冲突；已成功部分不会自动回滚")
+                updated_count += response["updated"]
+        return updated_count
 
 
     @staticmethod

@@ -1,5 +1,5 @@
 {
-  "contract_count": 538,
+  "contract_count": 547,
   "modules": [
     {
       "source_file": "scripts/scheduled/chat_mining.sh",
@@ -1447,6 +1447,15 @@
         {
           "symbol": "detect_language",
           "schema_file": "function_schema/kdb.multilingual.detection.detect_language.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/retrieval/application/writes.py",
+      "contracts": [
+        {
+          "symbol": "update_by_condition_service",
+          "schema_file": "function_schema/kdb.retrieval.application.writes.update_by_condition_service.md"
         }
       ]
     },
@@ -2938,6 +2947,43 @@
         {
           "symbol": "test_search_top_k_default_is_safe",
           "schema_file": "function_schema/tests.retrieval.test_search_response_ids.test_search_top_k_default_is_safe.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/retrieval/test_update_by_condition_count.py",
+      "contracts": [
+        {
+          "symbol": "prepare_serverless",
+          "schema_file": "function_schema/tests.retrieval.test_update_by_condition_count.prepare_serverless.md"
+        },
+        {
+          "symbol": "test_empty_patch_is_zero_without_backend_calls",
+          "schema_file": "function_schema/tests.retrieval.test_update_by_condition_count.test_empty_patch_is_zero_without_backend_calls.md"
+        },
+        {
+          "symbol": "test_http_counts_zero_and_repeated_same_value_updates",
+          "schema_file": "function_schema/tests.retrieval.test_update_by_condition_count.test_http_counts_zero_and_repeated_same_value_updates.md"
+        },
+        {
+          "symbol": "test_http_sums_updates_across_provider_groups",
+          "schema_file": "function_schema/tests.retrieval.test_update_by_condition_count.test_http_sums_updates_across_provider_groups.md"
+        },
+        {
+          "symbol": "test_native_count_uses_updated_not_total",
+          "schema_file": "function_schema/tests.retrieval.test_update_by_condition_count.test_native_count_uses_updated_not_total.md"
+        },
+        {
+          "symbol": "test_native_failures_raise_and_http_reports_failure",
+          "schema_file": "function_schema/tests.retrieval.test_update_by_condition_count.test_native_failures_raise_and_http_reports_failure.md"
+        },
+        {
+          "symbol": "test_serverless_partial_failures_are_not_success",
+          "schema_file": "function_schema/tests.retrieval.test_update_by_condition_count.test_serverless_partial_failures_are_not_success.md"
+        },
+        {
+          "symbol": "update_api",
+          "schema_file": "function_schema/tests.retrieval.test_update_by_condition_count.update_api.md"
         }
       ]
     },

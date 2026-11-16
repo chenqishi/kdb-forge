@@ -114,8 +114,6 @@ def delete_data(self, data_id: str, index_names: Optional[Union[str, List[str]]]
     return self.engine.delete(data_id, index_names=index_names, refresh=refresh)
 
 
-def update_data_value(self, index_name: str, update_value_dict: Dict[str, Any], conditions: List[Dict[str, Any]]) -> bool:
-    """
-    更新数据
-    """
+def update_data_value(self, index_name: str, update_value_dict: Dict[str, Any], conditions: List[Dict[str, Any]]) -> int:
+    """透传 ES8 确认的更新条数；0 成功，失败异常原样传播。"""
     return self.engine.update_value(index_name, update_value_dict, conditions)
