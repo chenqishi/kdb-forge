@@ -12,6 +12,8 @@
 
 检索 HTTP 服务的 `SEARCH_DATA_INTERFACE` 和 `MODIFY_KNOWLEDGE_HANDLE` 由 `retrieval/application/runtime.py` 单独持有；入口与 lifespan 按原顺序初始化它们。保持父进程启动和 worker 启动的既有语义，不以单进程计数替代 worker 验证。
 
+业务本体的 `retrieval/ontology/repository.py` 用锁保护进程级 `_CONNECTOR` 的首次初始化，复用 `shared.database.mysql.MySQLConnector`（pool_size=5）；首次数据库请求才创建，不在导入、路由注册或 `/ontology/meta` 时连接。每次请求的 service/repository 无业务缓存；连接和字典游标在调用结束/异常时归还，写事务显式 REPEATABLE READ。不同 worker 各有一个池，配置变更后需按既有流程重启生效；不影响检索门面与 ES 对象生命周期。
+
 任务服务的唯一状态模块为 `mining/tasks/state.py`：mysql_connector、task_pid_mapping、monitoring_thread、should_monitor、script_base_dir、task_queue、task_worker_thread、should_process_tasks、task_resource_usage、max_total_concurrency、current_resource_usage、resource_lock。业务函数读写模块属性；不按值导入会被重新赋值的计数或停止标志。保留原锁的保护范围、队列实现、线程启动/停止与 SQL 更新顺序。
 
 语言模型由 `multilingual/runtime.py` 持有，加载过程仍在原启动流程发生。文件服务运行配置由 `shared/storage/runtime_state.py` 持有，缓存客户端与清缓存操作在 `shared/storage/service_runtime.py` 中各保留一份。

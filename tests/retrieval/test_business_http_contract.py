@@ -20,7 +20,16 @@ CONTRACT = json.loads(CONTRACT_PATH.read_text())
 
 
 def test_openapi_matches_business_contract():
-    assert service.app.openapi() == CONTRACT["openapi"]
+    from copy import deepcopy
+    actual = deepcopy(service.app.openapi())
+    expected = CONTRACT["openapi"]
+    added_paths = {"/ontology", "/ontology/meta", "/ontology/resolve", "/ontology/{ontology_id}"}
+    assert set(actual["paths"]) == set(expected["paths"]) | added_paths
+    for path in added_paths:
+        actual["paths"].pop(path)
+    actual["components"]["schemas"] = {
+        name: actual["components"]["schemas"][name] for name in expected["components"]["schemas"]}
+    assert actual == expected
 
 
 @pytest.mark.parametrize(

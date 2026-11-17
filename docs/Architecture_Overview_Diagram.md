@@ -8,6 +8,8 @@
 flowchart TB
   ENTRY[工程接入层：HTTP / CLI / 定时入口]
   ENTRY --> RET[知识检索 retrieval]
+  RET --> ONTOLOGY[业务本体 ontology：文档校验 / 服务 / 仓储]
+  ONTOLOGY --> MYSQL[shared/database/mysql：共享连接池]
   ENTRY --> TASK[知识挖掘：任务管理]
   ENTRY --> LANG[多语言 multilingual]
   ENTRY --> FILES[files HTTP：对象访问入口]
@@ -36,6 +38,7 @@ flowchart TB
 | 目录 | 职责与边界 |
 |---|---|
 | `retrieval/application/` | 唯一 SearchDataInterface 门面、服务运行对象与业务查询 |
+| `retrieval/ontology/` | 完整业务本体文档及投影、MySQL 事务判重/版本/软删、作用域选取；入口同检索服务，无 ES 依赖、无元素级 CRUD |
 | `retrieval/search/`、`ranking.py`、`statistics.py` | 查询、多查询、分页、分数整理与计数聚合 |
 | `retrieval/ingestion/`、`categories/`、`file_operations.py` | 数据准备、ID、入库去重、写入、类目与按文件操作 |
 | `retrieval/presentation/` | 入库 content 的多模态组装与检索返回 URL 展示；死链维护保留另一份有空值差异的重建实现，修改时联动检查 |

@@ -1,0 +1,200 @@
+{
+  "schema_version": "1.0",
+  "name": "通用业务本体",
+  "alias_name": [
+    "基础业务本体",
+    "global base ontology"
+  ],
+  "description": "跨客户、跨行业的最小业务骨架：客户、联系人、会话",
+  "client": "",
+  "product": "",
+  "language": "zh-CN",
+  "definition": "作为全局兜底本体，只保留几乎所有客户都有的概念；行业与客户专属概念在各自作用域文档里补充。",
+  "object_types": [
+    {
+      "name": "客户",
+      "alias_name": [
+        "customer",
+        "企业客户"
+      ],
+      "description": "使用服务的企业或个人",
+      "identity": [
+        "客户编码"
+      ],
+      "attributes": [
+        {
+          "name": "客户编码",
+          "alias_name": [
+            "client_code"
+          ],
+          "description": "客户在本平台的唯一编码",
+          "data_type": "string",
+          "required": true,
+          "unique": true
+        },
+        {
+          "name": "客户名称",
+          "alias_name": [
+            "client_name"
+          ],
+          "description": "客户对外展示名称",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "客户状态",
+          "description": "客户当前合作状态",
+          "data_type": "enum",
+          "value_set": "客户状态"
+        }
+      ]
+    },
+    {
+      "name": "联系人",
+      "alias_name": [
+        "contact"
+      ],
+      "description": "客户侧的具体对接人或终端用户",
+      "identity": [
+        "联系人ID"
+      ],
+      "attributes": [
+        {
+          "name": "联系人ID",
+          "description": "联系人唯一标识",
+          "data_type": "string",
+          "required": true,
+          "unique": true
+        },
+        {
+          "name": "所属客户",
+          "description": "联系人归属的客户",
+          "data_type": "object",
+          "ref": "客户",
+          "required": true
+        },
+        {
+          "name": "渠道标识",
+          "alias_name": [
+            "external_id"
+          ],
+          "description": "渠道侧的用户标识，如 open_id",
+          "data_type": "string"
+        }
+      ]
+    },
+    {
+      "name": "会话",
+      "alias_name": [
+        "conversation",
+        "对话"
+      ],
+      "description": "联系人与服务方之间的一段连续沟通",
+      "identity": [
+        "会话ID"
+      ],
+      "attributes": [
+        {
+          "name": "会话ID",
+          "description": "会话唯一标识",
+          "data_type": "string",
+          "required": true,
+          "unique": true
+        },
+        {
+          "name": "联系人",
+          "description": "会话所属联系人",
+          "data_type": "object",
+          "ref": "联系人",
+          "required": true
+        },
+        {
+          "name": "渠道",
+          "description": "会话来源渠道",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "开始时间",
+          "description": "会话开始时间",
+          "data_type": "datetime"
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "name": "拥有联系人",
+      "description": "一个客户拥有多个联系人",
+      "subject": "客户",
+      "predicate": "owns",
+      "object": "联系人",
+      "cardinality": "1:N"
+    },
+    {
+      "name": "产生会话",
+      "description": "一个联系人产生多段会话",
+      "subject": "联系人",
+      "predicate": "starts",
+      "object": "会话",
+      "cardinality": "1:N"
+    }
+  ],
+  "value_sets": [
+    {
+      "name": "客户状态",
+      "description": "客户合作生命周期",
+      "values": [
+        {
+          "value": "trial",
+          "label": "试用"
+        },
+        {
+          "value": "active",
+          "label": "合作中"
+        },
+        {
+          "value": "paused",
+          "label": "暂停"
+        },
+        {
+          "value": "churned",
+          "label": "已流失"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "渠道标识唯一",
+      "description": "同一渠道下渠道标识不重复",
+      "condition": "同一渠道内两个联系人的渠道标识相同",
+      "effect": "视为同一联系人，合并会话",
+      "severity": "soft",
+      "applies_to": [
+        "联系人"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "name": "会话",
+      "alias_name": [
+        "对话",
+        "chat"
+      ],
+      "description": "一段连续沟通，跨渠道不合并",
+      "refers_to": "会话",
+      "examples": [
+        "客户说“刚才聊的”指的是当前会话"
+      ]
+    }
+  ],
+  "examples": [
+    "这个客户最近一周的会话有多少"
+  ],
+  "llm_hints": {
+    "usage": "回答客户相关问题时先用客户编码定位客户，再按联系人、会话展开"
+  },
+  "extensions": {}
+}

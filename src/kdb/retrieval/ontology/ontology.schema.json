@@ -1,0 +1,616 @@
+{
+  "$defs": {
+    "Attribute": {
+      "additionalProperties": false,
+      "properties": {
+        "alias_name": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Alias Name",
+          "type": "array"
+        },
+        "data_type": {
+          "enum": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "date",
+            "datetime",
+            "enum",
+            "object",
+            "array"
+          ],
+          "title": "Data Type",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "maxLength": 512,
+          "title": "Description",
+          "type": "string"
+        },
+        "examples": {
+          "items": {
+            "maxLength": 512,
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Examples",
+          "type": "array"
+        },
+        "item_type": {
+          "anyOf": [
+            {
+              "enum": [
+                "string",
+                "integer",
+                "number",
+                "boolean",
+                "date",
+                "datetime",
+                "object",
+                "enum"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Item Type"
+        },
+        "llm_hints": {
+          "additionalProperties": true,
+          "title": "Llm Hints",
+          "type": "object"
+        },
+        "name": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[^.\\x00-\\x1f\\x7f]+$",
+          "title": "Name",
+          "type": "string"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        },
+        "required": {
+          "default": false,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "unique": {
+          "default": false,
+          "title": "Unique",
+          "type": "boolean"
+        },
+        "value_set": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value Set"
+        }
+      },
+      "required": [
+        "name",
+        "data_type"
+      ],
+      "title": "Attribute",
+      "type": "object"
+    },
+    "EnumValue": {
+      "additionalProperties": false,
+      "properties": {
+        "alias_name": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Alias Name",
+          "type": "array"
+        },
+        "description": {
+          "default": "",
+          "maxLength": 512,
+          "title": "Description",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "value": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[^.\\x00-\\x1f\\x7f]+$",
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "label"
+      ],
+      "title": "EnumValue",
+      "type": "object"
+    },
+    "ObjectType": {
+      "additionalProperties": false,
+      "properties": {
+        "alias_name": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Alias Name",
+          "type": "array"
+        },
+        "attributes": {
+          "items": {
+            "$ref": "#/$defs/Attribute"
+          },
+          "maxItems": 200,
+          "minItems": 1,
+          "title": "Attributes",
+          "type": "array"
+        },
+        "definition": {
+          "default": "",
+          "maxLength": 2048,
+          "title": "Definition",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "maxLength": 512,
+          "title": "Description",
+          "type": "string"
+        },
+        "examples": {
+          "items": {
+            "maxLength": 512,
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Examples",
+          "type": "array"
+        },
+        "identity": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 10,
+          "minItems": 1,
+          "title": "Identity",
+          "type": "array"
+        },
+        "llm_hints": {
+          "additionalProperties": true,
+          "title": "Llm Hints",
+          "type": "object"
+        },
+        "name": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[^.\\x00-\\x1f\\x7f]+$",
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "identity",
+        "attributes"
+      ],
+      "title": "ObjectType",
+      "type": "object"
+    },
+    "Relation": {
+      "additionalProperties": false,
+      "properties": {
+        "alias_name": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Alias Name",
+          "type": "array"
+        },
+        "cardinality": {
+          "enum": [
+            "1:1",
+            "1:N",
+            "N:1",
+            "N:M"
+          ],
+          "title": "Cardinality",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "maxLength": 512,
+          "title": "Description",
+          "type": "string"
+        },
+        "examples": {
+          "items": {
+            "maxLength": 512,
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Examples",
+          "type": "array"
+        },
+        "join": {
+          "default": "",
+          "maxLength": 512,
+          "title": "Join",
+          "type": "string"
+        },
+        "llm_hints": {
+          "additionalProperties": true,
+          "title": "Llm Hints",
+          "type": "object"
+        },
+        "name": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[^.\\x00-\\x1f\\x7f]+$",
+          "title": "Name",
+          "type": "string"
+        },
+        "object": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Object",
+          "type": "string"
+        },
+        "predicate": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Predicate",
+          "type": "string"
+        },
+        "subject": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Subject",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "subject",
+        "predicate",
+        "object",
+        "cardinality"
+      ],
+      "title": "Relation",
+      "type": "object"
+    },
+    "Rule": {
+      "additionalProperties": false,
+      "properties": {
+        "applies_to": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Applies To",
+          "type": "array"
+        },
+        "condition": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Condition",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "maxLength": 512,
+          "title": "Description",
+          "type": "string"
+        },
+        "effect": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "title": "Effect",
+          "type": "string"
+        },
+        "examples": {
+          "items": {
+            "maxLength": 512,
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Examples",
+          "type": "array"
+        },
+        "name": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[^.\\x00-\\x1f\\x7f]+$",
+          "title": "Name",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "hard",
+            "soft"
+          ],
+          "title": "Severity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "condition",
+        "effect",
+        "severity"
+      ],
+      "title": "Rule",
+      "type": "object"
+    },
+    "Term": {
+      "additionalProperties": false,
+      "properties": {
+        "alias_name": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Alias Name",
+          "type": "array"
+        },
+        "description": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "examples": {
+          "items": {
+            "maxLength": 512,
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Examples",
+          "type": "array"
+        },
+        "llm_hints": {
+          "additionalProperties": true,
+          "title": "Llm Hints",
+          "type": "object"
+        },
+        "name": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[^.\\x00-\\x1f\\x7f]+$",
+          "title": "Name",
+          "type": "string"
+        },
+        "refers_to": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Refers To"
+        }
+      },
+      "required": [
+        "name",
+        "description"
+      ],
+      "title": "Term",
+      "type": "object"
+    },
+    "ValueSet": {
+      "additionalProperties": false,
+      "properties": {
+        "alias_name": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Alias Name",
+          "type": "array"
+        },
+        "description": {
+          "default": "",
+          "maxLength": 512,
+          "title": "Description",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[^.\\x00-\\x1f\\x7f]+$",
+          "title": "Name",
+          "type": "string"
+        },
+        "values": {
+          "items": {
+            "$ref": "#/$defs/EnumValue"
+          },
+          "maxItems": 100,
+          "minItems": 1,
+          "title": "Values",
+          "type": "array"
+        }
+      },
+      "required": [
+        "name",
+        "values"
+      ],
+      "title": "ValueSet",
+      "type": "object"
+    }
+  },
+  "$id": "https://kdb.marsmind.internal/schemas/ontology/1.0.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "alias_name": {
+      "items": {
+        "maxLength": 128,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 20,
+      "title": "Alias Name",
+      "type": "array"
+    },
+    "client": {
+      "default": "",
+      "maxLength": 64,
+      "pattern": "^([a-z0-9][a-z0-9_.-]{0,63})?$",
+      "title": "Client",
+      "type": "string"
+    },
+    "definition": {
+      "default": "",
+      "maxLength": 4096,
+      "title": "Definition",
+      "type": "string"
+    },
+    "description": {
+      "default": "",
+      "maxLength": 2048,
+      "title": "Description",
+      "type": "string"
+    },
+    "examples": {
+      "items": {
+        "maxLength": 512,
+        "type": "string"
+      },
+      "maxItems": 20,
+      "title": "Examples",
+      "type": "array"
+    },
+    "extensions": {
+      "additionalProperties": true,
+      "title": "Extensions",
+      "type": "object"
+    },
+    "language": {
+      "default": "zh-CN",
+      "pattern": "^[a-z]{2}(-[A-Z]{2})?$",
+      "title": "Language",
+      "type": "string"
+    },
+    "llm_hints": {
+      "additionalProperties": true,
+      "title": "Llm Hints",
+      "type": "object"
+    },
+    "name": {
+      "maxLength": 255,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "object_types": {
+      "items": {
+        "$ref": "#/$defs/ObjectType"
+      },
+      "maxItems": 200,
+      "minItems": 1,
+      "title": "Object Types",
+      "type": "array"
+    },
+    "product": {
+      "default": "",
+      "maxLength": 64,
+      "pattern": "^([a-z0-9][a-z0-9_.-]{0,63})?$",
+      "title": "Product",
+      "type": "string"
+    },
+    "relations": {
+      "items": {
+        "$ref": "#/$defs/Relation"
+      },
+      "maxItems": 500,
+      "title": "Relations",
+      "type": "array"
+    },
+    "rules": {
+      "items": {
+        "$ref": "#/$defs/Rule"
+      },
+      "maxItems": 200,
+      "title": "Rules",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "terms": {
+      "items": {
+        "$ref": "#/$defs/Term"
+      },
+      "maxItems": 500,
+      "title": "Terms",
+      "type": "array"
+    },
+    "value_sets": {
+      "items": {
+        "$ref": "#/$defs/ValueSet"
+      },
+      "maxItems": 200,
+      "title": "Value Sets",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "name",
+    "object_types"
+  ],
+  "title": "OntologyDocument",
+  "type": "object"
+}

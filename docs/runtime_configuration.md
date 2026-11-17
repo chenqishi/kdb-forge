@@ -15,7 +15,7 @@ scripts/services/retrieval.sh --check config/config_for_search_index.json
 
 | 能力 | 安装命令 | 依赖边界 |
 |---|---|---|
-| 知识检索 | `python -m pip install -e .` | ES8.17、FastAPI、请求/向量/分词及 CLI 基础库 |
+| 知识检索 | `python -m pip install -e .` | ES8.17、FastAPI、请求/向量/分词及 CLI 基础库；本体接口使用 mysql-connector-python |
 | 对象文件服务 | `python -m pip install -e ".[files]"` | Flask、S3/MinIO 客户端 |
 | 任务服务 | `python -m pip install -e ".[tasks]"` | SQL、进程监控、文档估算与对象存储 |
 | 文档挖掘 | `python -m pip install -e ".[documents]"` | PDF、Word、Excel、图片、对象存储及 SQL 上下文 |
@@ -45,6 +45,8 @@ python -m kdb.entrypoints.http.files.app --config config/minio_config.json --hos
 直接模块启动会执行真实初始化，应先用对应启动器检查资源。HTTP 监听、SQL/ES 初始化、任务子进程和对象存储写入属于真实运行行为。
 
 ## 配置与静态资源
+
+业务本体接口仍在检索服务 8003，数据库配置来自 `KDB_MYSQL_CONFIG`（显式相对路径按调用者工作目录），缺省用项目路径 `config/mysql_conn_config.json`。上线前执行 [本体迁移](../migrations/20261117_ontology.sql)，核对 MySQL 版本、utf8mb4、会话时区和连接上限；每 worker 池大小 5。迁移不自动执行，读取 `/ontology/meta` 不连库，缺少数据库配置时实际数据库请求明确返回 503。写接口部署在内网/网关后，详见 [API](api.md#业务本体)。
 
 `config/*.example` 是格式示例，复制后填写当前环境的真实路径和凭据。相对配置路径按调用者工作目录解析；示例中的绝对路径需要替换。私有有效配置位于受忽略的 `private/runtime_config/`，包含保留下来的 `hardcoded_defaults.json`；缺文件或字段必须显式报错，不用空值或假凭据填充。新克隆需要单独配置这些资源。
 

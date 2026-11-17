@@ -1,0 +1,271 @@
+{
+  "schema_version": "1.0",
+  "name": "电商行业通用本体",
+  "alias_name": [
+    "电商业务",
+    "ecommerce ontology"
+  ],
+  "description": "电商行业的通用概念：客户、门店、订单与售后状态",
+  "client": "",
+  "product": "ecommerce",
+  "language": "zh-CN",
+  "definition": "覆盖电商交易中的核心对象、关键字段、对象关系及枚举口径；具体售后时效由客户规则决定。",
+  "object_types": [
+    {
+      "name": "客户",
+      "alias_name": [
+        "customer",
+        "买家"
+      ],
+      "description": "在平台上下单的自然人或企业",
+      "definition": "一个客户可以有多个门店；客户号跨站点唯一。",
+      "identity": [
+        "客户号"
+      ],
+      "attributes": [
+        {
+          "name": "客户号",
+          "alias_name": [
+            "customer_id"
+          ],
+          "description": "客户唯一标识",
+          "data_type": "string",
+          "required": true,
+          "unique": true
+        },
+        {
+          "name": "客户类型",
+          "alias_name": [
+            "customer_type"
+          ],
+          "description": "个人或企业",
+          "data_type": "enum",
+          "required": true,
+          "value_set": "客户类型"
+        }
+      ],
+      "examples": [
+        "C-10086"
+      ],
+      "llm_hints": {
+        "disambiguation": "客户是下单主体，不是门店"
+      }
+    },
+    {
+      "name": "门店",
+      "alias_name": [
+        "store",
+        "店铺"
+      ],
+      "description": "客户在平台上的经营单元",
+      "definition": "门店按站点区分；一个客户在同一站点可有多个门店。",
+      "identity": [
+        "门店号"
+      ],
+      "attributes": [
+        {
+          "name": "门店号",
+          "alias_name": [
+            "store_id"
+          ],
+          "description": "门店唯一标识",
+          "data_type": "string",
+          "required": true,
+          "unique": true
+        },
+        {
+          "name": "站点",
+          "alias_name": [
+            "marketplace"
+          ],
+          "description": "门店所在平台站点",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "所属客户",
+          "alias_name": [
+            "customer_id"
+          ],
+          "description": "门店归属的客户",
+          "data_type": "object",
+          "ref": "客户",
+          "required": true
+        }
+      ],
+      "examples": [
+        "平台 US 站点店"
+      ],
+      "llm_hints": {
+        "disambiguation": "门店是经营单元，不是仓库"
+      }
+    },
+    {
+      "name": "订单",
+      "alias_name": [
+        "order",
+        "订单信息"
+      ],
+      "description": "客户下单后形成的交易凭证",
+      "definition": "一笔订单对应一次结算，可包含多个商品行；退款按订单行处理。",
+      "identity": [
+        "订单号"
+      ],
+      "attributes": [
+        {
+          "name": "订单号",
+          "alias_name": [
+            "order_id",
+            "订单编号"
+          ],
+          "description": "订单唯一标识",
+          "data_type": "string",
+          "required": true,
+          "unique": true
+        },
+        {
+          "name": "订单状态",
+          "alias_name": [
+            "order_status"
+          ],
+          "description": "订单当前生命周期状态",
+          "data_type": "enum",
+          "required": true,
+          "value_set": "订单状态"
+        },
+        {
+          "name": "下单时间",
+          "alias_name": [
+            "created_at"
+          ],
+          "description": "订单创建时间",
+          "data_type": "datetime",
+          "required": true
+        },
+        {
+          "name": "门店",
+          "alias_name": [
+            "store_id"
+          ],
+          "description": "订单归属的门店",
+          "data_type": "object",
+          "ref": "门店",
+          "required": true
+        }
+      ],
+      "examples": [
+        "ORDER-0001"
+      ],
+      "llm_hints": {
+        "disambiguation": "订单是交易凭证，不是购物车"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "name": "拥有门店",
+      "alias_name": [
+        "owns_store"
+      ],
+      "description": "一个客户拥有多个门店",
+      "subject": "客户",
+      "predicate": "owns",
+      "object": "门店",
+      "cardinality": "1:N",
+      "join": "stores.customer_id = customers.customer_id"
+    },
+    {
+      "name": "承接订单",
+      "alias_name": [
+        "receives_order"
+      ],
+      "description": "一个门店承接多笔订单",
+      "subject": "门店",
+      "predicate": "receives",
+      "object": "订单",
+      "cardinality": "1:N",
+      "join": "orders.store_id = stores.store_id"
+    }
+  ],
+  "value_sets": [
+    {
+      "name": "客户类型",
+      "alias_name": [
+        "customer_type"
+      ],
+      "description": "客户主体类型",
+      "values": [
+        {
+          "value": "individual",
+          "label": "个人"
+        },
+        {
+          "value": "business",
+          "label": "企业",
+          "alias_name": [
+            "商家"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "订单状态",
+      "alias_name": [
+        "order_status"
+      ],
+      "description": "订单从创建到完结的状态",
+      "values": [
+        {
+          "value": "created",
+          "label": "已创建",
+          "alias_name": [
+            "新建"
+          ]
+        },
+        {
+          "value": "paid",
+          "label": "已支付",
+          "alias_name": [
+            "已付款"
+          ]
+        },
+        {
+          "value": "shipped",
+          "label": "已发货"
+        },
+        {
+          "value": "refunded",
+          "label": "已退款",
+          "alias_name": [
+            "退钱"
+          ]
+        }
+      ]
+    }
+  ],
+  "rules": [],
+  "terms": [
+    {
+      "name": "站点",
+      "alias_name": [
+        "marketplace",
+        "店铺"
+      ],
+      "description": "卖家在平台上的经营站点，通常对应 marketplace",
+      "refers_to": "门店.站点",
+      "examples": [
+        "客户说“美国站点”指 marketplace=US"
+      ]
+    }
+  ],
+  "examples": [
+    "客户问：订单 ORDER-0001 什么时候发货"
+  ],
+  "llm_hints": {
+    "usage": "回答订单问题时先确认订单状态、门店与站点；售后时效需以客户政策为准",
+    "disambiguation": [
+      "订单状态用 value_set 里的 value，不要自造状态"
+    ]
+  },
+  "extensions": {}
+}

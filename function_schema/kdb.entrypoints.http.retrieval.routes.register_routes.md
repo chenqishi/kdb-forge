@@ -10,7 +10,7 @@ The single existing application, constructed by its entrypoint.
 
 ## Outputs
 
-Registers the unchanged path/method/response declarations and handlers once. Does not construct an app, initialize clients, start threads, or issue SQL.
+Registers the unchanged twelve original path/method/response declarations and handlers once, then the eight ontology operations using register_ontology_routes(app). Ontology request errors are scoped to /ontology; other paths retain their original validation handler. Does not construct an app, initialize clients, start threads, or issue SQL.
 
 ## SQL
 

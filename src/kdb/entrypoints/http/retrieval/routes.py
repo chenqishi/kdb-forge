@@ -1,4 +1,5 @@
 from fastapi import HTTPException
+from kdb.entrypoints.http.retrieval.ontology_routes import register_ontology_routes
 from kdb.entrypoints.http.retrieval.models import DeleteByFileRequest
 from kdb.entrypoints.http.retrieval.models import DeleteByFileResponse
 from kdb.entrypoints.http.retrieval.models import DeleteRequest
@@ -577,3 +578,4 @@ def register_routes(app):
     app.post('/update_by_condition', response_model=UpdateByConditionResponse)(update_by_condition)
     app.post('/modify_knowledge_direct_update', response_model=ModifyKnowledgeResponse)(modify_knowledge_direct_update)
     app.post('/modify_knowledge', response_model=ModifyKnowledgeResponse)(modify_knowledge)
+    register_ontology_routes(app)
