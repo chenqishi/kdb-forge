@@ -1,6 +1,6 @@
 # 项目操作指针
 
-- 业务本体文档 CRUD、作用域选取、MySQL 迁移与克隆说明见 [API](docs/api.md#业务本体) 和 [代码库本体](docs/ontology.md)；独立真实 MySQL 验证入口见 [测试说明](docs/testing.md)。
+- 业务本体的实际存储、校验、事务、作用域选取与克隆逻辑见 [实现说明](docs/business_ontology_implementation.md)；协议见 [API](docs/api.md#业务本体)，职责见 [代码库本体](docs/ontology.md)，独立真实 MySQL 验证入口见 [测试说明](docs/testing.md)。
 
 - 先按 [AGENTS.md](AGENTS.md) 的上下文获取规则定位本次需要的资料；README、架构图及本文件均按需检索，不默认整篇加载。业务代码仅在 `src/kdb`，命令使用 `python -m kdb.…` 或 `scripts/`。
 - 需求归属、模块协作和修改边界见 [代码库本体](docs/ontology.md)；它描述代码项目，保持模块级粒度，与单条知识数据无关。函数参数和 SQL 细节继续查当前契约。
