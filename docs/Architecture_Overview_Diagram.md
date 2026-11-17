@@ -1,8 +1,53 @@
-# 业务架构与依赖方向
+# 总体业务主题与工程依赖
 
-主体分为知识检索、知识挖掘、多语言、公共模块。工程入口负责参数、HTTP 响应和生命周期，业务模块不得反向导入入口。下图箭头表示调用或依赖方向。
+业务层按目标、业务域、能力、流程规则逐层展开，再映射到实现。层级含义与业务归属见[代码库本体](ontology.md#总体业务金字塔)。
 
-需求到业务能力、实现位置与维护边界的映射见[代码库本体](ontology.md)；本图展示整体组织和依赖。
+## 总体业务主题框图
+
+图从上到下依次为 L0 业务目标、L1 业务域及支撑主题、L2 业务能力、L3 流程与规则、L4 实现。实线表示业务分解及实现映射，虚线指向各实现的契约和验证依据。
+
+```mermaid
+flowchart TB
+  GOAL["业务目标：把多来源内容转化为可维护、可检索、可复用的业务知识<br/>管理业务概念与规则定义"]
+  GOAL --> PRODUCE["知识生产"]
+  GOAL --> USE["知识管理与取用"]
+  GOAL --> SUPPORT["语言与内容支撑"]
+
+  PRODUCE --> MC["知识提取、任务组织与质量处理<br/>文档 / 网页 / 对话"]
+  USE --> KC["知识入库、维护与查询<br/>更新 / 纠错 / 检索 / 结果整理"]
+  USE --> OC["业务本体管理<br/>文档 / 状态 / 作用域 / 模板"]
+  SUPPORT --> SC["语言识别与对象访问"]
+
+  MC --> MF["流程与规则<br/>任务调度、来源处理、提取与质检"]
+  KC --> KF["流程与规则<br/>入库查重、更新维护、检索与展示"]
+  OC --> OF["流程与规则<br/>校验、版本控制、状态切换<br/>作用域选取、整篇克隆"]
+  SC --> SF["流程与规则<br/>语言判定、对象读取与上传"]
+
+  MF --> MI["实现：mining<br/>tasks / document / web / chat / common"]
+  KF --> KI["实现：retrieval<br/>ingestion / modification / maintenance<br/>search / ranking / presentation"]
+  OF --> OI["实现：retrieval/ontology<br/>validation / service / repository<br/>本体 HTTP 与克隆 CLI"]
+  SF --> SI["实现：multilingual<br/>shared/storage 与 files HTTP"]
+
+  MI -.-> EVIDENCE["实现依据：接口文档 · 函数与 SQL 契约 · 回归测试"]
+  KI -.-> EVIDENCE
+  OI -.-> EVIDENCE
+  SI -.-> EVIDENCE
+
+  classDef goal fill:#17324d,color:#fff,stroke:#17324d
+  classDef domain fill:#e8f0fe,color:#17324d,stroke:#9bb7df
+  classDef ontology fill:#fff2cc,color:#5f4500,stroke:#c69500
+  classDef implementation fill:#f3f4f6,color:#273444,stroke:#bac3cf
+  class GOAL goal
+  class PRODUCE,USE,SUPPORT domain
+  class OC,OF,OI ontology
+  class MI,KI,SI,EVIDENCE implementation
+```
+
+黄色分支是本次补齐业务层级的本体管理能力。它已实现独立的管理与选取接口；挖掘、入库、查询尚未接入本体规则执行。客户/行业/全局是本体适用作用域；数据库、模型客户端、配置等是共用技术支撑，具体依赖见下图。
+
+## 工程实现与依赖
+
+工程组织沿用知识检索、知识挖掘、多语言、公共模块。工程入口负责参数、HTTP 响应和生命周期，业务模块不得反向导入入口。下图箭头表示调用或依赖方向。
 
 ```mermaid
 flowchart TB

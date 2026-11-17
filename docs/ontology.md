@@ -1,6 +1,6 @@
 # 代码库本体说明
 
-源码核对基线：`f7e7b2cf9bbfd82f6dae6d995b432c2c33b7133a`；核对日期：2026-11-15。此处记录源码核对范围，文档修订由 Git 历史记录，不代表真实环境验收。
+既有能力的源码核对基线：`f7e7b2cf9bbfd82f6dae6d995b432c2c33b7133a`；业务本体能力及其接入关系补充核对至 `a84adf8`。业务金字塔按当前已实现能力组织；文档修订由 Git 历史记录，不代表重新完成了全部源码或真实环境验收。
 
 这份本体描述 KDB Forge 的业务能力、实现模块、协作关系与维护边界。用途是从一个需求找到负责的代码，并判断修改会影响谁。对象保持在稳定的业务与模块层级；知识条目、客户、实际 index、普通字段和每个函数不逐个登记，知识数据增长不会扩大这份说明。
 
@@ -24,16 +24,52 @@
 
 下方能力表按业务域分组表达“包含”，代码列表达“实现”，边界说明表达“约束”；工程入口段表达“提供”，协作表表达“调用”。[架构图](Architecture_Overview_Diagram.md)展示整体依赖，[状态所有权](state_ownership.md)说明运行对象归谁持有。
 
+## 总体业务金字塔
+
+顶层业务目标是：**把多来源内容转化为可维护、可检索、可复用的业务知识，并管理其业务概念与规则定义。** 从目标向下逐层分解，最后映射到代码及契约。总体图见[业务主题框图](Architecture_Overview_Diagram.md#总体业务主题框图)。
+
+| 层级 | 回答的问题 | 本项目的表达 |
+|---|---|---|
+| L0 业务目标 | 为什么建设这些能力 | 多来源知识的生产、维护、取用，以及业务概念与规则定义的管理 |
+| L1 业务域及支撑主题 | 哪一类业务负责 | 知识生产；知识管理与取用；语言与内容支撑 |
+| L2 业务能力 | 提供什么业务动作 | 来源挖掘、任务组织、质量处理；入库、维护、查询、本体管理；语言识别、对象访问 |
+| L3 流程与规则 | 动作如何完成、受什么约束 | 任务阶段与质量规则；入库查重、查询整理；本体校验、版本和状态、作用域选取、模板克隆 |
+| L4 实现及契约 | 代码在哪里、行为依据是什么 | 实现模块、HTTP/CLI 入口、函数与 SQL 契约、对应回归入口 |
+
+业务主题与当前工程归属的对应关系如下。主题用于说明业务职责，代码目录仍沿用已有结构。
+
+| 业务域及支撑主题 | 下属能力 | 现有实现归属 |
+|---|---|---|
+| 知识生产 | 文档、网页、对话知识提取，任务组织及质量处理 | `mining/document`、`web`、`chat`、`tasks`、`common` |
+| 知识管理与取用 | 入库与更新、知识维护与纠错、查询与结果整理、业务本体管理 | `retrieval`；其中业务本体管理归 `retrieval/ontology` |
+| 语言与内容支撑 | 语言识别、对象读取与上传 | `multilingual`、`shared/storage` |
+
+多模态内容组装与展示归知识管理与取用；挖掘中的多模态处理归知识生产。数据库、模型客户端、配置等通用技术支撑在实现层登记。HTTP/CLI 是能力入口，函数是实现细节，都不单独提升为业务域。客户、行业、全局是本体文档的适用作用域，另由选取规则处理。
+
+### 业务本体管理的逐层展开
+
+其业务归属为 **业务知识的生产与取用目标 → 知识管理与取用 → 业务本体管理**。管理对象是包含类、属性、关系、枚举、规则及术语的一套完整文档。下表补齐 L3 流程规则和 L4 实现依据；字段、SQL 和算法细节由[实现说明](business_ontology_implementation.md)与函数契约维护。
+
+| 子能力 | 已实现的业务流程与规则 | 实现与契约依据 |
+|---|---|---|
+| 文档维护与查阅 | 创建、整篇替换、软删、列表及三种详情视图；更新采用版本条件，替换不能改变作用域 | [service.py](../src/kdb/retrieval/ontology/service.py)、[replace 契约](../function_schema/kdb.retrieval.ontology.service.OntologyService.replace.md) |
+| 定义一致性校验 | 校验结构、大小、名称唯一性、字段组合与引用；通过后生成投影并写入 | [validation.py](../src/kdb/retrieval/ontology/validation.py)、[校验契约](../function_schema/kdb.retrieval.ontology.validation.validate_document.md) |
+| 可用状态管理 | draft/active 切换带版本；draft 不参与选取，仍占业务键；删除保留文档记录 | [状态契约](../function_schema/kdb.retrieval.ontology.service.OntologyService.patch_status.md)、[删除契约](../function_schema/kdb.retrieval.ontology.service.OntologyService.delete.md) |
+| 按业务作用域取用 | 客户行业 → 客户通用 → 行业 → 全局，只选一篇 active 文档；客户单维请求有明确回落规则 | [resolve 契约](../function_schema/kdb.retrieval.ontology.service.OntologyService.resolve.md)、[接口规则](api.md#业务本体) |
+| 模板复用 | 选取源文档、整篇复制、改目标作用域、重新校验；默认 draft，后续修改不自动传播 | [克隆 CLI](../src/kdb/entrypoints/cli/tools/ontology_clone.py)、[克隆契约](../function_schema/kdb.entrypoints.cli.tools.ontology_clone.main.md) |
+
+当前接入入口为本体 HTTP 与克隆 CLI。现有挖掘、知识入库和查询流程尚未调用该服务把本体规则用于业务处理；本体中记录的 condition/effect 是规则定义，不是已经执行的规则引擎。因此总体图表达本体管理的业务归属，实际调用关系仍以协作表和工程依赖图为准。
+
 ## 业务能力与实现位置
 
-主体分为知识检索、知识挖掘、多语言和公共模块。工程入口与运维工具另外组织。这里的“知识检索”沿用项目域名，也包含已有的知识写入、纠错和管理能力。
+下方按既有工程归属展开，以便定位源码。这里的“知识检索”对应上方“知识管理与取用”，也包含已有的知识写入、纠错和本体管理能力；“知识挖掘”对应“知识生产”。工程入口与运维工具另外组织。
 
 ### 知识检索
 
 | 能力 | 职责 | 主要实现与边界 |
 |---|---|---|
 | 查询与结果整理 | 查找已有知识、多查询、分页、分数整理与聚合 | [search](../src/kdb/retrieval/search/)、[ranking.py](../src/kdb/retrieval/ranking.py)、[statistics.py](../src/kdb/retrieval/statistics.py)；请求和返回适配见 [HTTP 路由](../src/kdb/entrypoints/http/retrieval/routes.py) |
-| 业务本体 | 客户/行业/全局三层本体的存取与选取 | [ontology](../src/kdb/retrieval/ontology/)；一行一套本体、读取不拼装，MySQL 整篇覆盖与 revision 乐观锁；ES 与元素级 CRUD 不在本期；[接口说明](api.md#业务本体) |
+| 业务本体管理 | 维护业务概念与规则定义、控制文档可用状态、按作用域取用及复用模板 | [ontology](../src/kdb/retrieval/ontology/)；一行一套本体、读取不拼装，MySQL 整篇覆盖与 revision 乐观锁；当前未接入挖掘/查询执行规则；[实现说明](business_ontology_implementation.md) |
 | 入库与更新 | 准备数据、生成入库 ID、检查重复、插入、更新和按 ID 删除 | [ingestion](../src/kdb/retrieval/ingestion/)；[categories](../src/kdb/retrieval/categories/)负责类目处理；通过同一个 [SearchDataInterface](../src/kdb/retrieval/application/search_index_data_interface.py)调用 |
 | 多模态内容组装与展示 | 入库时将文本和附件地址拼成 content；查询时将内部地址占位符展开为带文件名的 URL | [presentation/multimodal.py](../src/kdb/retrieval/presentation/multimodal.py)；组装影响入库内容及后续内容向量生成，展示影响检索返回；关联调用见下方协作表 |
 | 知识纠错 | 结合检索和模型执行已有知识修改流程 | [modification](../src/kdb/retrieval/modification/)；具体入口是否写入以 [API](api.md)和函数契约为准，不能作为普通只读查重调用 |
@@ -136,7 +172,7 @@
 
 新增或调整稳定业务能力、职责归属、模块位置、入口关系及依赖边界时，更新本文件的相应行，并检查关联架构图。普通知识数据变动、函数内部实现和阈值调整只更新相应代码与契约；若改变模块协作或对外职责，再同步本体。
 
-新增能力沿用“业务归属、职责、实现位置、调用关系、维护边界”记录即可。图中箭头只画有依据的关系；未落地的设计明确标为建议。阅读顺序是本体定位职责 → 源码与函数契约确认行为 → 选择受影响入口与测试；遇到不一致先核对源码，不用文档补造业务事实。
+新增能力先确定业务目标和所属业务域，再登记能力、流程与规则，最后链接实现、契约及回归入口；业务归属、实际调用关系和维护边界分别记录。顶层不展开全部函数，图中箭头只画有依据的关系；未落地的设计明确标为建议。阅读顺序是本体定位职责 → 源码与函数契约确认行为 → 选择受影响入口与测试；遇到不一致先核对源码，不用文档补造业务事实。
 
 默认离线套件中的[文档链接检查](../tests/offline/test_document_links.py)验证 README、AGENTS、CLAUDE、MEMORY 和 docs 下 Markdown 行内相对链接的本地目标是否存在；不检查外网和标题锚点。提交本体和导航修改时一并暂存新增文档，并核对暂存差异，避免本地存在但干净检出遗漏。
 
