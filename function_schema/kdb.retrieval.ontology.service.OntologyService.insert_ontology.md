@@ -1,8 +1,8 @@
-# kdb.retrieval.ontology.service.OntologyService.create
+# kdb.retrieval.ontology.service.OntologyService.insert_ontology
 
 ## Signature
 
-`OntologyService.create(self, body: Any) -> dict`
+`OntologyService.insert_ontology(self, body: Any) -> dict`
 
 ## Inputs
 
@@ -10,7 +10,7 @@
 
 ## Outputs
 
-201（service返回dict）：success/message/ontology完整视图，含UUID4 hex、revision=1、规范化data_json、document_bytes、投影与时间。先校验status及文档，再事务判重插入、按生成ID回查；同业务键（含draft）409，细节保留已有ID/status/revision。
+201（service返回dict）：success/message/ontology元数据，含UUID4 hex、revision=1、作用域、名称、状态、document_bytes及时间，不返回data_json。先校验status及文档，再事务判重插入、按生成ID回查；同业务键（含draft）409，细节保留已有ID/status/revision。
 
 ## SQL
 

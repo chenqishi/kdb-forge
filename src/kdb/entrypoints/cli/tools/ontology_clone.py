@@ -32,7 +32,7 @@ def main(argv=None, service=None) -> int:
                                     [{"path": field, "reason": "invalid_pattern", "message": "客户编码必须为非空小写编码"}])
             setattr(args, field, value)
         service = service or OntologyService(OntologyRepository())
-        source = service.resolve(args.source_client, args.source_product, None, True)
+        source = service.select_ontology(args.source_client, args.source_product, None, True)
         if source["ontology"] is None:
             raise OntologyError(ONTOLOGY_NOT_FOUND, 404, "源本体不存在")
         document = deepcopy(validate_document(source["ontology"]["data_json"]).document)
@@ -44,7 +44,7 @@ def main(argv=None, service=None) -> int:
                       "product": validated.product, "name": validated.name, "status": args.status,
                       "object_types": len(validated.document["object_types"]), "document_bytes": validated.document_bytes}
         else:
-            result = service.create({"data_json": validated.document, "status": args.status})
+            result = service.insert_ontology({"data_json": validated.document, "status": args.status})
         print(json.dumps(result, ensure_ascii=False))
         return 0
     except OntologyError as exc:

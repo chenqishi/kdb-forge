@@ -1,8 +1,8 @@
-# kdb.retrieval.ontology.repository.OntologyRepository.soft_delete
+# kdb.retrieval.ontology.repository.OntologyRepository.delete_ontology
 
 ## Signature
 
-`OntologyRepository.soft_delete(self, ontology_id: str, revision: Optional[int]) -> int`
+`OntologyRepository.delete_ontology(self, ontology_id: str, revision: Optional[int]) -> int`
 
 ## Inputs
 
@@ -10,7 +10,7 @@ ontology_id, 可选 revision。
 
 ## Outputs
 
-get/resolve 返回行或 None；list 返回 (元数据列表,total)；insert 返回 ontology_id；UPDATE 返回 rowcount，0 交 service 区分 404/409；故障明确抛 422/503/500，不伪装空结果。
+返回首次软删的实际更新行数；0由service区分已删、不存在及版本冲突。 故障明确抛422/503/500，不伪装空结果。
 
 ## SQL
 

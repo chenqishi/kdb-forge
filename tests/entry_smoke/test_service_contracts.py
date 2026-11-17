@@ -24,7 +24,8 @@ def test_retrieval_keeps_all_twelve_post_routes():
         "/modify_knowledge",
     }
     actual = {route.path for route in service.app.routes if "POST" in getattr(route, "methods", ())}
-    assert actual == expected | {"/ontology", "/ontology/resolve"}
+    assert actual == expected | {"/insert_ontology", "/get_ontology", "/list_ontologies",
+                                 "/update_ontology", "/update_ontology_status", "/delete_ontology", "/select_ontology"}
 
 
 def test_service_lifespan_constructs_both_real_factory_roles(monkeypatch):

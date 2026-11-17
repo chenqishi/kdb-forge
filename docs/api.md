@@ -41,28 +41,30 @@
 
 | 方法与路径 | 主要输入 | 输出与行为 |
 |---|---|---|
-| `POST /ontology` | `data_json` 为对象或 JSON 对象字符串；`status` 默认 active | 201，`ontology` 为 full 视图，UUID4 hex、revision=1；同 `(client,product,name)` 未删行冲突 409，draft 也占业务键 |
-| `GET /ontology/{ontology_id}` | `view=full/document/outline`、`include_deleted=false` | full 含完整文档和紧凑 UTF-8 `document_bytes`；document 为顶层 `ontology_id/revision/document`；outline 只含类及属性大纲与计数 |
-| `GET /ontology` | 可选 `client/product/status/q`、`deep=0/1`、`include_deleted=false`、`page=1`、`page_size=20`（1–100） | `total/page/page_size/items`，列表不加载/返回 `data_json`；未传作用域=不过滤，空串=只看公用 |
-| `PUT /ontology/{ontology_id}` | 完整 `data_json`、正整数 `revision`；可选 `status` | 整篇替换并 revision+1，回 meta；作用域不可变；改名检查同作用域业务键；旧 revision 返回 409/current_revision |
-| `PATCH /ontology/{ontology_id}` | `status=draft/active`、正整数 `revision` | 仅改行状态，revision+1；同状态也 +1，不重写文档 |
-| `DELETE /ontology/{ontology_id}` | 可选正整数 `revision` | 软删，回 `deleted=true` 及含 del_flag 的 meta；重复删除 200/already deleted 且不再 +1；不存在 404 |
-| `POST /ontology/resolve` | `client/product` 默认空串，可选精确 `name`、`include_document=true` | 只返回一行、不合并；客户行业→客户通用→行业→全局，限 active 未删行；无匹配为 200/ontology=null |
-| `GET /ontology/meta` | 无 | 结构版本、枚举与上限；不初始化数据库连接 |
+| `POST /insert_ontology` | `data_json` 为对象或 JSON 对象字符串；`status` 默认 active | 201，`ontology` 为 meta，含 document_bytes，不返回 data_json，UUID4 hex、revision=1；同 `(client,product,name)` 未删行冲突 409，draft 也占业务键 |
+| `POST /get_ontology` | body 中必填 `ontology_id`；query 保留 `view=full/document/outline`、`include_deleted=false` | full 含完整文档和紧凑 UTF-8 `document_bytes`；document 为顶层 `ontology_id/revision/document`；outline 只含类及属性大纲与计数 |
+| `POST /list_ontologies` | 可选 `client/product/status/q`、`deep=0/1`、`include_deleted=false`、`page=1`、`page_size=100`（1–100） | `total/page/page_size/items`，列表不加载/返回 `data_json`；未传作用域=不过滤，空串=只看公用 |
+| `POST /update_ontology` | body 中必填 `ontology_id`、完整 `data_json`、正整数 `revision`；可选 `status` | 整篇替换并 revision+1，回 meta；作用域不可变；改名检查同作用域业务键；旧 revision 返回 409/current_revision |
+| `POST /update_ontology_status` | body 中必填 `ontology_id`、`status=draft/active`、正整数 `revision` | 仅改行状态，revision+1；同状态也 +1，不重写文档 |
+| `POST /delete_ontology` | body 中必填 `ontology_id`，可选正整数 `revision` | 软删，回 `deleted=true` 及含 del_flag 的 meta；重复删除 200/本体已删除 且不再 +1；不存在 404 |
+| `POST /select_ontology` | `client/product` 默认空串，可选精确 `name`、`include_document=true` | 只返回一行、不合并；客户行业→客户通用→行业→全局，限 active 未删行；无匹配为 200/ontology=null |
+| `GET /ontology_meta` | 无 | 结构版本、枚举与上限；不初始化数据库连接 |
 
-成功沿用 `{success:true,message:"",…}`；失败固定 `{success:false,code,message,details:[]}`，不加 `data` 包装。错误码：400 `ONTOLOGY_BAD_REQUEST`；404 `ONTOLOGY_NOT_FOUND`；409 `ONTOLOGY_NAME_CONFLICT/ONTOLOGY_REVISION_CONFLICT/ONTOLOGY_SCOPE_IMMUTABLE`；413 `ONTOLOGY_PAYLOAD_TOO_LARGE`；422 `ONTOLOGY_VALIDATION_FAILED/ONTOLOGY_RESERVED_FIELD/ONTOLOGY_SCHEMA_VERSION_UNSUPPORTED`；503 `ONTOLOGY_DB_UNAVAILABLE`；500 `ONTOLOGY_INTERNAL_ERROR`。数据库错误不会伪装成无匹配。参数错误处理器仅影响 `/ontology` 路径。
+所有 ID 字段统一为 body 中的 `ontology_id`（32位小写 hex），不再从路径取值。列表筛选和分页仍用 query，默认每页100；分页范围由 service 单点校验，路由只解析类型，失败统一400“请求参数不合法”。旧 `/ontology` 路径不再注册。创建、更新、状态变更和删除统一返回元数据，详情/列表/选取使用明确的 Pydantic 模型描述字段；列表不补读文档计算字节数。
+
+成功沿用 `{success:true,message:"",…}`；失败固定 `{success:false,code,message,details:[]}`，不加 `data` 包装。错误码：400 `ONTOLOGY_BAD_REQUEST`；404 `ONTOLOGY_NOT_FOUND`；409 `ONTOLOGY_NAME_CONFLICT/ONTOLOGY_REVISION_CONFLICT/ONTOLOGY_SCOPE_IMMUTABLE`；413 `ONTOLOGY_PAYLOAD_TOO_LARGE`；422 `ONTOLOGY_VALIDATION_FAILED/ONTOLOGY_RESERVED_FIELD/ONTOLOGY_SCHEMA_VERSION_UNSUPPORTED`；503 `ONTOLOGY_DB_UNAVAILABLE`；500 `ONTOLOGY_INTERNAL_ERROR`。数据库错误不会伪装成无匹配。错误处理器按匹配路由的 ontology tag 生效，支持代理 root_path，其他路由继续使用原处理器。
 
 所有字符串值去首尾空白；client/product 必须原本就是小写，禁止静默 lower。类、属性、关系、枚举、枚举值、规则和术语名禁止点号与 ASCII 控制字符。节点名、别名与引用按 NFKC+casefold 比较，存储保留规范化后的原始拼写；引用不重写。条件必填和引用错误都有 JSON 路径，最多 50 条。行控制字段禁止出现在文档任何层，`extensions` 子树例外。文档硬上限 1MB，200KB 起记录 warning；根 llm_hints/extensions 各 64KB，节点 llm_hints 16KB。
 
 外部可用 [JSON Schema](../src/kdb/retrieval/ontology/ontology.schema.json) 校验单节点结构，过 schema 不等于能入库：跨节点唯一性、引用、保留键、组合约束由服务端校验。三层完整种子在 [resources/ontology](../resources/ontology/)；导入请求需包装为 `{"data_json":文档,"status":"active或draft"}`。
 
-resolve 不传 name 时，同层按 update_time DESC、id DESC 稳定选取；传 name 时按 MySQL 列排序规则精确匹配。只传 client，优先该客户 product='' 的通用行；仅有该客户行业行时返回最近维护的一条，`scope=client_product,fallback=true`。fallback 严格等于“选中行作用域不等于请求作用域”，因此精确匹配 `(client,'')` 时为 false。任何场景都不补类、不合并。draft 客户行继续占业务键，但 resolve 回落行业或全局。
+select_ontology 不传 name 时，同层按 update_time DESC、id DESC 稳定选取；传 name 时按 MySQL 列排序规则精确匹配。只传 client，优先该客户 product='' 的通用行；仅有该客户行业行时返回最近维护的一条，`scope=client_product,fallback=true`。fallback 严格等于“选中行作用域不等于请求作用域”，因此精确匹配 `(client,'')` 时为 false。任何场景都不补类、不合并。draft 客户行继续占业务键，但 select_ontology 回落行业或全局。
 
 列表关键词 q 按名称精确 100、别名精确 90、名称前缀 70、名称包含 50、其他命中 20 排序，再按更新时间/id 倒序。别名精确用 JSON_CONTAINS，拉丁大小写敏感；别名包含匹配不区分大小写。`!/%/_` 均按字面量搜索。deep=1 **额外 OR 匹配**整篇 JSON，能找到仅在内部字段出现的词；这是管理端全扫描功能，不应接入 LLM 热路径。
 
 ### 存储、迁移和克隆
 
-先在目标库执行 [20261117_ontology.sql](../migrations/20261117_ontology.sql)，不写死库名；MySQL 8.0 默认 utf8mb4_0900_ai_ci，5.7 需改为 utf8mb4_unicode_ci。数据库仅 PRIMARY(id) 与 uk_ontology_id 唯一，业务键无唯一索引/生成列。判重在 INSERT/PUT 的同一事务中 FOR UPDATE，只看 del_flag=0；每个写事务显式使用 REPEATABLE READ，避免部署默认 READ COMMITTED 导致缺失键并发重复。死锁整笔重试一次；仍失败或锁等待超时返回 503。绕过接口裸写不受业务判重保护。
+先在目标库执行 [20261117_ontology.sql](../migrations/20261117_ontology.sql)，不写死库名；MySQL 8.0 默认 utf8mb4_0900_ai_ci，5.7 需改为 utf8mb4_unicode_ci。数据库仅 PRIMARY(id) 与 uk_ontology_id 唯一，业务键无唯一索引/生成列。判重在插入/整篇更新的同一事务中 FOR UPDATE，只看 del_flag=0；每个写事务显式使用 REPEATABLE READ，避免部署默认 READ COMMITTED 导致缺失键并发重复。死锁整笔重试一次；仍失败或锁等待超时返回 503。绕过接口裸写不受业务判重保护。
 
 连接配置取 `KDB_MYSQL_CONFIG`，未设置时用项目 `config/mysql_conn_config.json`；每个进程懒加载一个共享 MySQLConnector，池大小沿用 5，连接归还前关闭游标，读写均设置会话 utf8mb4，写操作显式 commit/rollback。安装基础依赖包含 mysql-connector-python；元信息、导入模块和生成 schema 不创建连接。
 
@@ -80,7 +82,7 @@ python -m kdb.entrypoints.cli.tools.ontology_clone \
 - §7.4 的 deep SQL 写成 AND，会排除文档内部独有关键词；按 §8.4“额外全文检索”实现 OR，并验证真实 SQL。
 - §7.8 原 SQL 在 product='' 时排除客户行业行，与明确的 client-only 回落场景相反；仅这个请求场景放宽该客户的 product 条件，空 product 行仍优先。
 - §8.8 示例表把只传 client 的精确通用命中标成 fallback=true；使用该节指定的 describe_scope 公式，精确命中为 false。
-- INSERT 返回生成的 ontology_id（不是 None），供创建后回查；列表只映射元数据，resolve/probe 补齐返回视图必需列；document 视图单独响应模型，DELETE 保留 del_flag，避免被通用模型丢弃。
+- INSERT 返回生成的 ontology_id（不是 None），供创建后回查；列表只映射元数据，按ID查询及作用域选取读取返回视图必需列；document 视图单独响应模型，删除响应保留 del_flag，避免被通用模型丢弃。
 - 全量归一化补默认值后再次检查 1MB 上限，防止入参未超限但实际入库文档超限。行业种子移除 Wayfair 专属例子与固定退款时效。
 
 测试和 13 步 HTTP 验收入口见[测试说明](testing.md)。本期没有元素级接口、ES 同步、embedding、继承合并或历史版本表。

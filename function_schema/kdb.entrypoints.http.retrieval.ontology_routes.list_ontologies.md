@@ -2,15 +2,15 @@
 
 ## Signature
 
-`list_ontologies(client: ScopeQuery=None, product: ScopeQuery=None, status: Optional[Literal['draft', 'active']]=None, q: Optional[str]=None, deep: Annotated[int, Query(ge=0, le=1)]=0, include_deleted: bool=False, page: Annotated[int, Query(ge=1)]=1, page_size: Annotated[int, Query(ge=1, le=100)]=20, service: OntologyService=Depends(get_service))`
+`list_ontologies(client: ScopeQuery = None, product: ScopeQuery = None, status: Optional[Literal["draft", "active"]] = None, q: Optional[str] = None, deep: Annotated[int, Query(ge=0, le=1)] = 0, include_deleted: bool = False, page: Annotated[int, Query(description="页码，从1开始，范围由业务服务校验")] = 1, page_size: Annotated[int, Query(description="每页条数，1至100，范围由业务服务校验")] = schema.DEFAULT_PAGE_SIZE, service: OntologyService = Depends(get_service))`
 
 ## Inputs
 
-client/product可选（未传与空串区分）；status可选draft/active；q可选，deep=0/1，include_deleted=false，page>=1，page_size=1..100默认20。 service经Depends(get_service)注入。
+client/product可选（未传与空串区分）；status可选draft/active；q可选，deep=0/1，include_deleted=false，page>=1，page_size=1..100默认100。 service经Depends(get_service)注入。
 
 ## Outputs
 
-success/message/total/page/page_size/items。items仅元数据（ID、作用域、名称、别名、描述、状态、revision、创建/更新时间），无文档；page转limit/offset。数据库错误按503/500传播，不伪装空列表。 路由仅传参/返回，文档业务规则交service；HTTP参数验证失败400 ONTOLOGY_BAD_REQUEST。
+success/message/total/page/page_size/items。items仅元数据（ID、作用域、名称、别名、描述、状态、revision、创建/更新时间），无文档；page转limit/offset。分页类型和范围由service统一校验（page>=1，page_size=1..MAX_PAGE_SIZE），失败统一400/请求参数不合法；路由仅解析query类型。路由、service和repository复用DEFAULT_PAGE_SIZE=100。数据库错误按503/500传播，不伪装空列表。 路由仅传参/返回，文档业务规则交service；HTTP参数验证失败400 ONTOLOGY_BAD_REQUEST。
 
 ## SQL
 

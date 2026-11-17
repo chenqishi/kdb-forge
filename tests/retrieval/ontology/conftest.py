@@ -26,7 +26,7 @@ class MemoryRepository:
             if not row.del_flag and row.ontology_id != exclude and (row.client, row.product, row.name) == (vd.client, vd.product, vd.name):
                 raise OntologyError(ONTOLOGY_NAME_CONFLICT, 409, "duplicate", [{"existing_ontology_id": row.ontology_id, "status": row.status, "revision": row.revision}])
 
-    def insert_if_absent(self, vd, status):
+    def insert_ontology(self, vd, status):
         self.calls.append(("insert", vd, status))
         self._conflict(vd)
         oid = uuid4().hex
@@ -35,14 +35,11 @@ class MemoryRepository:
                                      status, 1, now, now, 0, deepcopy(vd.document))
         return oid
 
-    def get_by_id(self, oid):
+    def select_ontology_by_id(self, oid):
         self.calls.append(("get", oid))
         return deepcopy(self.rows.get(oid))
 
-    def probe(self, oid):
-        return self.get_by_id(oid)
-
-    def replace_document(self, oid, revision, vd, status):
+    def update_ontology_document(self, oid, revision, vd, status):
         self.calls.append(("replace", oid))
         self._conflict(vd, oid)
         row = self.rows.get(oid)
@@ -54,7 +51,7 @@ class MemoryRepository:
         row.revision += 1
         return 1
 
-    def update_status(self, oid, revision, status):
+    def update_ontology_status(self, oid, revision, status):
         row = self.rows.get(oid)
         if row is None or row.del_flag or row.revision != revision:
             return 0
@@ -62,7 +59,7 @@ class MemoryRepository:
         row.revision += 1
         return 1
 
-    def soft_delete(self, oid, revision):
+    def delete_ontology(self, oid, revision):
         row = self.rows.get(oid)
         if row is None or row.del_flag or (revision is not None and row.revision != revision):
             return 0
@@ -70,7 +67,7 @@ class MemoryRepository:
         row.revision += 1
         return 1
 
-    def resolve(self, client, product, name):
+    def select_ontology(self, client, product, name):
         self.calls.append(("resolve", client, product, name))
         rows = [r for r in self.rows.values() if not r.del_flag and r.status == "active"
                 and r.client in (client, "") and (r.product in (product, "") or (client and not product and r.client == client))
@@ -79,7 +76,7 @@ class MemoryRepository:
             return (2 * bool(client and r.client == client) + bool(product and r.product == product), not r.product, r.update_time)
         return deepcopy(max(rows, key=rank)) if rows else None
 
-    def list(self, **filters):
+    def list_ontologies(self, **filters):
         self.calls.append(("list", filters))
         rows = [r for r in self.rows.values() if (filters["include_deleted"] or not r.del_flag)
                 and all(filters[key] is None or getattr(r, key) == filters[key] for key in ("client", "product", "status"))]

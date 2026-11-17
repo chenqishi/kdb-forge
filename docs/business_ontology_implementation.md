@@ -1,6 +1,6 @@
 # 业务本体实现说明
 
-本页按已落地源码说明业务本体的处理过程、数据约束和模块位置。业务实现提交为 [`a84adf8`](https://github.com/chenqishi/kdb-forge/commit/a84adf8bbdd8316e047013ebd9ac27581bec0c7b)，已进入 `main`；基线为重构后的 `75ee234`。请求和响应字段详见 [API 文档](api.md#业务本体)。
+本页按已落地源码说明业务本体的处理过程、数据约束和模块位置。实现基于重构后的代码，当前接口、函数命名及行为以 `main` 分支为准。请求和响应字段详见 [API 文档](api.md#业务本体)。
 
 ## 代码组成与调用关系
 
@@ -19,6 +19,18 @@ HTTP 请求由现有检索应用接收，依次经过请求模型、路由、业
 
 现有 [routes.py](../src/kdb/entrypoints/http/retrieval/routes.py) 只增加本体路由的导入与注册，保留原有 12 个操作。对应函数的 Inputs、Outputs、SQL 契约位于 [function_schema](../function_schema/)，文件名前缀为 `kdb.retrieval.ontology`、`kdb.entrypoints.http.retrieval.ontology` 和 `kdb.entrypoints.cli.tools.ontology_clone`。
 
+service 与 repository 的公开操作使用以下名称；失败后按ID回查直接复用 select_ontology_by_id，不保留 probe 包装。
+
+| 操作 | Service | Repository |
+|---|---|---|
+| 创建 | `insert_ontology` | `insert_ontology` |
+| 详情 | `get_ontology` | `select_ontology_by_id` |
+| 列表 | `list_ontologies` | `list_ontologies` |
+| 整篇更新 | `update_ontology` | `update_ontology_document` |
+| 状态切换 | `update_ontology_status` | `update_ontology_status` |
+| 软删除 | `delete_ontology` | `delete_ontology` |
+| 作用域选取 | `select_ontology` | `select_ontology` |
+
 ## 存储及事务
 
 只有 **1 张业务表 `dops_ontology`**。一行保存一套完整本体，`data_json` 是 MySQL JSON 列；类、属性、关系、枚举、规则和术语均保存在文档内。
@@ -27,7 +39,7 @@ HTTP 请求由现有检索应用接收，依次经过请求模型、路由、业
 |---|---|
 | `id` / `ontology_id` | 自增物理主键 / UUID4 hex 对外标识；分别有主键和唯一索引 |
 | `client/product/name/alias_name/description` | 从校验后的文档生成的五个投影列，用于筛选、判重和列表展示 |
-| `status` | `active` 或 `draft`；创建默认 active，只有 active 参与 resolve |
+| `status` | `active` 或 `draft`；创建默认 active，只有 active 参与 select_ontology |
 | `revision` | 创建为 1；成功替换、切换状态或首次软删时加 1 |
 | `del_flag` | 0 正常、1 已删除；软删保留整篇文档 |
 | `create_time/update_time` | 毫秒精度时间；对外格式为 `YYYY-MM-DD HH:mm:ss.SSS` |
@@ -59,34 +71,36 @@ HTTP 请求由现有检索应用接收，依次经过请求模型、路由、业
 
 | 操作 | 处理过程 |
 |---|---|
-| `POST /ontology` | 校验文档 → 事务判重 → 插入 → 回查完整视图；返回 201 |
-| `GET /ontology/{ontology_id}` | 默认排除软删行；支持 full、document、outline 三种视图，可显式包含已删除行 |
-| `GET /ontology` | 按作用域、状态、关键词和删除标记筛选，分页返回元数据；查询投影不加载整篇文档 |
-| `PUT /ontology/{ontology_id}` | 读取现有行 → 校验整篇文档 → 禁止修改 client/product → 事务内判重并按 revision 更新 → 回查元数据 |
-| `PATCH /ontology/{ontology_id}` | 按 revision 更新 status 和时间、版本；不重写文档，相同状态也使版本加 1 |
-| `DELETE /ontology/{ontology_id}` | 软删除；revision 可选；已删除行重复调用成功，版本不再增加；不存在返回 404 |
-| `POST /ontology/resolve` | 从 active、未删除行中选出一个符合优先级的本体；不合并文档 |
-| `GET /ontology/meta` | 返回结构版本、枚举和限制，不创建数据库连接 |
+| `POST /insert_ontology` | 校验文档 → 事务判重 → 插入 → 回查元数据；返回 201，不带完整文档 |
+| `POST /get_ontology` | 默认排除软删行；支持 full、document、outline 三种视图，可显式包含已删除行 |
+| `POST /list_ontologies` | 按作用域、状态、关键词和删除标记筛选，分页返回元数据；查询投影不加载整篇文档 |
+| `POST /update_ontology` | 读取现有行 → 校验整篇文档 → 禁止修改 client/product → 事务内判重并按 revision 更新 → 回查元数据 |
+| `POST /update_ontology_status` | 按 revision 更新 status 和时间、版本；不重写文档，相同状态也使版本加 1 |
+| `POST /delete_ontology` | 软删除；revision 可选；已删除行重复调用成功，版本不再增加；不存在返回 404 |
+| `POST /select_ontology` | 从 active、未删除行中选出一个符合优先级的本体；不合并文档 |
+| `GET /ontology_meta` | 返回结构版本、枚举和限制，不创建数据库连接 |
 
-PUT、PATCH 的 SQL 条件包含 `ontology_id/revision/del_flag=0`。更新行数为 0 后回查：不存在或已删除返回 404，仍存在则返回 409 和当前 revision。PUT 可以修改名称，未指定 status 时沿用当前状态。DELETE 在已经删除时保持幂等，即使调用方携带旧 revision，也返回已删除结果。
+update_ontology、update_ontology_status 的 SQL 条件包含 `ontology_id/revision/del_flag=0`。更新行数为 0 后回查：不存在或已删除返回 404，仍存在则返回 409 和当前 revision。update_ontology 可以修改名称，未指定 status 时沿用当前状态。delete_ontology 在已经删除时保持幂等，即使调用方携带旧 revision，也返回已删除结果。
 
 full 包含行元数据、删除标记、完整文档和文档字节数；document 顶层返回 `ontology_id/revision/document`；outline 返回类、属性名称及各集合计数。列表只返回元数据，不返回 `data_json`。
 
-成功响应采用 `success/message` 加业务字段。错误响应采用 `success=false/code/message/details`：参数错误 400、未找到 404、业务键或版本或作用域冲突 409、文档过大 413、文档校验失败 422、数据库不可用 503、其他存储错误 500。错误处理器按本体路径区分作用范围，其他路径沿用已有处理器。
+成功响应采用 `success/message` 加业务字段。错误响应采用 `success=false/code/message/details`：参数错误 400、未找到 404、业务键或版本或作用域冲突 409、文档过大 413、文档校验失败 422、数据库不可用 503、其他存储错误 500。错误处理器按匹配路由的 ontology tag 区分作用范围，其他路径沿用已有处理器。
+
+ID 统一从 body.ontology_id 取得，删除的 revision 也移到 body；get_ontology 的 view/include_deleted 和 list_ontologies 的筛选、分页继续使用 query。默认分页复用 DEFAULT_PAGE_SIZE=100，service 统一检查范围并返回带字段路径的400，路由只解析类型。创建及其他写入返回 OntologyMeta；详情为 Full/Outline 联合类型，列表为 OntologyListItem，选取为 SelectedOntologyDocument/Outline 联合类型。
 
 ## 搜索和作用域选取
 
-列表中，未传 client/product 表示不按该字段过滤，传空串表示只取公用作用域。默认每页 20，最多 100。q 匹配名称、说明及别名；deep=1 以 OR 方式额外匹配完整 JSON。`!/%/_` 在 LIKE 查询中转义为字面量。
+列表中，未传 client/product 表示不按该字段过滤，传空串表示只取公用作用域。默认每页 100，最多 100。q 匹配名称、说明及别名；deep=1 以 OR 方式额外匹配完整 JSON。`!/%/_` 在 LIKE 查询中转义为字面量。
 
 关键词排序分值为：名称精确 100、别名精确 90、名称前缀 70、名称包含 50、其他命中 20，再按更新时间和 id 倒序。别名精确匹配使用 JSON_CONTAINS，区分拉丁大小写；别名包含匹配不区分大小写。deep 查询会扫描文档，不使用全文索引。
 
-resolve 的优先级为客户行业 → 客户通用 → 行业 → 全局。仅参与请求作用域的 active、未删除行进入候选；可按 name 进一步精确筛选，同层按更新时间及 id 倒序选一行。
+select_ontology 的优先级为客户行业 → 客户通用 → 行业 → 全局。仅参与请求作用域的 active、未删除行进入候选；可按 name 进一步精确筛选，同层按更新时间及 id 倒序选一行。
 
 只传 client 时，优先该客户 product 为空的通用行；如果只有该客户的行业行，允许选最近更新的一条。`fallback` 严格按选中行的 `(client,product)` 是否等于请求作用域计算。未匹配返回成功响应、`ontology=null`、`scope=none`。`include_document=false` 返回大纲，默认返回选中文档；各层本体不会继承、拼接或补齐。
 
 ## 模板克隆与实际取舍
 
-克隆 CLI 先调用同一 resolve 逻辑选源，因此可能选中回落层；随后校验源文档、深拷贝、改写目标 client/product、再次校验，再调用 create。默认创建 draft；dry-run 只解析、校验和输出摘要，不写入。目标 product 未指定时使用请求的 source-product。模板后续修改不自动传播到已克隆客户。
+克隆 CLI 先调用同一 select_ontology 逻辑选源，因此可能选中回落层；随后校验源文档、深拷贝、改写目标 client/product、再次校验，再调用 insert_ontology。默认创建 draft；dry-run 只解析、校验和输出摘要，不写入。目标 product 未指定时使用请求的 source-product。模板后续修改不自动传播到已克隆客户。
 
 对原设计中矛盾或遗漏处，实际采用以下口径：deep 搜索使用额外 OR；client-only 允许客户行业回落；fallback 采用作用域比较公式；写事务显式使用 REPEATABLE READ 并重试一次死锁；归一化补默认值后重新检查文档上限；insert 返回生成 ID 供回查，document 采用独立响应模型，删除结果保留 del_flag。详细说明见 [API 文档中的实现口径](api.md#v8-设计中相互矛盾处的实现口径)。
 

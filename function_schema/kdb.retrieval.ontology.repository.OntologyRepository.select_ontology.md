@@ -1,16 +1,16 @@
-# kdb.retrieval.ontology.repository.OntologyRepository.resolve
+# kdb.retrieval.ontology.repository.OntologyRepository.select_ontology
 
 ## Signature
 
-`OntologyRepository.resolve(self, client: str, product: str, name: Optional[str]) -> Optional[OntologyRow]`
+`OntologyRepository.select_ontology(self, client: str, product: str, name: Optional[str]) -> Optional[OntologyRow]`
 
 ## Inputs
 
-client/product 默认空串；name 可选精确匹配；include_document 默认 true。
+client/product由service传入，公用维度为空串；name可选精确匹配。
 
 ## Outputs
 
-get/resolve 返回行或 None；list 返回 (元数据列表,total)；insert 返回 ontology_id；UPDATE 返回 rowcount，0 交 service 区分 404/409；故障明确抛 422/503/500，不伪装空结果。
+返回选中作用域的一行完整OntologyRow或None；只选择active未删行，不合并。 故障明确抛422/503/500，不伪装空结果。
 
 ## SQL
 

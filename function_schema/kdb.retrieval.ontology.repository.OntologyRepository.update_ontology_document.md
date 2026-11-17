@@ -1,8 +1,8 @@
-# kdb.retrieval.ontology.repository.OntologyRepository.replace_document
+# kdb.retrieval.ontology.repository.OntologyRepository.update_ontology_document
 
 ## Signature
 
-`OntologyRepository.replace_document(self, ontology_id: str, revision: int, vd: ValidatedDocument, status: str) -> int`
+`OntologyRepository.update_ontology_document(self, ontology_id: str, revision: int, vd: ValidatedDocument, status: str) -> int`
 
 ## Inputs
 
@@ -10,7 +10,7 @@ ontology_id, revision, ValidatedDocument, status；service 先确认作用域不
 
 ## Outputs
 
-get/resolve 返回行或 None；list 返回 (元数据列表,total)；insert 返回 ontology_id；UPDATE 返回 rowcount，0 交 service 区分 404/409；故障明确抛 422/503/500，不伪装空结果。
+返回实际更新行数；0交service按ID回查并区分404/409。 故障明确抛422/503/500，不伪装空结果。
 
 ## SQL
 

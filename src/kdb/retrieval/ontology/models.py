@@ -9,7 +9,7 @@ CARDINALITIES = ("1:1", "1:N", "N:1", "N:M")
 SEVERITIES = ("hard", "soft")
 
 # 用 Literal 而不是 str + validator：生成的 JSON Schema 会直接带 enum/const，
-# 结构约束只在一处维护。DATA_TYPES 等元组供 /ontology/meta 与校验复用。
+# 结构约束只在一处维护。DATA_TYPES 等元组供 /ontology_meta 与校验复用。
 DataType = Literal["string", "integer", "number", "boolean", "date", "datetime", "enum", "object", "array"]
 ItemType = Literal["string", "integer", "number", "boolean", "date", "datetime", "object", "enum"]
 Cardinality = Literal["1:1", "1:N", "N:1", "N:M"]

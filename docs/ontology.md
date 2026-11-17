@@ -52,10 +52,10 @@
 
 | 子能力 | 已实现的业务流程与规则 | 实现与契约依据 |
 |---|---|---|
-| 文档维护与查阅 | 创建、整篇替换、软删、列表及三种详情视图；更新采用版本条件，替换不能改变作用域 | [service.py](../src/kdb/retrieval/ontology/service.py)、[replace 契约](../function_schema/kdb.retrieval.ontology.service.OntologyService.replace.md) |
+| 文档维护与查阅 | 创建、整篇替换、软删、列表及三种详情视图；更新采用版本条件，替换不能改变作用域 | [service.py](../src/kdb/retrieval/ontology/service.py)、[更新契约](../function_schema/kdb.retrieval.ontology.service.OntologyService.update_ontology.md) |
 | 定义一致性校验 | 校验结构、大小、名称唯一性、字段组合与引用；通过后生成投影并写入 | [validation.py](../src/kdb/retrieval/ontology/validation.py)、[校验契约](../function_schema/kdb.retrieval.ontology.validation.validate_document.md) |
-| 可用状态管理 | draft/active 切换带版本；draft 不参与选取，仍占业务键；删除保留文档记录 | [状态契约](../function_schema/kdb.retrieval.ontology.service.OntologyService.patch_status.md)、[删除契约](../function_schema/kdb.retrieval.ontology.service.OntologyService.delete.md) |
-| 按业务作用域取用 | 客户行业 → 客户通用 → 行业 → 全局，只选一篇 active 文档；客户单维请求有明确回落规则 | [resolve 契约](../function_schema/kdb.retrieval.ontology.service.OntologyService.resolve.md)、[接口规则](api.md#业务本体) |
+| 可用状态管理 | draft/active 切换带版本；draft 不参与选取，仍占业务键；删除保留文档记录 | [状态契约](../function_schema/kdb.retrieval.ontology.service.OntologyService.update_ontology_status.md)、[删除契约](../function_schema/kdb.retrieval.ontology.service.OntologyService.delete_ontology.md) |
+| 按业务作用域取用 | 客户行业 → 客户通用 → 行业 → 全局，只选一篇 active 文档；客户单维请求有明确回落规则 | [选取契约](../function_schema/kdb.retrieval.ontology.service.OntologyService.select_ontology.md)、[接口规则](api.md#业务本体) |
 | 模板复用 | 选取源文档、整篇复制、改目标作用域、重新校验；默认 draft，后续修改不自动传播 | [克隆 CLI](../src/kdb/entrypoints/cli/tools/ontology_clone.py)、[克隆契约](../function_schema/kdb.entrypoints.cli.tools.ontology_clone.main.md) |
 
 当前接入入口为本体 HTTP 与克隆 CLI。现有挖掘、知识入库和查询流程尚未调用该服务把本体规则用于业务处理；本体中记录的 condition/effect 是规则定义，不是已经执行的规则引擎。因此总体图表达本体管理的业务归属，实际调用关系仍以协作表和工程依赖图为准。
@@ -112,7 +112,7 @@
 | 调用方 → 被调用方 | 方式与目的 | 代码依据 |
 |---|---|---|
 | 检索 HTTP → 检索业务门面 | Python 调用；把现有协议请求交给查询、入库等业务处理 | [routes.py](../src/kdb/entrypoints/http/retrieval/routes.py)、[application](../src/kdb/retrieval/application/) |
-| 检索 HTTP → 业务本体 | 提供 `/ontology` 的 8 个操作；Python service → repository → 共享 MySQL 连接池，独立于 ES | [ontology_routes.py](../src/kdb/entrypoints/http/retrieval/ontology_routes.py)、[ontology](../src/kdb/retrieval/ontology/) |
+| 检索 HTTP → 业务本体 | 提供 ontology tag 下的 8 个动词式操作；Python service → repository → 共享 MySQL 连接池，独立于 ES | [ontology_routes.py](../src/kdb/entrypoints/http/retrieval/ontology_routes.py)、[ontology](../src/kdb/retrieval/ontology/) |
 | 入库检查 → 查询与相似度辅助 | Python 调用；查找候选并按现有规则判断重复 | [deduplication.py](../src/kdb/retrieval/ingestion/deduplication.py)、[knowledge.py](../src/kdb/shared/similarity/knowledge.py) |
 | 入库准备、查询 → 多模态组装与展示 | Python 调用；prepare 调用 `join_multimodal_contents`；单查询、多查询、分页调用 `render_multimodal_urls` | [prepare.py](../src/kdb/retrieval/ingestion/prepare.py)、[queries.py](../src/kdb/retrieval/search/queries.py)、[multi_query.py](../src/kdb/retrieval/search/multi_query.py)、[pagination.py](../src/kdb/retrieval/search/pagination.py) |
 | 任务管理 → 来源管道 | 子进程运行管道 CLI；不是对管道实现的直接 import | [processes.py](../src/kdb/mining/tasks/processes.py)、[管道 CLI](../src/kdb/entrypoints/cli/mining/) |
@@ -134,7 +134,7 @@
 | 能力 | 主要入口或调用方 | 当前离线回归起点 |
 |---|---|---|
 | 查询、引擎与路由 | 检索 HTTP `/search`、`/web_search`；入库检查；对话复盘 bridge | [HTTP 契约](../tests/retrieval/test_business_http_contract.py)、[ES8 引擎](../tests/retrieval/test_es8_interface.py) |
-| 业务本体 | HTTP `/ontology`；行业→客户的 [克隆 CLI](../src/kdb/entrypoints/cli/tools/ontology_clone.py) | [校验/服务/HTTP/SQL 离线测试](../tests/retrieval/ontology/)、[真实 MySQL 验证](../tests/integrations/ontology/) |
+| 业务本体 | HTTP `/insert_ontology`、`/get_ontology`、`/select_ontology` 等；行业→客户的 [克隆 CLI](../src/kdb/entrypoints/cli/tools/ontology_clone.py) | [校验/服务/HTTP/SQL 离线测试](../tests/retrieval/ontology/)、[真实 MySQL 验证](../tests/integrations/ontology/) |
 | 入库与更新 | HTTP `/insert`；五条管道的批量入库 CLI，包括 Excel | [参数传递](../tests/retrieval/test_insert_check_duplicate_arg.py)、[HTTP 入库](../tests/retrieval/test_insert_ext_info.py)、[Excel 阶段](../tests/mining/test_excel_qa_segment_upload_control.py) |
 | 多模态组装与展示 | 入库 prepare；单查询、多查询、分页；死链清理的重建逻辑 | [内容拼接](../tests/retrieval/test_multimodal_content_assembly.py)、[URL 展示](../tests/mining/test_multimodal_url_filename.py)、[死链清理](../tests/retrieval/maintenance/test_prune_dead_raw_urls.py) |
 | 知识纠错 | `/modify_knowledge`、`/modify_knowledge_direct_update` | [HTTP 协议](../tests/retrieval/test_business_http_contract.py)、[服务初始化](../tests/entry_smoke/test_service_contracts.py)；这些不验证真实模型纠错质量 |

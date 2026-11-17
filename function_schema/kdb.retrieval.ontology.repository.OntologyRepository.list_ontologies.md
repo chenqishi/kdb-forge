@@ -1,16 +1,16 @@
-# kdb.retrieval.ontology.repository.OntologyRepository.list
+# kdb.retrieval.ontology.repository.OntologyRepository.list_ontologies
 
 ## Signature
 
-`OntologyRepository.list(self, client=None, product=None, status=None, q=None, deep=False, include_deleted=False, limit=20, offset=0) -> Tuple[List[OntologyRow], int]`
+`OntologyRepository.list_ontologies(self, client=None, product=None, status=None, q=None, deep=False, include_deleted=False, limit=DEFAULT_PAGE_SIZE, offset=0) -> Tuple[List[OntologyRow], int]`
 
 ## Inputs
 
-client/product/status 可选，空串作用域与未传不同；q、deep、include_deleted、page/page_size。
+client/product/status 可选，空串作用域与未传不同；q、deep、include_deleted、limit/offset；service先验证分页并换算。
 
 ## Outputs
 
-get/resolve 返回行或 None；list 返回 (元数据列表,total)；insert 返回 ontology_id；UPDATE 返回 rowcount，0 交 service 区分 404/409；故障明确抛 422/503/500，不伪装空结果。
+返回(元数据列表,total)，不加载data_json，默认limit复用DEFAULT_PAGE_SIZE=100。 故障明确抛422/503/500，不伪装空结果。
 
 ## SQL
 

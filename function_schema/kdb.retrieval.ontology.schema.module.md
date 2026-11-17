@@ -10,7 +10,7 @@
 
 ## Outputs
 
-模型单一真值生成 Draft 2020-12 JSON Schema，固定$id、indent=2、ensure_ascii=False、sort_keys=True和末尾换行。--write覆盖包内ontology.schema.json；--check一致退出0，否则1。不导入仓储/HTTP，不连接数据库；模块再导出限制常量与枚举。
+模型单一真值生成 Draft 2020-12 JSON Schema，固定$id、indent=2、ensure_ascii=False、sort_keys=True和末尾换行。--write覆盖包内ontology.schema.json；--check一致退出0，否则1。不导入仓储/HTTP，不连接数据库；模块再导出限制常量与枚举；DEFAULT_PAGE_SIZE=100、MAX_PAGE_SIZE=100，由路由、service和repository复用。
 
 ## SQL
 

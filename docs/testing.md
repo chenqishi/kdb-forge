@@ -52,7 +52,7 @@ KDB_OFFLINE_OUTPUT_DIR=/absolute/path/to/test-output ./run_offline_tests.sh -q -
 
 测试项数表示离线断言（含参数化用例），不是生产日志中约 1000 条请求的重放。生产配对回放、真实模型质量、后端可用性必须单独记录。
 
-业务本体的校验、schema 产物、SQL 参数/异常/事务、服务、HTTP 与克隆 CLI 均进入默认离线回归：
+业务本体的校验、schema 产物、SQL 参数/异常/事务、服务、HTTP 与克隆 CLI 均进入默认离线回归；HTTP 覆盖8条动词路径、body ID/revision 校验、100条默认分页、写响应meta、结构化响应模型，以及代理前缀下按tag返回400/422：
 
 ```bash
 ./run_offline_tests.sh --group explicit tests/retrieval/ontology -q
@@ -66,7 +66,7 @@ KDB_ONTOLOGY_TEST_MYSQL=1 KDB_MYSQL_CONFIG=/absolute/path/to/dedicated_test.json
   python tests/integrations/ontology/test_mysql_repository.py
 ```
 
-端到端 13 步验收见 [acceptance.sh](../resources/ontology/acceptance.sh)。需 curl/jq、已迁移且种子业务键为空的测试库，以及指向该库的本地测试 HTTP 实例。脚本包装原始种子为 data_json 请求，覆盖草稿/激活、回落、旧版本拒绝、删除重建及不同 product 同名并存。脚本会写入测试种子，结束后保留全局/行业/客户草稿行供检查；不要对生产服务执行。
+端到端 13 步验收见 [acceptance.sh](../resources/ontology/acceptance.sh)。需 curl/jq、已迁移且种子业务键为空的测试库，以及指向该库的本地测试 HTTP 实例。脚本使用 /insert_ontology、/update_ontology_status、/update_ontology、/delete_ontology、/select_ontology 及 /ontology_meta；删除用POST与JSON body。脚本包装原始种子为 data_json 请求，覆盖草稿/激活、回落、旧版本拒绝、删除重建及不同 product 同名并存。脚本会写入测试种子，结束后保留全局/行业/客户草稿行供检查；不要对生产服务执行。
 
 ```bash
 BASE=http://127.0.0.1:8003 bash resources/ontology/acceptance.sh

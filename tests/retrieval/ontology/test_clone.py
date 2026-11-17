@@ -11,14 +11,18 @@ ARGS = ["--source-client", "", "--source-product", "ecommerce", "--target-client
 
 def test_clone_dry_run_and_draft_do_not_change_source(doc, service, repo, capsys):
     doc.update(product="ecommerce")
-    source = service.create({"data_json": doc})["ontology"]
+    source = service.insert_ontology({"data_json": doc})["ontology"]
     assert main(ARGS + ["--dry-run"], service=service) == 0
     assert len(repo.rows) == 1
     assert json.loads(capsys.readouterr().out)["status"] == "draft"
     assert main(ARGS, service=service) == 0
     created = json.loads(capsys.readouterr().out)["ontology"]
     assert created["client"] == "wayfair" and created["status"] == "draft"
-    assert service.get(source["ontology_id"])["ontology"] == source
+    unchanged = service.get_ontology(source["ontology_id"])["ontology"]
+    assert all(unchanged[key] == value for key, value in source.items())
+    assert unchanged["data_json"]["client"] == ""
+    assert unchanged["data_json"]["product"] == "ecommerce"
+    assert "data_json" not in created
     assert main(ARGS, service=service) == 3
     assert json.loads(capsys.readouterr().err)["code"] == "ONTOLOGY_NAME_CONFLICT"
 
@@ -27,7 +31,7 @@ def test_clone_dry_run_and_draft_do_not_change_source(doc, service, repo, capsys
                                                  ("ONTOLOGY_VALIDATION_FAILED", 422, 4)])
 def test_clone_error_exit_codes(code, status, expected, capsys):
     service = Mock()
-    service.resolve.side_effect = OntologyError(code, status, "failed")
+    service.select_ontology.side_effect = OntologyError(code, status, "failed")
     assert main(ARGS, service=service) == expected
     assert json.loads(capsys.readouterr().err)["code"] == code
 

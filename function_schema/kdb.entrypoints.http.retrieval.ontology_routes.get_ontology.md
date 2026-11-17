@@ -2,11 +2,11 @@
 
 ## Signature
 
-`get_ontology(ontology_id: OntologyID, view: Literal['full', 'document', 'outline']='full', include_deleted: bool=False, service: OntologyService=Depends(get_service))`
+`get_ontology(body: GetOntologyRequest, view: Literal["full", "document", "outline"] = "full", include_deleted: bool = False, service: OntologyService = Depends(get_service))`
 
 ## Inputs
 
-路径ontology_id；view=full/document/outline，include_deleted默认false。 service经Depends(get_service)注入。
+body.ontology_id为32位小写hex；view=full/document/outline及include_deleted仍为query参数，默认full/false。 service经Depends(get_service)注入。
 
 ## Outputs
 

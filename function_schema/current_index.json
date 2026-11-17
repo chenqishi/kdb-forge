@@ -1,5 +1,5 @@
 {
-  "contract_count": 579,
+  "contract_count": 578,
   "modules": [
     {
       "source_file": "scripts/scheduled/chat_mining.sh",
@@ -187,8 +187,8 @@
       "source_file": "src/kdb/entrypoints/http/retrieval/ontology_routes.py",
       "contracts": [
         {
-          "symbol": "create_ontology",
-          "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.create_ontology.md"
+          "symbol": "insert_ontology",
+          "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.insert_ontology.md"
         },
         {
           "symbol": "delete_ontology",
@@ -207,20 +207,20 @@
           "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.ontology_meta.md"
         },
         {
-          "symbol": "patch_status",
-          "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.patch_status.md"
+          "symbol": "update_ontology_status",
+          "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.update_ontology_status.md"
         },
         {
           "symbol": "register_ontology_routes",
           "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.register_ontology_routes.md"
         },
         {
-          "symbol": "replace_ontology",
-          "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.replace_ontology.md"
+          "symbol": "update_ontology",
+          "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.update_ontology.md"
         },
         {
-          "symbol": "resolve_ontology",
-          "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.resolve_ontology.md"
+          "symbol": "select_ontology",
+          "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.select_ontology.md"
         }
       ]
     },
@@ -2274,36 +2274,32 @@
       "source_file": "src/kdb/retrieval/ontology/repository.py",
       "contracts": [
         {
-          "symbol": "OntologyRepository.get_by_id",
-          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.get_by_id.md"
+          "symbol": "OntologyRepository.select_ontology_by_id",
+          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.select_ontology_by_id.md"
         },
         {
-          "symbol": "OntologyRepository.insert_if_absent",
-          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.insert_if_absent.md"
+          "symbol": "OntologyRepository.insert_ontology",
+          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.insert_ontology.md"
         },
         {
-          "symbol": "OntologyRepository.list",
-          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.list.md"
+          "symbol": "OntologyRepository.list_ontologies",
+          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.list_ontologies.md"
         },
         {
-          "symbol": "OntologyRepository.probe",
-          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.probe.md"
+          "symbol": "OntologyRepository.update_ontology_document",
+          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.update_ontology_document.md"
         },
         {
-          "symbol": "OntologyRepository.replace_document",
-          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.replace_document.md"
+          "symbol": "OntologyRepository.select_ontology",
+          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.select_ontology.md"
         },
         {
-          "symbol": "OntologyRepository.resolve",
-          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.resolve.md"
+          "symbol": "OntologyRepository.delete_ontology",
+          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.delete_ontology.md"
         },
         {
-          "symbol": "OntologyRepository.soft_delete",
-          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.soft_delete.md"
-        },
-        {
-          "symbol": "OntologyRepository.update_status",
-          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.update_status.md"
+          "symbol": "OntologyRepository.update_ontology_status",
+          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.update_ontology_status.md"
         },
         {
           "symbol": "get_connector",
@@ -2324,32 +2320,32 @@
       "source_file": "src/kdb/retrieval/ontology/service.py",
       "contracts": [
         {
-          "symbol": "OntologyService.create",
-          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.create.md"
+          "symbol": "OntologyService.insert_ontology",
+          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.insert_ontology.md"
         },
         {
-          "symbol": "OntologyService.delete",
-          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.delete.md"
+          "symbol": "OntologyService.delete_ontology",
+          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.delete_ontology.md"
         },
         {
-          "symbol": "OntologyService.get",
-          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.get.md"
+          "symbol": "OntologyService.get_ontology",
+          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.get_ontology.md"
         },
         {
-          "symbol": "OntologyService.list",
-          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.list.md"
+          "symbol": "OntologyService.list_ontologies",
+          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.list_ontologies.md"
         },
         {
-          "symbol": "OntologyService.patch_status",
-          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.patch_status.md"
+          "symbol": "OntologyService.update_ontology_status",
+          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.update_ontology_status.md"
         },
         {
-          "symbol": "OntologyService.replace",
-          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.replace.md"
+          "symbol": "OntologyService.update_ontology",
+          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.update_ontology.md"
         },
         {
-          "symbol": "OntologyService.resolve",
-          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.resolve.md"
+          "symbol": "OntologyService.select_ontology",
+          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.select_ontology.md"
         }
       ]
     },

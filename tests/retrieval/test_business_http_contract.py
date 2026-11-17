@@ -23,7 +23,8 @@ def test_openapi_matches_business_contract():
     from copy import deepcopy
     actual = deepcopy(service.app.openapi())
     expected = CONTRACT["openapi"]
-    added_paths = {"/ontology", "/ontology/meta", "/ontology/resolve", "/ontology/{ontology_id}"}
+    added_paths = {"/insert_ontology", "/get_ontology", "/list_ontologies", "/update_ontology",
+                   "/update_ontology_status", "/delete_ontology", "/select_ontology", "/ontology_meta"}
     assert set(actual["paths"]) == set(expected["paths"]) | added_paths
     for path in added_paths:
         actual["paths"].pop(path)

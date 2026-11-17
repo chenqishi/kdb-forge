@@ -1,8 +1,8 @@
-# kdb.retrieval.ontology.repository.OntologyRepository.get_by_id
+# kdb.retrieval.ontology.repository.OntologyRepository.select_ontology_by_id
 
 ## Signature
 
-`OntologyRepository.get_by_id(self, ontology_id: str) -> Optional[OntologyRow]`
+`OntologyRepository.select_ontology_by_id(self, ontology_id: str) -> Optional[OntologyRow]`
 
 ## Inputs
 
@@ -10,7 +10,7 @@
 
 ## Outputs
 
-get/resolve 返回行或 None；list 返回 (元数据列表,total)；insert 返回 ontology_id；UPDATE 返回 rowcount，0 交 service 区分 404/409；故障明确抛 422/503/500，不伪装空结果。
+按ontology_id返回完整OntologyRow或None，包含软删行，由service判断可见性。 故障明确抛422/503/500，不伪装空结果。
 
 ## SQL
 

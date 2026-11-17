@@ -1,8 +1,8 @@
-# kdb.retrieval.ontology.service.OntologyService.resolve
+# kdb.retrieval.ontology.service.OntologyService.select_ontology
 
 ## Signature
 
-`OntologyService.resolve(self, client: str='', product: str='', name: Optional[str]=None, include_document: bool=True) -> dict`
+`OntologyService.select_ontology(self, client: str = "", product: str = "", name: Optional[str] = None, include_document: bool = True) -> dict`
 
 ## Inputs
 

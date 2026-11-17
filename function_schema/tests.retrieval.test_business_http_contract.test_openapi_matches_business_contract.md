@@ -6,7 +6,7 @@ The retrieval app and `tests/fixtures/business_retrieval_contract.json`, the cur
 
 ## Outputs
 
-The twelve original OpenAPI paths, request/response models, aliases, defaults and declared validation responses equal the unchanged fixture. The only extra paths are the four ontology paths (eight operations), whose new schemas and responses are covered separately in tests/retrieval/ontology/test_http_contract.py. No startup lifecycle or external I/O executes.
+The twelve original OpenAPI paths, request/response models, aliases, defaults and declared validation responses equal the unchanged fixture. The only extra paths are the eight ontology verb paths (seven POST operations and GET /ontology_meta), whose new schemas and responses are covered separately in tests/retrieval/ontology/test_http_contract.py. No startup lifecycle or external I/O executes.
 
 ## SQL
 

@@ -10,7 +10,7 @@
 
 ## Outputs
 
-Pydantic v2 strict/extra=forbid模型，描述文档或HTTP请求/响应的字段、默认值、长度、类型和Literal枚举；不执行IO。文档的跨节点唯一性/引用校验交validation；HTTP请求错误交专属400处理器。
+Pydantic v2 strict/extra=forbid模型，描述文档或HTTP请求/响应的字段、默认值、长度、类型和Literal枚举；不执行IO。文档的跨节点唯一性/引用校验交validation；HTTP请求错误交按ontology tag作用的400处理器。Get/Update/UpdateStatus/Delete请求的ontology_id为body内32位小写hex；Delete的revision也是body字段。创建回OntologyMeta；详情采用OntologyFull/OntologyOutline联合类型；列表采用OntologyListItem；选取采用SelectedOntologyDocument/OntologyOutline联合类型并保留原字段集合。
 
 ## SQL
 

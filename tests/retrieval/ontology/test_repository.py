@@ -28,7 +28,7 @@ def sql():
 def test_list_score_where_and_pagination_parameter_order(sql):
     repo, _, conn, cursor = sql
     q = "a!%_"
-    repo.list(client="wayfair", status="active", q=q, limit=20, offset=40)
+    repo.list_ontologies(client="wayfair", status="active", q=q, limit=20, offset=40)
     count_sql, count_params = cursor.execute.call_args_list[-2].args
     page_sql, params = cursor.execute.call_args_list[-1].args
     assert count_params == ("wayfair", "active", "%a!!!%!_%", "%a!!!%!_%", "%a!!!%!_%")
@@ -42,20 +42,20 @@ def test_list_score_where_and_pagination_parameter_order(sql):
 
 def test_list_empty_filters_and_deep_is_additional_or_match(sql):
     repo, _, _, cursor = sql
-    repo.list(client="", product=None, q="inner", deep=True, include_deleted=True)
+    repo.list_ontologies(client="", product=None, q="inner", deep=True, include_deleted=True)
     sql_text, params = cursor.execute.call_args_list[-1].args
     assert " OR CAST(`data_json` AS CHAR) LIKE" in sql_text
     assert "`del_flag` = 0" not in sql_text
     assert "`product` = %s" not in sql_text
     assert params[4] == ""
-    repo.list(include_deleted=True)
+    repo.list_ontologies(include_deleted=True)
     assert "WHERE 1=1" in cursor.execute.call_args.args[0]
 
 
 def test_insert_and_duplicate_check_share_transaction(doc, sql):
     repo, _, conn, cursor = sql
     vd = validate_document(doc)
-    oid = repo.insert_if_absent(vd, "draft")
+    oid = repo.insert_ontology(vd, "draft")
     assert len(oid) == 32
     calls = cursor.execute.call_args_list
     assert calls[-2].args[0].endswith("FOR UPDATE")
@@ -72,7 +72,7 @@ def test_conflict_rolls_back_and_no_insert(doc, sql):
     repo, _, conn, cursor = sql
     cursor.fetchall.return_value = [{"ontology_id": "a" * 32, "status": "draft", "revision": 4}]
     with pytest.raises(OntologyError) as caught:
-        repo.insert_if_absent(validate_document(doc), "active")
+        repo.insert_ontology(validate_document(doc), "active")
     assert caught.value.details == [{"existing_ontology_id": "a" * 32, "status": "draft", "revision": 4}]
     assert not any("INSERT" in call.args[0] for call in cursor.execute.call_args_list)
     conn.rollback.assert_called_once()
@@ -84,7 +84,7 @@ def test_put_checks_new_name_excluding_self_and_binds_version(doc, sql):
     repo, _, _, cursor = sql
     oid = "b" * 32
     doc["name"] = "new"
-    assert repo.replace_document(oid, 5, validate_document(doc), "draft") == 1
+    assert repo.update_ontology_document(oid, 5, validate_document(doc), "draft") == 1
     check, params = cursor.execute.call_args_list[-2].args
     assert "`ontology_id` <> %s" in check
     assert params == ("", "", "new", oid)
@@ -102,7 +102,7 @@ def test_sql_errors_map_and_release(errno, status, code, sql):
     repo, _, conn, cursor = sql
     cursor.execute.side_effect = DriverError(errno)
     with pytest.raises(OntologyError) as caught:
-        repo.update_status("0" * 32, 1, "active")
+        repo.update_ontology_status("0" * 32, 1, "active")
     assert (caught.value.http_status, caught.value.code) == (status, code)
     assert str(errno) not in caught.value.message
     cursor.close.assert_called_once()
@@ -113,27 +113,27 @@ def test_sql_errors_map_and_release(errno, status, code, sql):
 def test_deadlock_retries_entire_transaction_once(sql):
     repo, _, conn, cursor = sql
     cursor.execute.side_effect = [None, DriverError(1213), None, None]
-    assert repo.update_status("0" * 32, 1, "active") == 1
+    assert repo.update_ontology_status("0" * 32, 1, "active") == 1
     assert conn.start_transaction.call_count == 2
     conn.rollback.assert_called_once()
     conn.commit.assert_called_once()
     assert conn.close.call_count == 2
     cursor.execute.side_effect = DriverError(1213)
     with pytest.raises(OntologyError) as caught:
-        repo.update_status("0" * 32, 1, "active")
+        repo.update_ontology_status("0" * 32, 1, "active")
     assert caught.value.http_status == 503
 
 
 def test_uuid_collision_regenerates_once(doc, sql):
     repo, _, conn, cursor = sql
     cursor.execute.side_effect = [None, None, DriverError(1062), None]
-    oid = repo.insert_if_absent(validate_document(doc), "active")
+    oid = repo.insert_ontology(validate_document(doc), "active")
     first_id = cursor.execute.call_args_list[-2].args[1][0]
     assert oid != first_id
     conn.commit.assert_called_once()
     cursor.execute.side_effect = [None, None, DriverError(1062), DriverError(1062)]
     with pytest.raises(OntologyError) as caught:
-        repo.insert_if_absent(validate_document(doc), "active")
+        repo.insert_ontology(validate_document(doc), "active")
     assert caught.value.code == "ONTOLOGY_INTERNAL_ERROR"
 
 
@@ -141,28 +141,28 @@ def test_connection_cursor_and_close_failure_paths(sql):
     repo, connector, conn, cursor = sql
     connector.get_connection.return_value = None
     with pytest.raises(OntologyError) as caught:
-        repo.get_by_id("0" * 32)
+        repo.select_ontology_by_id("0" * 32)
     assert caught.value.http_status == 503
     connector.get_connection.return_value = conn
     conn.cursor.side_effect = DriverError(2006)
     with pytest.raises(OntologyError):
-        repo.get_by_id("0" * 32)
+        repo.select_ontology_by_id("0" * 32)
     conn.close.assert_called_once()
     conn.cursor.side_effect = None
     conn.close.reset_mock()
     cursor.close.side_effect = RuntimeError("close")
-    assert repo.get_by_id("0" * 32) is None
+    assert repo.select_ontology_by_id("0" * 32) is None
     conn.close.assert_called_once()
 
 
 def test_resolve_sql_filters_and_parameter_order(sql):
     repo, _, _, cursor = sql
-    repo.resolve("wayfair", "ecommerce", "named")
+    repo.select_ontology("wayfair", "ecommerce", "named")
     statement, params = cursor.execute.call_args.args
     assert params == ("wayfair", "wayfair", "ecommerce", "ecommerce", "wayfair", "ecommerce", "named")
     assert "`status` = 'active'" in statement and statement.endswith("LIMIT 1")
     assert "`id` DESC" in statement
-    repo.resolve("wayfair", "", None)
+    repo.select_ontology("wayfair", "", None)
     assert cursor.execute.call_args.args[1] == ("wayfair", "wayfair", "", "", "wayfair", "", "wayfair")
 
 

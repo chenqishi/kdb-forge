@@ -1,12 +1,12 @@
-# kdb.retrieval.ontology.service.OntologyService.get
+# kdb.retrieval.ontology.service.OntologyService.get_ontology
 
 ## Signature
 
-`OntologyService.get(self, ontology_id: str, view: str='full', include_deleted: bool=False) -> dict`
+`OntologyService.get_ontology(self, ontology_id: str, view: str = "full", include_deleted: bool = False) -> dict`
 
 ## Inputs
 
-路径ontology_id；view=full/document/outline，include_deleted默认false。
+HTTP body.ontology_id；view=full/document/outline，include_deleted默认false。
 
 ## Outputs
 

@@ -75,10 +75,12 @@ class MySQLRepositoryTests(unittest.TestCase):
     def create(self, client="", product="", name=None, status="active", document=None):
         doc = deepcopy(self.doc if document is None else document)
         doc.update(client=client, product=product, name=name or self.prefix)
-        return self.service.create({"data_json": doc, "status": status})["ontology"]
+        meta = self.service.insert_ontology({"data_json": doc, "status": status})["ontology"]
+        self.assertNotIn("data_json", meta)
+        return self.service.get_ontology(meta["ontology_id"])["ontology"]
 
     def resolve(self, client="", product="", name=None):
-        return self.service.resolve(client, product, name or self.prefix)
+        return self.service.select_ontology(client, product, name or self.prefix)
 
     def assert_error(self, code, fn):
         with self.assertRaises(OntologyError) as caught:
@@ -89,7 +91,7 @@ class MySQLRepositoryTests(unittest.TestCase):
     def test_D01_global_insert_and_schema(self):
         row = self.create()
         self.assertEqual(row["revision"], 1)
-        self.assertEqual(self.repo.get_by_id(row["ontology_id"]).data_json, row["data_json"])
+        self.assertEqual(self.repo.select_ontology_by_id(row["ontology_id"]).data_json, row["data_json"])
         conn = self.connector.get_connection(); cursor = conn.cursor(dictionary=True)
         try:
             cursor.execute("SHOW INDEX FROM dops_ontology")
@@ -109,10 +111,10 @@ class MySQLRepositoryTests(unittest.TestCase):
         for _ in range(3):
             row = self.create(self.client, "ecommerce")
             ids.add(row["ontology_id"])
-            self.service.delete(row["ontology_id"], 1)
-            repeated = self.service.delete(row["ontology_id"], 1)
+            self.service.delete_ontology(row["ontology_id"], 1)
+            repeated = self.service.delete_ontology(row["ontology_id"], 1)
             self.assertEqual(repeated["ontology"]["revision"], 2)
-            self.assertEqual(repeated["message"], "already deleted")
+            self.assertEqual(repeated["message"], "本体已删除")
         self.assertEqual(len(ids), 3)
 
     def test_D04_draft_reserves_key_but_does_not_resolve(self):
@@ -132,7 +134,7 @@ class MySQLRepositoryTests(unittest.TestCase):
     def test_D06_delete_customer_falls_back(self):
         industry = self.create(product="ecommerce")
         customer = self.create(self.client, "ecommerce")
-        self.service.delete(customer["ontology_id"])
+        self.service.delete_ontology(customer["ontology_id"])
         self.assertEqual(self.resolve(self.client, "ecommerce")["ontology"]["ontology_id"], industry["ontology_id"])
 
     def test_D07_client_only_prefers_generic_and_can_fall_back_to_industry(self):
@@ -141,7 +143,7 @@ class MySQLRepositoryTests(unittest.TestCase):
         generic = self.create(self.client)
         self.assertEqual(self.resolve(self.client)["ontology"]["ontology_id"], generic["ontology_id"])
         self.assertFalse(self.resolve(self.client)["fallback"])
-        self.service.delete(generic["ontology_id"])
+        self.service.delete_ontology(generic["ontology_id"])
         self.assertEqual(self.resolve(self.client)["ontology"]["ontology_id"], specific["ontology_id"])
 
     def test_D08_replace_updates_version_time_and_projection(self):
@@ -149,25 +151,25 @@ class MySQLRepositoryTests(unittest.TestCase):
         doc = row["data_json"]
         doc.update(name=self.prefix + " renamed", alias_name=["别名"], description="修改后")
         time.sleep(0.003)
-        result = self.service.replace(row["ontology_id"], {"data_json": doc, "revision": 1})["ontology"]
+        result = self.service.update_ontology(row["ontology_id"], {"data_json": doc, "revision": 1})["ontology"]
         self.assertEqual(result["revision"], 2)
         self.assertGreater(result["update_time"], row["update_time"])
-        stored = self.repo.get_by_id(row["ontology_id"])
+        stored = self.repo.select_ontology_by_id(row["ontology_id"])
         self.assertEqual((stored.name, stored.alias_name, stored.description), (doc["name"], doc["alias_name"], doc["description"]))
 
     def test_D09_stale_replace_returns_zero_and_service_conflict(self):
         row = self.create()
         vd = validate_document(row["data_json"])
-        self.assertEqual(self.repo.replace_document(row["ontology_id"], 1, vd, "active"), 1)
-        self.assertEqual(self.repo.replace_document(row["ontology_id"], 1, vd, "active"), 0)
-        error = self.assert_error("ONTOLOGY_REVISION_CONFLICT", lambda: self.service.replace(row["ontology_id"], {"data_json": vd.document, "revision": 1}))
+        self.assertEqual(self.repo.update_ontology_document(row["ontology_id"], 1, vd, "active"), 1)
+        self.assertEqual(self.repo.update_ontology_document(row["ontology_id"], 1, vd, "active"), 0)
+        error = self.assert_error("ONTOLOGY_REVISION_CONFLICT", lambda: self.service.update_ontology(row["ontology_id"], {"data_json": vd.document, "revision": 1}))
         self.assertEqual(error.details, [{"current_revision": 2}])
 
     def test_D10_delete_stale_revision(self):
         row = self.create()
-        self.service.patch_status(row["ontology_id"], {"status": "draft", "revision": 1})
-        self.assert_error("ONTOLOGY_REVISION_CONFLICT", lambda: self.service.delete(row["ontology_id"], 1))
-        self.assertEqual(self.repo.get_by_id(row["ontology_id"]).del_flag, 0)
+        self.service.update_ontology_status(row["ontology_id"], {"status": "draft", "revision": 1})
+        self.assert_error("ONTOLOGY_REVISION_CONFLICT", lambda: self.service.delete_ontology(row["ontology_id"], 1))
+        self.assertEqual(self.repo.select_ontology_by_id(row["ontology_id"]).del_flag, 0)
 
     def test_D11_large_chinese_and_emoji_roundtrip(self):
         doc = deepcopy(self.doc)
@@ -175,7 +177,7 @@ class MySQLRepositoryTests(unittest.TestCase):
             "description": "中文🙂" * 100, "data_type": "string"} for i in range(200)]
         doc["object_types"].append(dict(deepcopy(doc["object_types"][0]), name="第二类"))
         row = self.create(document=doc)
-        read = self.repo.get_by_id(row["ontology_id"])
+        read = self.repo.select_ontology_by_id(row["ontology_id"])
         self.assertGreater(row["document_bytes"], 300000)
         self.assertEqual(document_size(read.data_json), row["document_bytes"])
         self.assertEqual(read.data_json, row["data_json"])
@@ -209,22 +211,22 @@ class MySQLRepositoryTests(unittest.TestCase):
         vd = validate_document(doc)
         def create():
             try:
-                return repo.insert_if_absent(vd, "active")
+                return repo.insert_ontology(vd, "active")
             except OntologyError as exc:
                 return exc.code
         with ThreadPoolExecutor(max_workers=2) as pool:
             results = list(pool.map(lambda _: create(), range(2)))
         self.assertEqual(results.count("ONTOLOGY_NAME_CONFLICT"), 1, results)
         self.assertEqual(len([r for r in results if len(r) == 32]), 1)
-        self.assertEqual(self.repo.list(client=self.client)[1], 1)
+        self.assertEqual(self.repo.list_ontologies(client=self.client)[1], 1)
 
     def test_D14_rename_collision_keeps_both_documents(self):
         first = self.create(self.client)
         second = self.create(self.client, name=self.prefix + "other")
         changed = dict(second["data_json"], name=first["name"])
-        self.assert_error("ONTOLOGY_NAME_CONFLICT", lambda: self.service.replace(second["ontology_id"], {"data_json": changed, "revision": 1}))
-        self.assertEqual(self.repo.get_by_id(second["ontology_id"]).name, second["name"])
-        self.assertEqual(self.repo.get_by_id(first["ontology_id"]).revision, 1)
+        self.assert_error("ONTOLOGY_NAME_CONFLICT", lambda: self.service.update_ontology(second["ontology_id"], {"data_json": changed, "revision": 1}))
+        self.assertEqual(self.repo.select_ontology_by_id(second["ontology_id"]).name, second["name"])
+        self.assertEqual(self.repo.select_ontology_by_id(first["ontology_id"]).revision, 1)
 
     def test_D15_same_name_different_product_and_global(self):
         self.create()
@@ -236,15 +238,15 @@ class MySQLRepositoryTests(unittest.TestCase):
         doc = dict(self.doc, alias_name=["alias"], description="literal !%_ token")
         doc["object_types"][0]["attributes"].append({"name": "internal_unique_term", "data_type": "string"})
         created = self.create(self.client, document=doc)
-        self.assertEqual(self.repo.list(client=self.client, q="!%_")[1], 1)
-        self.assertEqual(self.repo.list(client=self.client, q="internal_unique_term")[1], 0)
-        self.assertEqual(self.repo.list(client=self.client, q="internal_unique_term", deep=True)[1], 1)
-        self.assertEqual(self.repo.list(client=self.client, q="alias")[0][0].ontology_id, created["ontology_id"])
+        self.assertEqual(self.repo.list_ontologies(client=self.client, q="!%_")[1], 1)
+        self.assertEqual(self.repo.list_ontologies(client=self.client, q="internal_unique_term")[1], 0)
+        self.assertEqual(self.repo.list_ontologies(client=self.client, q="internal_unique_term", deep=True)[1], 1)
+        self.assertEqual(self.repo.list_ontologies(client=self.client, q="alias")[0][0].ontology_id, created["ontology_id"])
 
     def test_collation_and_same_status_patch(self):
         row = self.create(self.client, name=self.prefix + " Café")
         self.assert_error("ONTOLOGY_NAME_CONFLICT", lambda: self.create(self.client, name=self.prefix + " CAFE"))
-        result = self.service.patch_status(row["ontology_id"], {"status": "active", "revision": 1})
+        result = self.service.update_ontology_status(row["ontology_id"], {"status": "active", "revision": 1})
         self.assertEqual(result["ontology"]["revision"], 2)
 
 

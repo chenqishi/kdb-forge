@@ -1,8 +1,8 @@
-# kdb.retrieval.ontology.repository.OntologyRepository.insert_if_absent
+# kdb.retrieval.ontology.repository.OntologyRepository.insert_ontology
 
 ## Signature
 
-`OntologyRepository.insert_if_absent(self, vd: ValidatedDocument, status: str) -> str`
+`OntologyRepository.insert_ontology(self, vd: ValidatedDocument, status: str) -> str`
 
 ## Inputs
 
@@ -10,7 +10,7 @@ ValidatedDocument 及 draft/active；UUID4 hex 由仓储生成并返回。
 
 ## Outputs
 
-get/resolve 返回行或 None；list 返回 (元数据列表,total)；insert 返回 ontology_id；UPDATE 返回 rowcount，0 交 service 区分 404/409；故障明确抛 422/503/500，不伪装空结果。
+返回新生成的ontology_id；同一业务键的未删行冲突返回409，draft也占业务键。 故障明确抛422/503/500，不伪装空结果。
 
 ## SQL
 

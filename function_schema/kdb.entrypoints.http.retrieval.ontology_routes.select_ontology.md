@@ -1,8 +1,8 @@
-# kdb.entrypoints.http.retrieval.ontology_routes.resolve_ontology
+# kdb.entrypoints.http.retrieval.ontology_routes.select_ontology
 
 ## Signature
 
-`resolve_ontology(body: ResolveRequest, service: OntologyService=Depends(get_service))`
+`select_ontology(body: SelectOntologyRequest, service: OntologyService = Depends(get_service))`
 
 ## Inputs
 

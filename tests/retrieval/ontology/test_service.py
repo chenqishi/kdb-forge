@@ -9,12 +9,14 @@ from kdb.retrieval.ontology.service import OntologyService, describe_scope
 
 def test_create_projection_status_and_conflict(doc, repo, service):
     doc.update(client="wayfair", product="ecommerce")
-    created = service.create({"data_json": doc})["ontology"]
+    created = service.insert_ontology({"data_json": doc})["ontology"]
     assert created["revision"] == 1
-    assert created["client"] == created["data_json"]["client"] == "wayfair"
+    assert created["client"] == "wayfair"
+    assert "data_json" not in created
+    assert service.get_ontology(created["ontology_id"])["ontology"]["data_json"]["client"] == "wayfair"
     assert sum(call[0] == "insert" for call in repo.calls) == 1
     with pytest.raises(OntologyError) as caught:
-        service.create({"data_json": doc, "status": "draft"})
+        service.insert_ontology({"data_json": doc, "status": "draft"})
     assert caught.value.code == "ONTOLOGY_NAME_CONFLICT"
     assert caught.value.details[0]["existing_ontology_id"] == created["ontology_id"]
 
@@ -22,49 +24,49 @@ def test_create_projection_status_and_conflict(doc, repo, service):
 def test_invalid_status_never_calls_repository(doc):
     repo = Mock()
     with pytest.raises(OntologyError) as caught:
-        OntologyService(repo).create({"data_json": doc, "status": "invalid"})
+        OntologyService(repo).insert_ontology({"data_json": doc, "status": "invalid"})
     assert caught.value.http_status == 400
     assert repo.mock_calls == []
 
 
 def test_replace_scope_conflict_and_not_found_order(doc, repo, service):
-    oid = service.create({"data_json": doc})["ontology"]["ontology_id"]
+    oid = service.insert_ontology({"data_json": doc})["ontology"]["ontology_id"]
     doc["client"] = "changed"
     with pytest.raises(OntologyError) as caught:
-        service.replace(oid, {"data_json": doc, "revision": 1})
+        service.update_ontology(oid, {"data_json": doc, "revision": 1})
     assert caught.value.code == "ONTOLOGY_SCOPE_IMMUTABLE"
     assert not any(call[0] == "replace" for call in repo.calls)
     repo.calls.clear()
     with pytest.raises(OntologyError) as caught:
-        service.replace("0" * 32, {"data_json": None, "revision": 1})
+        service.update_ontology("0" * 32, {"data_json": None, "revision": 1})
     assert caught.value.http_status == 404
     assert repo.calls == [("get", "0" * 32)]
 
 
 def test_replace_stale_revision_and_deleted_cannot_be_replaced(doc, repo, service):
-    oid = service.create({"data_json": doc})["ontology"]["ontology_id"]
+    oid = service.insert_ontology({"data_json": doc})["ontology"]["ontology_id"]
     repo.rows[oid].revision = 5
     with pytest.raises(OntologyError) as caught:
-        service.replace(oid, {"data_json": doc, "revision": 1})
+        service.update_ontology(oid, {"data_json": doc, "revision": 1})
     assert caught.value.details == [{"current_revision": 5}]
     assert caught.value.code == "ONTOLOGY_REVISION_CONFLICT"
-    service.delete(oid)
+    service.delete_ontology(oid)
     with pytest.raises(OntologyError) as caught:
-        service.patch_status(oid, {"status": "active", "revision": 6})
+        service.update_ontology_status(oid, {"status": "active", "revision": 6})
     assert caught.value.http_status == 404
 
 
 def test_delete_idempotence_recreation_and_missing(doc, service):
     for _ in range(3):
-        oid = service.create({"data_json": doc})["ontology"]["ontology_id"]
-        first = service.delete(oid, 1)
-        second = service.delete(oid, 1)
+        oid = service.insert_ontology({"data_json": doc})["ontology"]["ontology_id"]
+        first = service.delete_ontology(oid, 1)
+        second = service.delete_ontology(oid, 1)
         assert first["ontology"]["revision"] == second["ontology"]["revision"] == 2
-        assert second["message"] == "already deleted"
+        assert second["message"] == "本体已删除"
         assert second["ontology"]["del_flag"] == 1
-        assert service.get(oid, include_deleted=True)["ontology"]["del_flag"] == 1
+        assert service.get_ontology(oid, include_deleted=True)["ontology"]["del_flag"] == 1
     with pytest.raises(OntologyError) as caught:
-        service.delete("0" * 32)
+        service.delete_ontology("0" * 32)
     assert caught.value.http_status == 404
 
 
@@ -85,22 +87,31 @@ def test_resolve_never_merges_and_draft_falls_back(doc, service):
     industry = deepcopy(doc)
     industry.update(product="ecommerce", name="行业模板")
     industry["object_types"].append({"name": "行业专属", "identity": ["id"], "attributes": [{"name": "id", "data_type": "string"}]})
-    service.create({"data_json": industry})
+    service.insert_ontology({"data_json": industry})
     doc.update(client="wayfair", product="ecommerce")
-    oid = service.create({"data_json": doc, "status": "draft"})["ontology"]["ontology_id"]
-    assert service.resolve("wayfair", "ecommerce")["scope"] == "industry"
-    service.patch_status(oid, {"status": "active", "revision": 1})
-    chosen = service.resolve("wayfair", "ecommerce")["ontology"]["data_json"]
+    oid = service.insert_ontology({"data_json": doc, "status": "draft"})["ontology"]["ontology_id"]
+    assert service.select_ontology("wayfair", "ecommerce")["scope"] == "industry"
+    service.update_ontology_status(oid, {"status": "active", "revision": 1})
+    chosen = service.select_ontology("wayfair", "ecommerce")["ontology"]["data_json"]
     assert len(chosen["object_types"]) == 1
-    assert "outline" in service.resolve("wayfair", "ecommerce", include_document=False)["ontology"]
-    service.delete(oid)
-    assert service.resolve("wayfair", "ecommerce")["scope"] == "industry"
+    assert "outline" in service.select_ontology("wayfair", "ecommerce", include_document=False)["ontology"]
+    service.delete_ontology(oid)
+    assert service.select_ontology("wayfair", "ecommerce")["scope"] == "industry"
 
 
 def test_list_preserves_absent_vs_empty_scope(doc, repo, service):
-    service.create({"data_json": doc})
-    result = service.list(client="", status="active", page=2, page_size=5)
+    service.insert_ontology({"data_json": doc})
+    result = service.list_ontologies(client="", status="active", page=2, page_size=5)
     filters = repo.calls[-1][1]
     assert filters["client"] == "" and filters["product"] is None
     assert filters["offset"] == 5
     assert result["total"] == 1 and result["items"] == []
+
+
+@pytest.mark.parametrize("page,size", [(0, 100), (1, 0), (1, 101), (True, 10), (1, "10"), (1.5, 10)])
+def test_pagination_rejected_before_repository(service, repo, page, size):
+    with pytest.raises(OntologyError) as caught:
+        service.list_ontologies(page=page, page_size=size)
+    assert caught.value.http_status == 400
+    assert caught.value.message == "请求参数不合法"
+    assert repo.calls == []

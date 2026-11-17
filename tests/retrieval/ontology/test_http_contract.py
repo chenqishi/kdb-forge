@@ -1,4 +1,3 @@
-from copy import deepcopy
 import re
 
 from fastapi import FastAPI
@@ -18,75 +17,96 @@ def client(service):
 
 
 def test_create_conflict_and_three_views(client, doc):
-    response = client.post("/ontology", json={"data_json": doc})
+    response = client.post("/insert_ontology", json={"data_json": doc})
     assert response.status_code == 201
-    full = response.json()["ontology"]
-    oid = full["ontology_id"]
+    meta = response.json()["ontology"]
+    oid = meta["ontology_id"]
     assert re.fullmatch("[0-9a-f]{32}", oid)
-    assert full["data_json"]["name"] == full["name"]
-    duplicate = client.post("/ontology", json={"data_json": doc})
+    assert set(meta) == {"ontology_id", "client", "product", "name", "status", "revision",
+                         "create_time", "update_time", "document_bytes"}
+    duplicate = client.post("/insert_ontology", json={"data_json": doc})
     assert duplicate.status_code == 409
     assert duplicate.json()["details"][0]["existing_ontology_id"] == oid
-    path = "/ontology/" + oid
-    assert client.get(path).json()["ontology"]["document_bytes"] > 0
-    document = client.get(path, params={"view": "document"}).json()
+    body = {"ontology_id": oid}
+    full = client.post("/get_ontology", json=body).json()["ontology"]
+    assert full["data_json"]["name"] == full["name"]
+    assert full["document_bytes"] == meta["document_bytes"]
+    document = client.post("/get_ontology", json=body, params={"view": "document"}).json()
     assert set(document) == {"success", "message", "ontology_id", "revision", "document"}
-    outline = client.get(path, params={"view": "outline"}).json()["ontology"]
+    outline = client.post("/get_ontology", json=body, params={"view": "outline"}).json()["ontology"]
     assert outline["outline"]["counts"]["object_types"] == 1
     assert "data_json" not in outline
+    assert "create_time" not in outline and "document_bytes" not in outline
 
 
 def test_full_crud_versions_status_and_deletion(client, doc):
-    oid = client.post("/ontology", json={"data_json": doc, "status": "draft"}).json()["ontology"]["ontology_id"]
-    path = "/ontology/" + oid
+    oid = client.post("/insert_ontology", json={"data_json": doc, "status": "draft"}).json()["ontology"]["ontology_id"]
+    body = {"ontology_id": oid}
     doc["name"] = "改名"
-    updated = client.put(path, json={"data_json": doc, "revision": 1})
+    updated = client.post("/update_ontology", json=dict(body, data_json=doc, revision=1))
     assert updated.status_code == 200
     assert updated.json()["ontology"]["revision"] == 2
     assert updated.json()["ontology"]["status"] == "draft"
-    assert "data_json" not in updated.json()["ontology"]
-    assert "deleted" not in updated.json()
-    stale = client.put(path, json={"data_json": doc, "revision": 1})
+    assert "data_json" not in updated.json()["ontology"] and "deleted" not in updated.json()
+    stale = client.post("/update_ontology", json=dict(body, data_json=doc, revision=1))
     assert stale.status_code == 409
     assert stale.json()["details"] == [{"current_revision": 2}]
-    patched = client.patch(path, json={"status": "active", "revision": 2})
+    patched = client.post("/update_ontology_status", json=dict(body, status="active", revision=2))
     assert patched.json()["ontology"]["revision"] == 3
     assert patched.json()["ontology"]["status"] == "active"
-    same = client.patch(path, json={"status": "active", "revision": 3})
+    same = client.post("/update_ontology_status", json=dict(body, status="active", revision=3))
     assert same.json()["ontology"]["revision"] == 4
-    assert client.delete(path, params={"revision": 3}).status_code == 409
-    deleted = client.delete(path, params={"revision": 4})
+    assert client.post("/delete_ontology", json=dict(body, revision=3)).status_code == 409
+    deleted = client.post("/delete_ontology", json=dict(body, revision=4))
     assert deleted.json()["deleted"] is True
     assert deleted.json()["ontology"]["del_flag"] == 1
-    assert client.delete(path).json()["message"] == "already deleted"
-    assert client.get(path).status_code == 404
-    assert client.get(path, params={"include_deleted": "true"}).status_code == 200
-    assert client.put(path, json={"data_json": doc, "revision": 5}).status_code == 404
+    assert client.post("/delete_ontology", json=body).json()["message"] == "本体已删除"
+    assert client.post("/get_ontology", json=body).status_code == 404
+    assert client.post("/get_ontology", json=body, params={"include_deleted": "true"}).status_code == 200
+    assert client.post("/update_ontology", json=dict(body, data_json=doc, revision=5)).status_code == 404
 
 
-@pytest.mark.parametrize("path", ["/ontology?page=0", "/ontology?page_size=101", "/ontology?deep=2",
-                                  "/ontology?client=Bad", "/ontology?status=bad", "/ontology?include_deleted=nope",
-                                  "/ontology/" + "0" * 32 + "?view=bad", "/ontology/not-an-id"])
-def test_bad_queries_are_flat_400(client, path):
-    response = client.get(path)
+@pytest.mark.parametrize("path,body", [
+    ("/list_ontologies?page=0", None), ("/list_ontologies?page_size=101", None),
+    ("/list_ontologies?page_size=bad", None), ("/list_ontologies?deep=2", None),
+    ("/list_ontologies?client=Bad", None), ("/list_ontologies?status=bad", None),
+    ("/list_ontologies?include_deleted=nope", None),
+    ("/get_ontology?view=bad", {"ontology_id": "0" * 32}),
+    ("/get_ontology", {"ontology_id": "not-an-id"}),
+    ("/get_ontology?ontology_id=" + "0" * 32, {}),
+    ("/delete_ontology", {"ontology_id": "0" * 32, "revision": 0}),
+    ("/delete_ontology", {"ontology_id": "0" * 32, "revision": "1"}),
+])
+def test_bad_queries_are_flat_400(client, path, body):
+    response = client.post(path, json=body)
     assert response.status_code == 400
     assert response.json()["code"] == "ONTOLOGY_BAD_REQUEST"
+    assert response.json()["message"] == "请求参数不合法"
     assert set(response.json()) == {"success", "message", "code", "details"}
+
+
+@pytest.mark.parametrize("path,extra", [("/get_ontology", {}), ("/update_ontology", {"data_json": {"schema_version": "1.0"}, "revision": 1}),
+    ("/update_ontology_status", {"status": "active", "revision": 1}), ("/delete_ontology", {})])
+@pytest.mark.parametrize("identifier", ["bad", "A" * 32, 123, None])
+def test_ids_are_validated_in_body(client, path, extra, identifier):
+    response = client.post(path, json=dict(extra, ontology_id=identifier))
+    assert response.status_code == 400
+    assert any(issue["path"] == "body.ontology_id" for issue in response.json()["details"])
 
 
 @pytest.mark.parametrize("extra", [{"name": "外层错误"}, {"status": "bad"}, {"revision": 1}])
 def test_bad_outer_body_is_400(client, doc, extra):
-    response = client.post("/ontology", json=dict({"data_json": doc}, **extra))
+    response = client.post("/insert_ontology", json=dict({"data_json": doc}, **extra))
     assert response.status_code == 400
     assert response.json()["code"] == "ONTOLOGY_BAD_REQUEST"
 
 
 def test_document_errors_and_invalid_body_json(client, doc):
     doc["client"] = "Wayfair"
-    response = client.post("/ontology", json={"data_json": doc})
+    response = client.post("/insert_ontology", json={"data_json": doc})
     assert response.status_code == 422
     assert response.json()["details"][0]["reason"] == "invalid_pattern"
-    response = client.post("/ontology", content="{", headers={"content-type": "application/json"})
+    response = client.post("/insert_ontology", content="{", headers={"content-type": "application/json"})
     assert response.status_code == 400
     assert response.json()["code"] == "ONTOLOGY_BAD_REQUEST"
 
@@ -98,26 +118,48 @@ def test_meta_route_openapi_and_no_database_dependency():
         raise AssertionError("meta must not construct a service")
     app.dependency_overrides[get_service] = unavailable
     client = TestClient(app)
-    assert client.get("/ontology/meta").json()["limits"]["max_document_bytes"] == 1048576
-    paths = client.get("/openapi.json").json()["paths"]
-    assert {key: set(value) for key, value in paths.items()} == {
-        "/ontology/meta": {"get"}, "/ontology/resolve": {"post"},
-        "/ontology": {"get", "post"}, "/ontology/{ontology_id}": {"get", "put", "patch", "delete"}}
-    ordered = [r.path for r in app.routes]
-    assert ordered.index("/ontology/meta") < ordered.index("/ontology/{ontology_id}")
+    assert client.get("/ontology_meta").json()["limits"]["max_document_bytes"] == 1048576
+    spec = client.get("/openapi.json").json()
+    assert {key: set(value) for key, value in spec["paths"].items()} == {
+        "/ontology_meta": {"get"}, **{path: {"post"} for path in
+        ("/select_ontology", "/list_ontologies", "/insert_ontology", "/get_ontology",
+         "/update_ontology", "/update_ontology_status", "/delete_ontology")}}
+    for operations in spec["paths"].values():
+        for operation in operations.values():
+            assert operation["tags"] == ["ontology"]
+            assert not any(p["in"] == "path" for p in operation.get("parameters", []))
+    parameters = spec["paths"]["/list_ontologies"]["post"]["parameters"]
+    assert all(p["in"] == "query" for p in parameters)
+    assert next(p for p in parameters if p["name"] == "page_size")["schema"]["default"] == 100
+    models = spec["components"]["schemas"]
+    assert models["InsertOntologyResponse"]["properties"]["ontology"]["$ref"].endswith("/OntologyMeta")
+    assert models["ListResponse"]["properties"]["items"]["items"]["$ref"].endswith("/OntologyListItem")
+    assert len(models["DetailResponse"]["properties"]["ontology"]["anyOf"]) == 2
+    assert len(models["SelectResponse"]["properties"]["ontology"]["anyOf"]) == 3
+    assert "outline" in models["OntologyOutline"]["properties"]
+    assert "document_bytes" not in models["OntologyListItem"]["properties"]
+    for name in ("GetOntologyRequest", "UpdateOntologyRequest", "UpdateOntologyStatusRequest", "DeleteOntologyRequest"):
+        assert models[name]["properties"]["ontology_id"]["pattern"] == "^[0-9a-f]{32}$"
+    assert client.get("/ontology/meta").status_code == 404
+    assert client.post("/ontology", json={}).status_code == 404
+    assert client.get("/list_ontologies").status_code == 405
 
 
-def test_same_name_in_other_scope_and_resolve_no_match(client, doc):
-    assert client.post("/ontology/resolve", json={}).json()["ontology"] is None
+def test_same_name_in_other_scope_and_resolve_no_match(client, doc, repo):
+    assert client.post("/select_ontology", json={}).json()["ontology"] is None
     for product in ("ecommerce", "retail"):
         doc["product"] = product
-        assert client.post("/ontology", json={"data_json": doc}).status_code == 201
-    result = client.get("/ontology").json()
-    assert result["total"] == 2
-    assert all("data_json" not in item for item in result["items"])
-    response = client.post("/ontology/resolve", json={"product": "retail", "name": doc["name"], "include_document": False})
+        assert client.post("/insert_ontology", json={"data_json": doc}).status_code == 201
+    result = client.post("/list_ontologies").json()
+    assert result["total"] == 2 and result["page_size"] == 100
+    assert repo.calls[-1][1]["limit"] == 100
+    assert all("data_json" not in item and "document_bytes" not in item for item in result["items"])
+    response = client.post("/select_ontology", json={"product": "retail", "name": doc["name"], "include_document": False})
     assert response.json()["scope"] == "industry"
     assert "outline" in response.json()["ontology"]
+    response = client.post("/select_ontology", json={"product": "retail"})
+    assert "data_json" in response.json()["ontology"]
+    assert "outline" not in response.json()["ontology"]
 
 
 def test_non_ontology_validation_and_custom_handler_are_preserved():
@@ -146,20 +188,35 @@ def test_sync_validation_handler_and_ontology_business_error_are_scoped():
     @app.exception_handler(RequestValidationError)
     def custom_handler(request, exc):
         return JSONResponse({"original": True}, status_code=418)
-    @app.get("/other")
+    @app.get("/ontology/unrelated")
     def other(value: int):
         raise OntologyError("ONTOLOGY_NOT_FOUND", 404, "missing")
+    app.get("/tagged-elsewhere", tags=["ontology"])(other)
     register_ontology_routes(app)
     client = TestClient(app)
-    assert client.get("/other?value=bad").status_code == 418
-    assert client.get("/other?value=1").json() == {"detail": "missing"}
-    assert client.get("/ontology?page=bad").status_code == 400
+    assert client.get("/ontology/unrelated?value=bad").status_code == 418
+    assert client.get("/ontology/unrelated?value=1").json() == {"detail": "missing"}
+    assert client.get("/tagged-elsewhere?value=bad").status_code == 400
+    assert client.get("/tagged-elsewhere?value=1").json()["code"] == "ONTOLOGY_NOT_FOUND"
+    assert client.post("/list_ontologies?page=bad").status_code == 400
+
+
+def test_proxy_prefix_keeps_flat_request_and_document_errors(service, doc):
+    app = FastAPI()
+    register_ontology_routes(app)
+    app.dependency_overrides[get_service] = lambda: service
+    client = TestClient(app, root_path="/test-gateway")
+    bad_id = client.post("/test-gateway/get_ontology", json={"ontology_id": "bad"})
+    assert bad_id.status_code == 400 and bad_id.json()["code"] == "ONTOLOGY_BAD_REQUEST"
+    doc["client"] = "Bad"
+    bad_doc = client.post("/test-gateway/insert_ontology", json={"data_json": doc})
+    assert bad_doc.status_code == 422 and bad_doc.json()["code"] == "ONTOLOGY_VALIDATION_FAILED"
 
 
 def test_db_unavailable_is_not_empty_success(client, repo, monkeypatch):
     def fail(*args):
         raise OntologyError("ONTOLOGY_DB_UNAVAILABLE", 503, "不可用")
-    monkeypatch.setattr(repo, "resolve", fail)
-    response = client.post("/ontology/resolve", json={})
+    monkeypatch.setattr(repo, "select_ontology", fail)
+    response = client.post("/select_ontology", json={})
     assert response.status_code == 503
     assert response.json()["success"] is False

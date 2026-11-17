@@ -11,7 +11,7 @@ from kdb.shared.config.paths import project_path
 
 from .errors import (OntologyError, ONTOLOGY_DB_UNAVAILABLE, ONTOLOGY_INTERNAL_ERROR,
                      ONTOLOGY_NAME_CONFLICT, ONTOLOGY_VALIDATION_FAILED)
-from .schema import TABLE_NAME
+from .schema import DEFAULT_PAGE_SIZE, TABLE_NAME
 from .validation import ValidatedDocument, compact_json
 
 logger = logging.getLogger(__name__)
@@ -151,13 +151,9 @@ class OntologyRepository:
             return list(cursor.fetchall())
         return self._read_call(read)
 
-    def get_by_id(self, ontology_id: str) -> Optional[OntologyRow]:
+    def select_ontology_by_id(self, ontology_id: str) -> Optional[OntologyRow]:
         rows = self._read("SELECT %s FROM %s WHERE `ontology_id` = %%s" % (FULL_COLUMNS, TABLE), (ontology_id,))
         return to_row(rows[0]) if rows else None
-
-    def probe(self, ontology_id: str) -> Optional[OntologyRow]:
-        # Include metadata/document for the idempotent DELETE response without another race-prone read.
-        return self.get_by_id(ontology_id)
 
     def _check_name(self, cursor, vd, exclude=None):
         sql = ("SELECT `ontology_id`, `status`, `revision` FROM " + TABLE +
@@ -174,7 +170,7 @@ class OntologyRepository:
                                 [{"existing_ontology_id": existing["ontology_id"],
                                   "status": existing["status"], "revision": int(existing["revision"])}])
 
-    def insert_if_absent(self, vd: ValidatedDocument, status: str) -> str:
+    def insert_ontology(self, vd: ValidatedDocument, status: str) -> str:
         def insert(cursor):
             self._check_name(cursor, vd)
             for attempt in range(2):
@@ -191,7 +187,7 @@ class OntologyRepository:
                         raise
         return self._tx(insert)
 
-    def replace_document(self, ontology_id: str, revision: int, vd: ValidatedDocument, status: str) -> int:
+    def update_ontology_document(self, ontology_id: str, revision: int, vd: ValidatedDocument, status: str) -> int:
         def replace(cursor):
             self._check_name(cursor, vd, exclude=ontology_id)
             cursor.execute(
@@ -202,7 +198,7 @@ class OntologyRepository:
             return cursor.rowcount
         return self._tx(replace)
 
-    def update_status(self, ontology_id: str, revision: int, status: str) -> int:
+    def update_ontology_status(self, ontology_id: str, revision: int, status: str) -> int:
         def update(cursor):
             cursor.execute(
                 "UPDATE " + TABLE + " SET `status` = %s, `revision` = `revision` + 1, "
@@ -211,7 +207,7 @@ class OntologyRepository:
             return cursor.rowcount
         return self._tx(update)
 
-    def soft_delete(self, ontology_id: str, revision: Optional[int]) -> int:
+    def delete_ontology(self, ontology_id: str, revision: Optional[int]) -> int:
         def delete(cursor):
             sql = ("UPDATE " + TABLE + " SET `del_flag` = 1, `revision` = `revision` + 1, "
                    "`update_time` = CURRENT_TIMESTAMP(3) WHERE `ontology_id` = %s AND `del_flag` = 0")
@@ -223,8 +219,8 @@ class OntologyRepository:
             return cursor.rowcount
         return self._tx(delete)
 
-    def list(self, client=None, product=None, status=None, q=None, deep=False,
-             include_deleted=False, limit=20, offset=0) -> Tuple[List[OntologyRow], int]:
+    def list_ontologies(self, client=None, product=None, status=None, q=None, deep=False,
+             include_deleted=False, limit=DEFAULT_PAGE_SIZE, offset=0) -> Tuple[List[OntologyRow], int]:
         where = [] if include_deleted else ["`del_flag` = 0"]
         params = []
         for column, value in (("client", client), ("product", product), ("status", status)):
@@ -259,7 +255,7 @@ class OntologyRepository:
             return [to_row(row) for row in cursor.fetchall()], total
         return self._read_call(read)
 
-    def resolve(self, client: str, product: str, name: Optional[str]) -> Optional[OntologyRow]:
+    def select_ontology(self, client: str, product: str, name: Optional[str]) -> Optional[OntologyRow]:
         sql = ("SELECT " + FULL_COLUMNS +
                ", ((`client` = %s AND %s != '') * 2 + (`product` = %s AND %s != '')) AS `scope_rank` "
                "FROM " + TABLE + " WHERE `del_flag` = 0 AND `status` = 'active' "

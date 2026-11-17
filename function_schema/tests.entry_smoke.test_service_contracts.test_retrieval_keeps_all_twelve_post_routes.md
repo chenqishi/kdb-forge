@@ -15,7 +15,7 @@
 ## Description
 
 Inputs: synthetic request/config and monkeypatched service factories.
-Outputs: exact twelve original POST routes plus POST /ontology and /ontology/resolve; current public SearchDataInterface retains category methods; lifespan creates one interface/modifier pair; update retains payload fields and no unnecessary embedding. No external I/O.
+Outputs: exact twelve original POST routes plus the seven ontology POST routes: /insert_ontology, /get_ontology, /list_ontologies, /update_ontology, /update_ontology_status, /delete_ontology, /select_ontology; current public SearchDataInterface retains category methods; lifespan creates one interface/modifier pair; update retains payload fields and no unnecessary embedding. No external I/O.
 SQL: none.
 Source: tests/entry_smoke/test_service_contracts.py
 
