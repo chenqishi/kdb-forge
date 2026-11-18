@@ -2,15 +2,15 @@
 
 ## Signature
 
-`OntologyService.get_ontology(self, ontology_id: str, view: str = "full", include_deleted: bool = False) -> dict`
+`OntologyService.get_ontology(self, ontology_id: str, view: str='full', include_deleted: bool=False, review_status: str='approved') -> dict`
 
 ## Inputs
 
-HTTP body.ontology_id；view=full/document/outline，include_deleted默认false。
+body.ontology_id；query的view=full/document/outline默认full、include_deleted默认false、review_status默认approved，可传pending/rejected/all。
 
 ## Outputs
 
-full: success/message/ontology含文档、投影、del_flag、document_bytes；document: 顶层success/message/ontology_id/revision/document；outline: ontology含ID/作用域/状态/revision/update_time及类、属性名、元素计数。非法view400，未删可见性不满足404。
+默认只返回未删且approved的记录；审核与软删筛选独立，all仅放开审核条件，不满足返回404。full含元数据、文档、del_flag、document_bytes；document顶层含ontology_id/status/review_status/revision/document；outline含作用域、两个状态、版本、更新时间、类/属性和计数。非法view或审核筛选400。
 
 ## SQL
 

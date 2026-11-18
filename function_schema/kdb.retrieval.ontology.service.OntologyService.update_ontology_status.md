@@ -6,11 +6,11 @@
 
 ## Inputs
 
-HTTP body.ontology_id；body.status仅draft/active，revision为正整数。
+body.ontology_id、正整数revision；status=active/inactive和review_status=pending/approved/rejected均可选，至少提供一个非null值。未传状态保留。
 
 ## Outputs
 
-200：meta，revision+1（同状态也增加），不重写文档。状态非法400；UPDATE=0时按ID回查，不存在/软删404，否则409/current_revision。
+200：meta含两个状态，单次成功revision+1（相同值也增加），不重写文档。审核和启停可独立更新，未提供的字段保持原值；启停改变不重置审核。状态非法或空更新400；UPDATE=0回查区分404与409/current_revision。
 
 ## SQL
 

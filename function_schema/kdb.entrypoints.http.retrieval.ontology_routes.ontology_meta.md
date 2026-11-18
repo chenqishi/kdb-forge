@@ -10,11 +10,11 @@
 
 ## Outputs
 
-200 success/message，加schema_version、status_values、scope_values、data_types、item_types、cardinalities、severities、reserved_fields、limits；限制值与schema/model一致，不连接数据库。
+200 success/message，加schema_version、status_values=active/inactive、review_status_values=pending/approved/rejected、scope_values、各文档枚举、reserved_fields与limits。review_status是文档保留字段，extensions豁免不变。不初始化或连接数据库。
 
 ## SQL
 
-无直接 SQL，经 service → repository；复用 dops_ontology 与共享 MySQL 连接池。
+无SQL或数据库依赖。
 
 ## Source
 

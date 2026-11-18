@@ -54,6 +54,17 @@ def test_unknown_and_reserved_fields(doc):
     assert_issue(doc, "reserved_field", "llm_hints.nested[0].id", "ONTOLOGY_RESERVED_FIELD")
 
 
+def test_review_status_is_row_control_except_inside_extensions(doc):
+    doc["review_status"] = "approved"
+    assert_issue(doc, "reserved_field", "review_status", "ONTOLOGY_RESERVED_FIELD")
+    del doc["review_status"]
+    doc["llm_hints"] = {"review_status": "approved"}
+    assert_issue(doc, "reserved_field", "llm_hints.review_status", "ONTOLOGY_RESERVED_FIELD")
+    del doc["llm_hints"]
+    doc["extensions"] = {"review_status": "domain-specific"}
+    assert validate_document(doc).document["extensions"]["review_status"] == "domain-specific"
+
+
 def test_casefold_duplicate_class_attribute_enum_and_alias(doc):
     node = doc["object_types"][0]
     node["name"] = "Ｏｒｄｅｒ"

@@ -2,15 +2,15 @@
 
 ## Signature
 
-`OntologyService.list_ontologies(self, client=None, product=None, status=None, q=None, deep=False, include_deleted=False, page=1, page_size=DEFAULT_PAGE_SIZE) -> dict`
+`OntologyService.list_ontologies(self, client=None, product=None, status=None, q=None, deep=False, include_deleted=False, page=1, page_size=DEFAULT_PAGE_SIZE, review_status='approved') -> dict`
 
 ## Inputs
 
-client/product可选（未传与空串区分）；status可选draft/active；q可选，deep=0/1，include_deleted=false，page>=1，page_size=1..100默认100。
+client/product可选，未传不过滤、空串只取公用；status可选active/inactive。review_status默认approved，可传pending/rejected/all；include_deleted=false；q可选、deep=0/1；page>=1，page_size=1..100默认100。所有HTTP筛选和分页位于query。
 
 ## Outputs
 
-success/message/total/page/page_size/items。items仅元数据（ID、作用域、名称、别名、描述、状态、revision、创建/更新时间），无文档；page转limit/offset。分页类型和范围由service统一校验（page>=1，page_size=1..MAX_PAGE_SIZE），失败统一400/请求参数不合法；路由仅解析query类型。路由、service和repository复用DEFAULT_PAGE_SIZE=100。数据库错误按503/500传播，不伪装空列表。
+success/message/total/page/page_size/items。列表项包含两个状态与元数据，不加载文档。默认未删且approved，status缺省不过滤；all在service转为仓储None。COUNT与分页使用相同条件。分页类型/范围由service统一校验，失败400/请求参数不合法；数据库故障不能伪装成空列表。
 
 ## SQL
 

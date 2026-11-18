@@ -44,6 +44,13 @@ class MySQLRepositoryTests(unittest.TestCase):
             migration = (ROOT / "migrations/20261117_ontology.sql").read_text()
             cursor.execute(migration)
             cursor.execute(migration)  # Idempotent migration.
+            upgrade = (ROOT / "migrations/20261118_ontology_review_status.sql").read_text()
+            for _ in range(2):
+                for statement in upgrade.split(";"):
+                    if statement.strip():
+                        cursor.execute(statement)
+                        if cursor.with_rows:
+                            cursor.fetchall()
             conn.commit()
             cursor.execute("SELECT VERSION() AS version, DATABASE() AS db, @@character_set_server AS charset, "
                            "@@session.time_zone AS time_zone, @@transaction_isolation AS isolation, @@max_connections AS max_connections")
@@ -72,12 +79,12 @@ class MySQLRepositoryTests(unittest.TestCase):
         finally:
             cursor.close(); conn.close()
 
-    def create(self, client="", product="", name=None, status="active", document=None):
+    def create(self, client="", product="", name=None, status="active", document=None, review_status="approved"):
         doc = deepcopy(self.doc if document is None else document)
         doc.update(client=client, product=product, name=name or self.prefix)
-        meta = self.service.insert_ontology({"data_json": doc, "status": status})["ontology"]
+        meta = self.service.insert_ontology({"data_json": doc, "status": status, "review_status": review_status})["ontology"]
         self.assertNotIn("data_json", meta)
-        return self.service.get_ontology(meta["ontology_id"])["ontology"]
+        return self.service.get_ontology(meta["ontology_id"], review_status="all")["ontology"]
 
     def resolve(self, client="", product="", name=None):
         return self.service.select_ontology(client, product, name or self.prefix)
@@ -117,10 +124,10 @@ class MySQLRepositoryTests(unittest.TestCase):
             self.assertEqual(repeated["message"], "本体已删除")
         self.assertEqual(len(ids), 3)
 
-    def test_D04_draft_reserves_key_but_does_not_resolve(self):
-        self.create(self.client, "ecommerce", status="draft")
+    def test_D04_inactive_reserves_key_but_does_not_resolve(self):
+        self.create(self.client, "ecommerce", status="inactive")
         self.assert_error("ONTOLOGY_NAME_CONFLICT", lambda: self.create(self.client, "ecommerce"))
-        self.create(self.client, "ecommerce", name=self.prefix + "other", status="draft")
+        self.create(self.client, "ecommerce", name=self.prefix + "other", status="inactive")
         self.assertIsNone(self.resolve(self.client, "ecommerce")["ontology"])
 
     def test_D05_customer_over_industry_without_merge(self):
@@ -167,7 +174,7 @@ class MySQLRepositoryTests(unittest.TestCase):
 
     def test_D10_delete_stale_revision(self):
         row = self.create()
-        self.service.update_ontology_status(row["ontology_id"], {"status": "draft", "revision": 1})
+        self.service.update_ontology_status(row["ontology_id"], {"status": "inactive", "revision": 1})
         self.assert_error("ONTOLOGY_REVISION_CONFLICT", lambda: self.service.delete_ontology(row["ontology_id"], 1))
         self.assertEqual(self.repo.select_ontology_by_id(row["ontology_id"]).del_flag, 0)
 
@@ -218,7 +225,7 @@ class MySQLRepositoryTests(unittest.TestCase):
             results = list(pool.map(lambda _: create(), range(2)))
         self.assertEqual(results.count("ONTOLOGY_NAME_CONFLICT"), 1, results)
         self.assertEqual(len([r for r in results if len(r) == 32]), 1)
-        self.assertEqual(self.repo.list_ontologies(client=self.client)[1], 1)
+        self.assertEqual(self.repo.list_ontologies(client=self.client, review_status=None)[1], 1)
 
     def test_D14_rename_collision_keeps_both_documents(self):
         first = self.create(self.client)
@@ -248,6 +255,85 @@ class MySQLRepositoryTests(unittest.TestCase):
         self.assert_error("ONTOLOGY_NAME_CONFLICT", lambda: self.create(self.client, name=self.prefix + " CAFE"))
         result = self.service.update_ontology_status(row["ontology_id"], {"status": "active", "revision": 1})
         self.assertEqual(result["ontology"]["revision"], 2)
+
+    def test_review_defaults_approval_edit_and_partial_status_updates(self):
+        doc = dict(self.doc, client=self.client)
+        row = self.service.insert_ontology({"data_json": doc})["ontology"]
+        oid = row["ontology_id"]
+        self.assertEqual((row["status"], row["review_status"]), ("active", "pending"))
+        self.assertEqual(self.repo.list_ontologies(client=self.client)[1], 0)
+        self.assert_error("ONTOLOGY_NOT_FOUND", lambda: self.service.get_ontology(oid))
+        self.assertIsNone(self.resolve(self.client)["ontology"])
+        self.assertEqual(self.service.get_ontology(oid, review_status="pending")["ontology"]["ontology_id"], oid)
+        approved = self.service.update_ontology_status(oid, {"revision": 1, "review_status": "approved"})["ontology"]
+        self.assertEqual((approved["status"], approved["review_status"], approved["revision"]), ("active", "approved", 2))
+        self.assertEqual(self.resolve(self.client)["ontology"]["ontology_id"], oid)
+        self.assertEqual(self.repo.list_ontologies(client=self.client)[1], 1)
+        self.service.update_ontology_status(oid, {"revision": 2, "status": "inactive"})
+        self.assertEqual(self.repo.select_ontology_by_id(oid).review_status, "approved")
+        self.assertIsNone(self.resolve(self.client)["ontology"])
+        self.assertEqual(self.repo.list_ontologies(client=self.client)[1], 1)
+        self.service.update_ontology(oid, {"revision": 3, "data_json": dict(doc, description="changed")})
+        stored = self.repo.select_ontology_by_id(oid)
+        self.assertEqual((stored.status, stored.review_status, stored.revision), ("inactive", "pending", 4))
+        self.assert_error("ONTOLOGY_REVISION_CONFLICT", lambda: self.service.update_ontology_status(oid, {"revision": 3, "review_status": "approved"}))
+        self.service.delete_ontology(oid, 4)
+        self.assertEqual(self.repo.list_ontologies(client=self.client, review_status=None)[1], 0)
+        self.assertEqual(self.repo.list_ontologies(client=self.client, include_deleted=True)[1], 0)
+        self.assertEqual(self.repo.list_ontologies(client=self.client, include_deleted=True, review_status=None)[1], 1)
+
+    def test_review_search_counts_and_pagination_share_filters(self):
+        expected = {}
+        for review in ("pending", "approved", "rejected"):
+            for status in ("active", "inactive"):
+                row = self.create(self.client, name=self.prefix + review + status, status=status, review_status=review)
+                expected[(review, status)] = row["ontology_id"]
+        for review in ("pending", "approved", "rejected"):
+            rows, count = self.repo.list_ontologies(client=self.client, review_status=review, limit=1, offset=1)
+            self.assertEqual(count, 2)
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0].review_status, review)
+            rows, count = self.repo.list_ontologies(client=self.client, review_status=review, status="inactive", q=self.prefix)
+            self.assertEqual(count, 1)
+            self.assertEqual(rows[0].ontology_id, expected[(review, "inactive")])
+        self.assertEqual(self.repo.list_ontologies(client=self.client)[1], 2)
+        self.assertEqual(self.repo.list_ontologies(client=self.client, review_status=None)[1], 6)
+
+    def test_legacy_review_migration_preserves_rows_and_is_idempotent(self):
+        table = "ontology_migration_" + uuid4().hex
+        conn = self.connector.get_connection()
+        cursor = conn.cursor(dictionary=True)
+        try:
+            cursor.execute("CREATE TABLE `" + table + "` LIKE dops_ontology")
+            cursor.execute("ALTER TABLE `" + table + "` DROP INDEX idx_scope_status, DROP COLUMN review_status, "
+                           "ADD INDEX idx_scope_status (client,product,status,del_flag)")
+            for status, deleted in (("active", 0), ("draft", 0), ("draft", 1)):
+                cursor.execute("INSERT INTO `" + table + "` (ontology_id,name,alias_name,data_json,status,del_flag) "
+                               "VALUES (%s,%s,%s,%s,%s,%s)",
+                               (uuid4().hex, self.prefix + status + str(deleted), "[]", json.dumps(self.doc), status, deleted))
+            conn.commit()
+            migration = (ROOT / "migrations/20261118_ontology_review_status.sql").read_text().replace("dops_ontology", table)
+            for run in range(2):
+                for statement in migration.split(";"):
+                    if statement.strip():
+                        cursor.execute(statement)
+                        if cursor.with_rows:
+                            cursor.fetchall()
+                conn.commit()
+                cursor.execute("SELECT status,review_status,revision,del_flag,data_json FROM `" + table + "` ORDER BY id")
+                rows = cursor.fetchall()
+                self.assertEqual([(r["status"], r["revision"], r["del_flag"]) for r in rows],
+                                 [("active", 1, 0), ("inactive", 2, 0), ("inactive", 2, 1)])
+                self.assertEqual([r["review_status"] for r in rows], ["pending" if run == 0 else "approved", "pending", "pending"])
+                self.assertTrue(all(json.loads(r["data_json"]) == self.doc for r in rows))
+                cursor.execute("UPDATE `" + table + "` SET review_status='approved' WHERE status='active'")
+                conn.commit()
+            cursor.execute("SHOW INDEX FROM `" + table + "` WHERE Key_name='idx_scope_status'")
+            self.assertEqual([r["Column_name"] for r in cursor.fetchall()], ["client", "product", "status", "review_status", "del_flag"])
+        finally:
+            cursor.execute("DROP TABLE IF EXISTS `" + table + "`")
+            conn.commit()
+            cursor.close(); conn.close()
 
 
 if __name__ == "__main__":

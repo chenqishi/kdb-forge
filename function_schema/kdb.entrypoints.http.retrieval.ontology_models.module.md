@@ -10,6 +10,8 @@
 
 ## Outputs
 
+创建默认status=active、review_status=pending；替换/状态请求两字段可选。所有元数据、完整/大纲/选取及document响应均暴露review_status；详情和列表默认approved，可用all查看所有审核状态。
+
 Pydantic v2 strict/extra=forbid模型，描述文档或HTTP请求/响应的字段、默认值、长度、类型和Literal枚举；不执行IO。文档的跨节点唯一性/引用校验交validation；HTTP请求错误交按ontology tag作用的400处理器。Get/Update/UpdateStatus/Delete请求的ontology_id为body内32位小写hex；Delete的revision也是body字段。创建回OntologyMeta；详情采用OntologyFull/OntologyOutline联合类型；列表采用OntologyListItem；选取采用SelectedOntologyDocument/OntologyOutline联合类型并保留原字段集合。
 
 ## SQL

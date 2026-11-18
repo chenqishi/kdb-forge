@@ -16,7 +16,7 @@ from kdb.retrieval.ontology.validation import pydantic_issues
 from .ontology_models import (DeleteOntologyRequest, DetailResponse, DocumentResponse, GetOntologyRequest,
                               InsertOntologyRequest, InsertOntologyResponse, ListResponse, MetaResponse,
                               MutationResponse, OntologyErrorBody, SelectOntologyRequest, SelectResponse,
-                              UpdateOntologyRequest, UpdateOntologyStatusRequest)
+                              OntologyStatus, ReviewFilter, UpdateOntologyRequest, UpdateOntologyStatusRequest)
 
 ScopeQuery = Annotated[Optional[str], Query(max_length=64, pattern=r"^([a-z0-9][a-z0-9_.-]{0,63})?$")]
 
@@ -30,19 +30,23 @@ def insert_ontology(body: InsertOntologyRequest, service: OntologyService = Depe
 
 
 def get_ontology(body: GetOntologyRequest, view: Literal["full", "document", "outline"] = "full",
-                 include_deleted: bool = False, service: OntologyService = Depends(get_service)):
-    return service.get_ontology(body.ontology_id, view, include_deleted)
+                 include_deleted: bool = False,
+                 review_status: Annotated[ReviewFilter, Query(description="默认仅审核通过；pending/rejected筛选待审/驳回，all查看所有审核状态")] = "approved",
+                 service: OntologyService = Depends(get_service)):
+    return service.get_ontology(body.ontology_id, view, include_deleted, review_status)
 
 
 def list_ontologies(client: ScopeQuery = None, product: ScopeQuery = None,
-                    status: Optional[Literal["draft", "active"]] = None,
+                    status: Optional[OntologyStatus] = None,
                     q: Optional[str] = None, deep: Annotated[int, Query(ge=0, le=1)] = 0,
                     include_deleted: bool = False,
+                    review_status: Annotated[ReviewFilter, Query(description="默认仅审核通过；all不过滤审核状态，软删筛选独立")] = "approved",
                     page: Annotated[int, Query(description="页码，从1开始，范围由业务服务校验")] = 1,
                     page_size: Annotated[int, Query(description="每页条数，1至100，范围由业务服务校验")] = schema.DEFAULT_PAGE_SIZE,
                     service: OntologyService = Depends(get_service)):
     return service.list_ontologies(client=client, product=product, status=status, q=q.strip() if q else None,
-                        deep=bool(deep), include_deleted=include_deleted, page=page, page_size=page_size)
+                        deep=bool(deep), include_deleted=include_deleted, page=page, page_size=page_size,
+                        review_status=review_status)
 
 
 def update_ontology(body: UpdateOntologyRequest, service: OntologyService = Depends(get_service)):
@@ -65,6 +69,7 @@ def select_ontology(body: SelectOntologyRequest, service: OntologyService = Depe
 def ontology_meta():
     return {"success": True, "message": "", "schema_version": schema.SCHEMA_VERSION,
             "status_values": schema.STATUS_VALUES, "scope_values": schema.SCOPE_VALUES,
+            "review_status_values": schema.REVIEW_STATUS_VALUES,
             "data_types": schema.DATA_TYPES, "item_types": schema.ITEM_TYPES,
             "cardinalities": schema.CARDINALITIES, "severities": schema.SEVERITIES,
             "reserved_fields": schema.RESERVED_FIELD_ORDER,

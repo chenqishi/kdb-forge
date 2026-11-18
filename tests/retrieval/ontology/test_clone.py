@@ -9,15 +9,15 @@ from kdb.retrieval.ontology.errors import OntologyError
 ARGS = ["--source-client", "", "--source-product", "ecommerce", "--target-client", "wayfair"]
 
 
-def test_clone_dry_run_and_draft_do_not_change_source(doc, service, repo, capsys):
+def test_clone_dry_run_is_active_pending_and_does_not_change_source(doc, service, repo, capsys):
     doc.update(product="ecommerce")
-    source = service.insert_ontology({"data_json": doc})["ontology"]
+    source = service.insert_ontology({"data_json": doc, "review_status": "approved"})["ontology"]
     assert main(ARGS + ["--dry-run"], service=service) == 0
     assert len(repo.rows) == 1
-    assert json.loads(capsys.readouterr().out)["status"] == "draft"
+    assert json.loads(capsys.readouterr().out)["review_status"] == "pending"
     assert main(ARGS, service=service) == 0
     created = json.loads(capsys.readouterr().out)["ontology"]
-    assert created["client"] == "wayfair" and created["status"] == "draft"
+    assert created["client"] == "wayfair" and created["status"] == "active" and created["review_status"] == "pending"
     unchanged = service.get_ontology(source["ontology_id"])["ontology"]
     assert all(unchanged[key] == value for key, value in source.items())
     assert unchanged["data_json"]["client"] == ""

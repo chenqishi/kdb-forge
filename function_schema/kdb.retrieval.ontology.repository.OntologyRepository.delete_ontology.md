@@ -6,15 +6,15 @@
 
 ## Inputs
 
-ontology_id, 可选 revision。
+ontology_id、可选revision；审核与启停状态不限制删除。
 
 ## Outputs
 
-返回首次软删的实际更新行数；0由service区分已删、不存在及版本冲突。 故障明确抛422/503/500，不伪装空结果。
+返回首次软删的实际行数，两个状态均保持不变。任意审核/生效状态都可软删；0由service区分已删、不存在和版本冲突。故障明确抛422/503/500。
 
 ## SQL
 
-实际表：`dops_ontology`；DDL 来源：[20261117_ontology.sql](../migrations/20261117_ontology.sql)。仅 PRIMARY(id)、uk_ontology_id 唯一，不建业务唯一索引。
+实际表：`dops_ontology`；DDL 来源：[建表](../migrations/20261117_ontology.sql)与[审核状态迁移](../migrations/20261118_ontology_review_status.sql)。仅 PRIMARY(id)、uk_ontology_id 唯一，不建业务唯一索引。
 
 ```sql
 UPDATE dops_ontology SET del_flag=1,revision=revision+1,update_time=CURRENT_TIMESTAMP(3)

@@ -3,9 +3,14 @@ from typing import Annotated, Any, Dict, List, Literal, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from kdb.retrieval.ontology.schema import DEFAULT_REVIEW_STATUS, DEFAULT_STATUS
+
 ScopeCode = Annotated[str, Field(max_length=64, pattern=r"^([a-z0-9][a-z0-9_.-]{0,63})?$")]
 Revision = Annotated[int, Field(strict=True, ge=1)]
 OntologyID = Annotated[str, Field(strict=True, pattern=r"^[0-9a-f]{32}$", description="本体标识，32位小写十六进制 UUID")]
+OntologyStatus = Literal["active", "inactive"]
+ReviewStatus = Literal["pending", "approved", "rejected"]
+ReviewFilter = Literal["pending", "approved", "rejected", "all"]
 
 
 class _Request(BaseModel):
@@ -14,7 +19,8 @@ class _Request(BaseModel):
 
 class InsertOntologyRequest(_Request):
     data_json: Any
-    status: Optional[Literal["draft", "active"]] = None
+    status: OntologyStatus = Field(default=DEFAULT_STATUS, description="生效状态：active启用，inactive停用")
+    review_status: ReviewStatus = Field(default=DEFAULT_REVIEW_STATUS, description="审核状态：pending待审，approved通过，rejected驳回")
 
 
 class GetOntologyRequest(_Request):
@@ -24,10 +30,13 @@ class GetOntologyRequest(_Request):
 class UpdateOntologyRequest(InsertOntologyRequest):
     ontology_id: OntologyID
     revision: Revision
+    status: Optional[OntologyStatus] = Field(default=None, description="缺省保留当前生效状态")
+    review_status: Optional[ReviewStatus] = Field(default=None, description="正文替换时缺省重置pending；可显式指定审核结果")
 
 
 class UpdateOntologyStatusRequest(GetOntologyRequest):
-    status: Literal["draft", "active"]
+    status: Optional[OntologyStatus] = Field(default=None, description="可与review_status分别更新，至少提供一个；未传则保留")
+    review_status: Optional[ReviewStatus] = Field(default=None, description="审核状态，可独立更新；未传则保留")
     revision: Revision
 
 
@@ -54,7 +63,8 @@ class OntologySelectionBase(BaseModel):
     client: str
     product: str
     name: str
-    status: Literal["draft", "active"]
+    status: OntologyStatus = Field(description="生效状态：active启用，inactive停用")
+    review_status: ReviewStatus = Field(description="审核状态：pending待审，approved通过，rejected驳回")
     revision: int
     update_time: str
 
@@ -129,6 +139,8 @@ class DetailResponse(_Success):
 
 class DocumentResponse(_Success):
     ontology_id: str
+    status: OntologyStatus
+    review_status: ReviewStatus
     revision: int
     document: Dict[str, Any]
 
@@ -155,6 +167,7 @@ class SelectResponse(_Success):
 class MetaResponse(_Success):
     schema_version: str
     status_values: List[str]
+    review_status_values: List[str]
     scope_values: List[str]
     data_types: List[str]
     item_types: List[str]

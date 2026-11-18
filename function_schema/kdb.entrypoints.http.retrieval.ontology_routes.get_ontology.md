@@ -2,15 +2,15 @@
 
 ## Signature
 
-`get_ontology(body: GetOntologyRequest, view: Literal["full", "document", "outline"] = "full", include_deleted: bool = False, service: OntologyService = Depends(get_service))`
+`get_ontology(body: GetOntologyRequest, view: Literal['full', 'document', 'outline']='full', include_deleted: bool=False, review_status: Annotated[ReviewFilter, Query(description='默认仅审核通过；pending/rejected筛选待审/驳回，all查看所有审核状态')]='approved', service: OntologyService=Depends(get_service))`
 
 ## Inputs
 
-body.ontology_id为32位小写hex；view=full/document/outline及include_deleted仍为query参数，默认full/false。 service经Depends(get_service)注入。
+body.ontology_id；query的view=full/document/outline默认full、include_deleted默认false、review_status默认approved，可传pending/rejected/all。 service经Depends(get_service)注入。
 
 ## Outputs
 
-full: success/message/ontology含文档、投影、del_flag、document_bytes；document: 顶层success/message/ontology_id/revision/document；outline: ontology含ID/作用域/状态/revision/update_time及类、属性名、元素计数。非法view400，未删可见性不满足404。 路由仅传参/返回，文档业务规则交service；HTTP参数验证失败400 ONTOLOGY_BAD_REQUEST。
+默认只返回未删且approved的记录；审核与软删筛选独立，all仅放开审核条件，不满足返回404。full含元数据、文档、del_flag、document_bytes；document顶层含ontology_id/status/review_status/revision/document；outline含作用域、两个状态、版本、更新时间、类/属性和计数。非法view或审核筛选400。
 
 ## SQL
 

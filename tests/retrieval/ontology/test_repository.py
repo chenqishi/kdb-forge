@@ -31,7 +31,7 @@ def test_list_score_where_and_pagination_parameter_order(sql):
     repo.list_ontologies(client="wayfair", status="active", q=q, limit=20, offset=40)
     count_sql, count_params = cursor.execute.call_args_list[-2].args
     page_sql, params = cursor.execute.call_args_list[-1].args
-    assert count_params == ("wayfair", "active", "%a!!!%!_%", "%a!!!%!_%", "%a!!!%!_%")
+    assert count_params == ("wayfair", "active", "approved", "%a!!!%!_%", "%a!!!%!_%", "%a!!!%!_%")
     assert params == (q, q, "a!!!%!_%", "%a!!!%!_%", *count_params, 20, 40)
     assert page_sql.count("%s") == len(params)
     assert "q_score` DESC" in page_sql and "`data_json`" not in page_sql
@@ -48,20 +48,20 @@ def test_list_empty_filters_and_deep_is_additional_or_match(sql):
     assert "`del_flag` = 0" not in sql_text
     assert "`product` = %s" not in sql_text
     assert params[4] == ""
-    repo.list_ontologies(include_deleted=True)
+    repo.list_ontologies(include_deleted=True, review_status=None)
     assert "WHERE 1=1" in cursor.execute.call_args.args[0]
 
 
 def test_insert_and_duplicate_check_share_transaction(doc, sql):
     repo, _, conn, cursor = sql
     vd = validate_document(doc)
-    oid = repo.insert_ontology(vd, "draft")
+    oid = repo.insert_ontology(vd, "inactive")
     assert len(oid) == 32
     calls = cursor.execute.call_args_list
     assert calls[-2].args[0].endswith("FOR UPDATE")
     assert calls[-2].args[1] == ("", "", vd.name)
     assert calls[-1].args[1][0] == oid
-    assert calls[-1].args[1][-1] == "draft"
+    assert calls[-1].args[1][-2:] == ("inactive", "pending")
     conn.start_transaction.assert_called_once_with(isolation_level="REPEATABLE READ")
     conn.commit.assert_called_once()
     cursor.close.assert_called_once()
@@ -70,10 +70,10 @@ def test_insert_and_duplicate_check_share_transaction(doc, sql):
 
 def test_conflict_rolls_back_and_no_insert(doc, sql):
     repo, _, conn, cursor = sql
-    cursor.fetchall.return_value = [{"ontology_id": "a" * 32, "status": "draft", "revision": 4}]
+    cursor.fetchall.return_value = [{"ontology_id": "a" * 32, "status": "inactive", "review_status": "pending", "revision": 4}]
     with pytest.raises(OntologyError) as caught:
         repo.insert_ontology(validate_document(doc), "active")
-    assert caught.value.details == [{"existing_ontology_id": "a" * 32, "status": "draft", "revision": 4}]
+    assert caught.value.details == [{"existing_ontology_id": "a" * 32, "status": "inactive", "review_status": "pending", "revision": 4}]
     assert not any("INSERT" in call.args[0] for call in cursor.execute.call_args_list)
     conn.rollback.assert_called_once()
     conn.commit.assert_not_called()
@@ -84,12 +84,12 @@ def test_put_checks_new_name_excluding_self_and_binds_version(doc, sql):
     repo, _, _, cursor = sql
     oid = "b" * 32
     doc["name"] = "new"
-    assert repo.update_ontology_document(oid, 5, validate_document(doc), "draft") == 1
+    assert repo.update_ontology_document(oid, 5, validate_document(doc), "inactive") == 1
     check, params = cursor.execute.call_args_list[-2].args
     assert "`ontology_id` <> %s" in check
     assert params == ("", "", "new", oid)
     update, params = cursor.execute.call_args.args
-    assert params[-3:] == ("draft", oid, 5)
+    assert params[-4:] == ("inactive", "pending", oid, 5)
     assert "`revision` = `revision` + 1" in update
 
 
@@ -161,6 +161,7 @@ def test_resolve_sql_filters_and_parameter_order(sql):
     statement, params = cursor.execute.call_args.args
     assert params == ("wayfair", "wayfair", "ecommerce", "ecommerce", "wayfair", "ecommerce", "named")
     assert "`status` = 'active'" in statement and statement.endswith("LIMIT 1")
+    assert "`review_status` = 'approved'" in statement and "`del_flag` = 0" in statement
     assert "`id` DESC" in statement
     repo.select_ontology("wayfair", "", None)
     assert cursor.execute.call_args.args[1] == ("wayfair", "wayfair", "", "", "wayfair", "", "wayfair")
@@ -170,8 +171,32 @@ def test_json_mapping_and_millisecond_time():
     assert _load_json(b'["x"]', []) == ["x"]
     assert _load_json({"a": 1}, {}) == {"a": 1}
     raw = dict(ontology_id="a" * 32, client="", product="", name="test", alias_name='["x"]',
-               description="", status="active", revision=2, create_time=datetime(2026, 1, 1, microsecond=123456),
+               description="", status="active", review_status="approved", revision=2, create_time=datetime(2026, 1, 1, microsecond=123456),
                update_time=datetime(2026, 1, 1), del_flag=0, data_json='{"name":"test"}')
     row = to_row(raw)
     assert row.create_time == "2026-01-01 00:00:00.123"
     assert row.data_json == {"name": "test"}
+    assert row.review_status == "approved"
+
+
+def test_review_filter_is_shared_by_count_and_page(sql):
+    repo, _, _, cursor = sql
+    for review in ("approved", "pending", "rejected", None):
+        repo.list_ontologies(review_status=review)
+        count, params = cursor.execute.call_args_list[-2].args
+        page, page_params = cursor.execute.call_args_list[-1].args
+        assert ("`review_status` = %s" in count) == (review is not None)
+        assert count.split(" WHERE ")[1] == page.split(" WHERE ")[1].split(" ORDER BY ")[0]
+        assert params == (() if review is None else (review,))
+        assert page_params[:-2] == params
+
+
+def test_partial_status_update_binds_both_states_with_version(sql):
+    repo, _, conn, cursor = sql
+    repo.update_ontology_status("b" * 32, 7, review_status="approved")
+    statement, params = cursor.execute.call_args.args
+    assert params == (None, "approved", "b" * 32, 7)
+    assert "`status` = COALESCE(%s, `status`)" in statement
+    assert "`review_status` = COALESCE(%s, `review_status`)" in statement
+    assert "`revision` = %s AND `del_flag` = 0" in statement
+    conn.commit.assert_called_once()

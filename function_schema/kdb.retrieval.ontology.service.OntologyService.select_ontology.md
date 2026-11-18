@@ -2,15 +2,15 @@
 
 ## Signature
 
-`OntologyService.select_ontology(self, client: str = "", product: str = "", name: Optional[str] = None, include_document: bool = True) -> dict`
+`OntologyService.select_ontology(self, client: str='', product: str='', name: Optional[str]=None, include_document: bool=True) -> dict`
 
 ## Inputs
 
-client/product小写作用域编码，默认空串；name可选精确过滤（None/空串不筛选）；include_document默认true。
+client/product默认空串；name可选精确匹配；include_document默认true。不提供绕过审核、生效或软删条件的参数。
 
 ## Outputs
 
-success/message/scope/fallback/request/ontology。无行200、scope=none、fallback=true、ontology=null；有行按实际client/product计算scope，fallback=(实际作用域!=请求)。include_document=true返回该行完整data_json，false返回outline；永不合并。
+success/message/scope/fallback/request/ontology。只选未删、active且approved的整行；待审、驳回或停用客户行回落符合条件的上层行。无匹配200/ontology=null/scope=none/fallback=true；有匹配按实际作用域计算fallback。文档/outline视图均含两个状态，永不合并。
 
 ## SQL
 

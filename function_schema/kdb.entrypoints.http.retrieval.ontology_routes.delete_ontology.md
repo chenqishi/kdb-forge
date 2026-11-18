@@ -2,15 +2,15 @@
 
 ## Signature
 
-`delete_ontology(body: DeleteOntologyRequest, service: OntologyService = Depends(get_service))`
+`delete_ontology(body: DeleteOntologyRequest, service: OntologyService=Depends(get_service))`
 
 ## Inputs
 
-body.ontology_id为32位小写hex；revision为HTTP body中的可选正整数。 service经Depends(get_service)注入。
+body.ontology_id；body.revision为可选正整数。任意审核/生效状态均可软删。 service经Depends(get_service)注入。
 
 ## Outputs
 
-200：deleted=true、ontology meta带del_flag=1；首次删除revision+1；已删再删message=本体已删除且revision不变（即使传旧revision）。不存在404；未删且revision不符409/current_revision。 路由仅传参/返回，文档业务规则交service；HTTP参数验证失败400 ONTOLOGY_BAD_REQUEST。
+200：deleted=true、ontology meta带del_flag=1和两个原状态；首次软删revision+1，审核/生效状态不变。已删再删message=本体已删除，revision不变，即使携带旧revision。不存在404，未删且版本不符409。
 
 ## SQL
 
