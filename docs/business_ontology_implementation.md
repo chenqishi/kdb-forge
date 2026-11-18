@@ -4,7 +4,7 @@
 
 ## 代码组成与调用关系
 
-HTTP 请求由现有检索应用接收，依次经过请求模型、路由、业务服务和存储层。创建及整篇更新在进入写事务前执行文档校验。存储层复用共享 `MySQLConnector`；元信息接口直接返回常量，不连接数据库。
+HTTP 请求由现有检索应用接收，依次经过请求模型、路由、业务服务和存储层。创建及包含正文的更新在进入写事务前执行文档校验；统一更新入口也支持仅改启停/审核状态。存储层复用共享 `MySQLConnector`；元信息接口直接返回常量，不连接数据库。
 
 | 位置 | 已实现职责 |
 |---|---|
@@ -26,8 +26,8 @@ service 与 repository 的公开操作使用以下名称；失败后按ID回查�
 | 创建 | `insert_ontology` | `insert_ontology` |
 | 详情 | `get_ontology` | `select_ontology_by_id` |
 | 列表 | `list_ontologies` | `list_ontologies` |
-| 整篇更新 | `update_ontology` | `update_ontology_document` |
-| 状态切换 | `update_ontology_status` | `update_ontology_status` |
+| 统一更新正文／启停／审核 | `update_ontology` | `update_ontology_document` 或 `update_ontology_status` |
+| 原有启停入口 | `update_ontology_status`（委托统一更新） | `update_ontology_status` |
 | 软删除 | `delete_ontology` | `delete_ontology` |
 | 作用域选取 | `select_ontology` | `select_ontology` |
 
@@ -40,7 +40,7 @@ service 与 repository 的公开操作使用以下名称；失败后按ID回查�
 | `id` / `ontology_id` | 自增物理主键 / UUID4 hex 对外标识；分别有主键和唯一索引 |
 | `client/product/name/alias_name/description` | 从校验后的文档生成的五个投影列，用于筛选、判重和列表展示 |
 | `status` | `active` 启用或 `inactive` 停用；创建默认 active，与审核状态独立 |
-| `review_status` | `pending` 待审、`approved` 通过、`rejected` 驳回；创建默认 pending |
+| `review_status` | `pending` 未审核、`approved` 通过、`rejected` 驳回；创建默认 pending |
 | `revision` | 创建为 1；成功替换、切换状态或首次软删时加 1 |
 | `del_flag` | 0 正常、1 已删除；软删保留整篇文档 |
 | `create_time/update_time` | 毫秒精度时间；对外格式为 `YYYY-MM-DD HH:mm:ss.SSS` |
@@ -77,13 +77,13 @@ service 与 repository 的公开操作使用以下名称；失败后按ID回查�
 | `POST /insert_ontology` | 校验文档 → 事务判重 → 插入 → 回查元数据；返回 201，不带完整文档 |
 | `POST /get_ontology` | 默认只返回未软删且approved的记录；支持full/document/outline，可显式筛选pending/rejected/all，软删筛选独立 |
 | `POST /list_ontologies` | 按作用域、启停状态、审核状态、关键词和删除标记筛选，默认未删且approved，分页返回元数据；查询投影不加载整篇文档 |
-| `POST /update_ontology` | 读取现有行 → 校验整篇文档 → 禁止修改 client/product → 事务内判重并按 revision 更新 → 回查元数据 |
-| `POST /update_ontology_status` | 按 revision 独立更新 status/review_status（至少一个）和时间、版本；不重写文档，相同状态也使版本加 1 |
+| `POST /update_ontology` | 统一更新：不传data_json时只改指定启停/审核状态；传正文时校验完整文档、禁止改作用域、事务判重；两种方式都校验revision并回meta |
+| `POST /update_ontology_status` | 保留原有启停入口，status必填，不接受review_status；委托update_ontology，仅改启停而保留正文和审核结果 |
 | `POST /delete_ontology` | 软删除；revision 可选；已删除行重复调用成功，版本不再增加；不存在返回 404 |
 | `POST /select_ontology` | 从 active、approved、未删除行中选出一个符合优先级的本体；不合并文档 |
 | `GET /ontology_meta` | 返回结构版本、枚举和限制，不创建数据库连接 |
 
-update_ontology、update_ontology_status 的 SQL 条件包含 `ontology_id/revision/del_flag=0`。更新行数为 0 后回查：不存在或已删除返回 404，仍存在则返回 409 和当前 revision。update_ontology 可以修改名称，未指定 status 时沿用当前状态；未指定 review_status 时重置为 pending，也可显式指定审核结果。单独切换启停不改变审核结果。delete_ontology 在已经删除时保持幂等，即使调用方携带旧 revision，也返回已删除结果。
+update_ontology、update_ontology_status 的 SQL 条件包含 `ontology_id/revision/del_flag=0`。更新行数为 0 后回查：不存在或已删除返回 404，仍存在则返回 409 和当前 revision。update_ontology 可以修改名称，未指定 status 时沿用当前状态；提供正文且未指定 review_status 时重置为 pending（未审核），也可显式指定审核结果；未提供正文时只更新传入的状态，另一状态和完整文档不变。空更新400，显式null正文422；不存在/已删仍404。delete_ontology 在已经删除时保持幂等，即使调用方携带旧 revision，也返回已删除结果。
 
 full 包含行元数据、删除标记、完整文档和文档字节数；document 顶层返回 `ontology_id/status/review_status/revision/document`；outline 返回类、属性名称及各集合计数。列表只返回元数据，不返回 `data_json`。所有写响应和读视图都包含两个状态；详情不满足审核/软删筛选返回404。
 
@@ -107,7 +107,7 @@ select_ontology 的优先级为客户行业 → 客户通用 → 行业 → 全�
 
 对原设计中矛盾或遗漏处，实际采用以下口径：deep 搜索使用额外 OR；client-only 允许客户行业回落；fallback 采用作用域比较公式；写事务显式使用 REPEATABLE READ 并重试一次死锁；归一化补默认值后重新检查文档上限；insert 返回生成 ID 供回查，document 采用独立响应模型，删除结果保留 del_flag。详细说明见 [API 文档中的实现口径](api.md#v8-设计中相互矛盾处的实现口径)。
 
-审核状态由现有写接口维护，沿用原认证行为；不新增审核人、审核意见、审批流程或审核历史表。
+审核状态统一由insert_ontology/update_ontology维护，默认未审核；没有独立审核API。insert_ontology当前按单条记录接收审核状态。沿用原认证行为；不新增审核人、审核意见、审批流程或审核历史表。
 
 本期没有元素级 CRUD、继承合并、历史版本表、ES 同步、embedding、前端页面或新增认证体系。软删记录保留删除时文档，但 revision 并不表示保存了每次历史快照。生产库迁移和生产上线属于部署动作，不由导入模块自动触发。
 

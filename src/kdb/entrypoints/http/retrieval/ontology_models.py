@@ -20,7 +20,7 @@ class _Request(BaseModel):
 class InsertOntologyRequest(_Request):
     data_json: Any
     status: OntologyStatus = Field(default=DEFAULT_STATUS, description="生效状态：active启用，inactive停用")
-    review_status: ReviewStatus = Field(default=DEFAULT_REVIEW_STATUS, description="审核状态：pending待审，approved通过，rejected驳回")
+    review_status: ReviewStatus = Field(default=DEFAULT_REVIEW_STATUS, description="审核状态：pending未审核，approved通过，rejected驳回；默认未审核")
 
 
 class GetOntologyRequest(_Request):
@@ -30,13 +30,13 @@ class GetOntologyRequest(_Request):
 class UpdateOntologyRequest(InsertOntologyRequest):
     ontology_id: OntologyID
     revision: Revision
+    data_json: Any = Field(default=None, description="仅更新状态时可省略；提供时必须为完整本体文档，不能为null")
     status: Optional[OntologyStatus] = Field(default=None, description="缺省保留当前生效状态")
-    review_status: Optional[ReviewStatus] = Field(default=None, description="正文替换时缺省重置pending；可显式指定审核结果")
+    review_status: Optional[ReviewStatus] = Field(default=None, description="可独立更新审核状态；省略时，正文替换重置为未审核，仅改状态则保留")
 
 
 class UpdateOntologyStatusRequest(GetOntologyRequest):
-    status: Optional[OntologyStatus] = Field(default=None, description="可与review_status分别更新，至少提供一个；未传则保留")
-    review_status: Optional[ReviewStatus] = Field(default=None, description="审核状态，可独立更新；未传则保留")
+    status: OntologyStatus = Field(description="仅修改生效状态；审核状态通过update_ontology修改")
     revision: Revision
 
 
@@ -64,7 +64,7 @@ class OntologySelectionBase(BaseModel):
     product: str
     name: str
     status: OntologyStatus = Field(description="生效状态：active启用，inactive停用")
-    review_status: ReviewStatus = Field(description="审核状态：pending待审，approved通过，rejected驳回")
+    review_status: ReviewStatus = Field(description="审核状态：pending未审核，approved通过，rejected驳回")
     revision: int
     update_time: str
 

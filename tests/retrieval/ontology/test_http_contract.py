@@ -51,7 +51,7 @@ def test_full_crud_versions_status_and_deletion(client, doc):
     stale = client.post("/update_ontology", json=dict(body, data_json=doc, revision=1))
     assert stale.status_code == 409
     assert stale.json()["details"] == [{"current_revision": 2}]
-    patched = client.post("/update_ontology_status", json=dict(body, status="active", review_status="approved", revision=2))
+    patched = client.post("/update_ontology", json=dict(body, status="active", review_status="approved", revision=2))
     assert patched.json()["ontology"]["revision"] == 3
     assert patched.json()["ontology"]["status"] == "active"
     same = client.post("/update_ontology_status", json=dict(body, status="active", revision=3))
@@ -233,7 +233,7 @@ def test_defaults_review_workflow_and_document_edit_require_review(client, doc):
         pending = client.post("/get_ontology", json=body, params={"view": view, "review_status": "pending"})
         assert pending.status_code == 200
         assert (pending.json() if view == "document" else pending.json()["ontology"])["review_status"] == "pending"
-    approved = client.post("/update_ontology_status", json=dict(body, revision=1, review_status="approved"))
+    approved = client.post("/update_ontology", json=dict(body, revision=1, review_status="approved"))
     assert approved.status_code == 200
     assert approved.json()["ontology"]["status"] == "active"
     assert approved.json()["ontology"]["revision"] == 2
@@ -248,8 +248,8 @@ def test_defaults_review_workflow_and_document_edit_require_review(client, doc):
     assert (updated["status"], updated["review_status"], updated["revision"]) == ("inactive", "pending", 4)
     assert client.post("/get_ontology", json=body).status_code == 404
     assert client.post("/list_ontologies").json()["total"] == 0
-    assert client.post("/update_ontology_status", json=dict(body, revision=3, review_status="approved")).status_code == 409
-    rejected = client.post("/update_ontology_status", json=dict(body, revision=4, review_status="rejected"))
+    assert client.post("/update_ontology", json=dict(body, revision=3, review_status="approved")).status_code == 409
+    rejected = client.post("/update_ontology", json=dict(body, revision=4, review_status="rejected"))
     assert rejected.json()["ontology"]["revision"] == 5
     assert client.post("/get_ontology", json=body, params={"review_status": "rejected"}).status_code == 200
     assert client.post("/delete_ontology", json=dict(body, revision=5)).status_code == 200
@@ -314,6 +314,8 @@ def test_openapi_exposes_review_defaults_and_all_response_states(client):
     props = schemas["InsertOntologyRequest"]["properties"]
     assert props["status"]["default"] == "active"
     assert props["review_status"]["default"] == "pending"
+    assert "data_json" not in schemas["UpdateOntologyRequest"]["required"]
+    assert "review_status" not in schemas["UpdateOntologyStatusRequest"]["properties"]
     for name in ("OntologyMeta", "OntologyFull", "OntologyOutline", "OntologyListItem", "SelectedOntologyDocument", "DocumentResponse"):
         assert schemas[name]["properties"]["review_status"]["enum"] == ["pending", "approved", "rejected"]
     for path in ("/get_ontology", "/list_ontologies"):
@@ -323,3 +325,56 @@ def test_openapi_exposes_review_defaults_and_all_response_states(client):
     assert meta["status_values"] == ["active", "inactive"]
     assert meta["review_status_values"] == ["pending", "approved", "rejected"]
     assert "review_status" in meta["reserved_fields"]
+
+
+def test_update_without_document_preserves_content_and_unspecified_state(client, doc):
+    doc["extensions"] = {"preserve": {"nested": [1, None, "value"]}}
+    created = client.post("/insert_ontology", json={"data_json": doc}).json()["ontology"]
+    body = {"ontology_id": created["ontology_id"]}
+    original = client.post("/get_ontology?review_status=all", json=body).json()["ontology"]["data_json"]
+    approved = client.post("/update_ontology", json=dict(body, revision=1, review_status="approved"))
+    assert approved.status_code == 200
+    assert approved.json()["ontology"]["revision"] == 2
+    assert approved.json()["ontology"]["status"] == "active"
+    stored = client.post("/get_ontology", json=body).json()["ontology"]
+    assert stored["data_json"] == original
+    disabled = client.post("/update_ontology", json=dict(body, revision=2, status="inactive"))
+    assert disabled.status_code == 200
+    assert disabled.json()["ontology"]["review_status"] == "approved"
+    both = client.post("/update_ontology", json=dict(body, revision=3, status="active", review_status="rejected"))
+    assert both.status_code == 200 and both.json()["ontology"]["revision"] == 4
+    assert client.post("/get_ontology", json=body).status_code == 404
+    stored = client.post("/get_ontology?review_status=all", json=body).json()["ontology"]
+    assert stored["data_json"] == original
+    assert (stored["status"], stored["review_status"]) == ("active", "rejected")
+    assert client.post("/update_ontology", json=dict(body, revision=3, review_status="approved")).status_code == 409
+
+
+@pytest.mark.parametrize("extra,code", [({}, 400), ({"status": None, "review_status": None}, 400),
+                                       ({"data_json": None}, 422),
+                                       ({"data_json": None, "review_status": "approved"}, 422)])
+def test_empty_update_and_explicit_null_document_never_write(client, doc, extra, code):
+    created = client.post("/insert_ontology", json={"data_json": doc}).json()["ontology"]
+    body = {"ontology_id": created["ontology_id"], "revision": 1}
+    result = client.post("/update_ontology", json=dict(body, **extra))
+    assert result.status_code == code
+    stored = client.post("/get_ontology?review_status=all", json={"ontology_id": body["ontology_id"]}).json()["ontology"]
+    assert stored["revision"] == 1 and stored["review_status"] == "pending"
+
+
+def test_legacy_activation_route_does_not_accept_review(client, doc):
+    created = client.post("/insert_ontology", json={"data_json": doc}).json()["ontology"]
+    body = {"ontology_id": created["ontology_id"], "revision": 1}
+    for extra in ({"review_status": "approved"}, {"status": "inactive", "review_status": "approved"}):
+        assert client.post("/update_ontology_status", json=dict(body, **extra)).status_code == 400
+    response = client.post("/update_ontology_status", json=dict(body, status="inactive"))
+    assert response.status_code == 200
+    assert response.json()["ontology"]["review_status"] == "pending"
+
+
+@pytest.mark.parametrize("review", ["pending", "approved", "rejected"])
+def test_insert_explicit_review_status_is_per_record(client, doc, review):
+    created = client.post("/insert_ontology", json={"data_json": doc, "review_status": review})
+    assert created.status_code == 201
+    assert created.json()["ontology"]["review_status"] == review
+    assert created.json()["ontology"]["status"] == "active"

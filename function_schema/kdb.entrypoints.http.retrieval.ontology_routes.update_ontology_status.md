@@ -6,11 +6,11 @@
 
 ## Inputs
 
-body.ontology_id、正整数revision；status=active/inactive和review_status=pending/approved/rejected均可选，至少提供一个非null值。未传状态保留。 service经Depends(get_service)注入。
+body.ontology_id、正整数revision；status=active/inactive必填。保留原有启停入口，不接收review_status；审核使用update_ontology。 service经Depends(get_service)注入。
 
 ## Outputs
 
-200：meta含两个状态，单次成功revision+1（相同值也增加），不重写文档。审核和启停可独立更新，未提供的字段保持原值；启停改变不重置审核。状态非法或空更新400；UPDATE=0回查区分404与409/current_revision。
+200：meta含两个状态，单次成功revision+1（相同值也增加），不重写文档。仅更新启停，委托update_ontology复用版本和错误处理；文档及审核结果保持不变。审核字段或非法/缺失status返回400；不存在或已删404，版本冲突409/current_revision。
 
 ## SQL
 

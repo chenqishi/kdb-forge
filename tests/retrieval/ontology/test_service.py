@@ -124,7 +124,7 @@ def test_unreviewed_customer_falls_back_and_replacement_requires_review(doc, ser
     customer = service.insert_ontology({"data_json": customer_doc, "review_status": review_status})["ontology"]
     assert service.select_ontology("customer", "retail")["ontology"]["ontology_id"] == industry["ontology_id"]
     oid = customer["ontology_id"]
-    service.update_ontology_status(oid, {"revision": 1, "review_status": "approved"})
+    service.update_ontology(oid, {"revision": 1, "review_status": "approved"})
     assert service.select_ontology("customer", "retail")["ontology"]["ontology_id"] == oid
     updated = service.update_ontology(oid, {"revision": 2, "data_json": dict(customer_doc, description="changed")})["ontology"]
     assert (updated["status"], updated["review_status"]) == ("active", "pending")
@@ -141,3 +141,20 @@ def test_invalid_review_status_does_not_write(doc):
         OntologyService(repo).insert_ontology({"data_json": doc, "review_status": "all"})
     assert caught.value.http_status == 400
     assert repo.mock_calls == []
+
+
+def test_partial_update_model_and_dict_preserve_document(doc, service, repo):
+    from kdb.entrypoints.http.retrieval.ontology_models import UpdateOntologyRequest
+    oid = service.insert_ontology({"data_json": doc})["ontology"]["ontology_id"]
+    original = deepcopy(repo.rows[oid].data_json)
+    body = UpdateOntologyRequest(ontology_id=oid, revision=1, review_status="approved")
+    result = service.update_ontology(oid, body)["ontology"]
+    assert result["review_status"] == "approved" and result["revision"] == 2
+    assert not any(call[0] == "replace" for call in repo.calls)
+    assert repo.rows[oid].data_json == original
+    service.update_ontology(oid, {"revision": 2, "status": "inactive"})
+    assert repo.rows[oid].review_status == "approved" and repo.rows[oid].data_json == original
+    service.delete_ontology(oid)
+    with pytest.raises(OntologyError) as caught:
+        service.update_ontology(oid, {"revision": 4, "review_status": "rejected"})
+    assert caught.value.http_status == 404

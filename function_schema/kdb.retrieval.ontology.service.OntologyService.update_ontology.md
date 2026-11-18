@@ -6,11 +6,11 @@
 
 ## Inputs
 
-body.ontology_id为32位小写hex，data_json为完整文档，revision为正整数；status可选且缺省保留，review_status可选且缺省重置pending。
+body.ontology_id为32位小写hex，revision为正整数；data_json可省略，提供时必须是完整文档且不能为null。status、review_status可选；至少提供文档或一个非null状态。仅更新状态时保留未传字段和文档，更新正文时未传review_status默认重置pending（未审核）。
 
 ## Outputs
 
-200：success/message/ontology meta，含两个状态，不返回data_json。不存在/已删404；禁止改变client/product（409），允许改名但事务内判重。正文与两个状态同一UPDATE写入，成功revision+1；旧revision返回409/current_revision。缺省重新待审，可显式指定审核结果。
+200：success/message/ontology meta，含两个状态，不返回data_json。不存在/已删404；禁止改变client/product（409），允许改名但事务内判重。统一更新正文、生效或审核状态；省略data_json时只更新指定状态，不重写文档。提供正文时仍校验文档及作用域，审核状态缺省重置为未审核，可显式指定。每次成功revision+1；旧revision返回409/current_revision，空更新400，显式null文档422。
 
 ## SQL
 

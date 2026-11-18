@@ -54,7 +54,7 @@
 |---|---|---|
 | 文档维护与查阅 | 创建、整篇替换、软删、列表及三种详情视图；更新采用版本条件，替换不能改变作用域 | [service.py](../src/kdb/retrieval/ontology/service.py)、[更新契约](../function_schema/kdb.retrieval.ontology.service.OntologyService.update_ontology.md) |
 | 定义一致性校验 | 校验结构、大小、名称唯一性、字段组合与引用；通过后生成投影并写入 | [validation.py](../src/kdb/retrieval/ontology/validation.py)、[校验契约](../function_schema/kdb.retrieval.ontology.validation.validate_document.md) |
-| 可用状态管理 | 启停与审核独立、均带版本；默认启用+待审，正文修改默认重审；默认查询未删且审核通过，业务选取还须启用；所有未删行占业务键 | [状态契约](../function_schema/kdb.retrieval.ontology.service.OntologyService.update_ontology_status.md)、[删除契约](../function_schema/kdb.retrieval.ontology.service.OntologyService.delete_ontology.md) |
+| 可用状态管理 | 插入/统一更新处理审核，启停与审核独立、均带版本；默认启用+未审核，正文修改默认重审；默认查询未删且审核通过，业务选取还须启用；所有未删行占业务键 | [更新与审核契约](../function_schema/kdb.retrieval.ontology.service.OntologyService.update_ontology.md)、[删除契约](../function_schema/kdb.retrieval.ontology.service.OntologyService.delete_ontology.md) |
 | 按业务作用域取用 | 客户行业 → 客户通用 → 行业 → 全局，只选一篇启用、审核通过且未删除的文档；客户单维请求有明确回落规则 | [选取契约](../function_schema/kdb.retrieval.ontology.service.OntologyService.select_ontology.md)、[接口规则](api.md#业务本体) |
 | 模板复用 | 选取源文档、整篇复制、改目标作用域、重新校验；默认启用且待审，后续修改不自动传播 | [克隆 CLI](../src/kdb/entrypoints/cli/tools/ontology_clone.py)、[克隆契约](../function_schema/kdb.entrypoints.cli.tools.ontology_clone.main.md) |
 

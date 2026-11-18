@@ -41,20 +41,22 @@
 
 | 方法与路径 | 主要输入 | 输出与行为 |
 |---|---|---|
-| `POST /insert_ontology` | `data_json` 为对象或 JSON 对象字符串；`status=active/inactive` 默认 active；`review_status=pending/approved/rejected` 默认 pending | 201，`ontology` 为 meta，含 document_bytes，不返回 data_json，UUID4 hex、revision=1；同 `(client,product,name)` 未删行冲突 409，待审、驳回和停用行也占业务键 |
+| `POST /insert_ontology` | `data_json` 为对象或 JSON 对象字符串；`status=active/inactive` 默认 active；`review_status=pending/approved/rejected` 默认 pending（未审核） | 201，`ontology` 为 meta，含 document_bytes，不返回 data_json，UUID4 hex、revision=1；同 `(client,product,name)` 未删行冲突 409，待审、驳回和停用行也占业务键 |
 | `POST /get_ontology` | body 中必填 `ontology_id`；query 保留 `view=full/document/outline`、`include_deleted=false`、`review_status=approved`（可传 pending/rejected/all） | full 含完整文档和紧凑 UTF-8 `document_bytes`；document 为顶层 `ontology_id/status/review_status/revision/document`；outline 只含类及属性大纲与计数 |
 | `POST /list_ontologies` | 可选 `client/product/status/q`、`deep=0/1`、`include_deleted=false`、`review_status=approved`（可传 pending/rejected/all）、`page=1`、`page_size=100`（1–100） | `total/page/page_size/items`，列表不加载/返回 `data_json`；未传作用域=不过滤，空串=只看公用 |
-| `POST /update_ontology` | body 中必填 `ontology_id`、完整 `data_json`、正整数 `revision`；可选 `status/review_status` | 整篇替换并 revision+1，回 meta；status 缺省保留，review_status 缺省重置 pending；作用域不可变；改名检查同作用域业务键；旧 revision 返回 409/current_revision |
-| `POST /update_ontology_status` | body 中必填 `ontology_id`、正整数 `revision`；`status` 和 `review_status` 至少传一个 | 独立修改启停或审核状态，未传字段保留；revision+1，同状态也 +1，不重写文档 |
+| `POST /update_ontology` | body 中必填 `ontology_id`、正整数 `revision`；`data_json/status/review_status` 至少提供一项有效更新 | 统一更新正文、启停和审核，revision+1，回meta；省略data_json只改指定状态；提供时整篇替换且不可为null；作用域不可变，改名判重，旧revision返回409 |
+| `POST /update_ontology_status` | body 中必填 `ontology_id`、正整数 `revision`、`status=active/inactive` | 保留原有启停入口，委托update_ontology；不接收审核字段，不改变正文及审核结果 |
 | `POST /delete_ontology` | body 中必填 `ontology_id`，可选正整数 `revision` | 软删，回 `deleted=true` 及含 del_flag 的 meta；重复删除 200/本体已删除 且不再 +1；不存在 404 |
 | `POST /select_ontology` | `client/product` 默认空串，可选精确 `name`、`include_document=true` | 只返回一行、不合并；客户行业→客户通用→行业→全局，限 active、approved、未删行；无匹配为 200/ontology=null |
 | `GET /ontology_meta` | 无 | 结构版本、两套状态枚举（status_values/review_status_values）与上限；不初始化数据库连接 |
 
-生效和审核是独立字段：新建默认启用且待审，启用不代表审核通过。`update_ontology_status` 可只传 `review_status` 完成审核，也可只改 `status`；未提供任何状态返回400。正文替换缺省回到待审，可在同一次写入中显式指定审核结果；仅修改启停不改变审核结果。所有写响应和读视图均返回两个状态，软删不修改它们。
+当前insert_ontology按单条记录插入，review_status属于该条请求；可显式指定，省略时为pending（未审核）。
+
+生效和审核是独立字段：新建默认启用且未审核，启用不代表审核通过。`update_ontology` 可只传 `ontology_id/revision/review_status` 修改审核结果，也可只改 `status`；省略正文及两个状态或仅传null状态返回400，显式null正文返回422。原有 `update_ontology_status` 仅用于启停，不作为审核入口。正文替换缺省回到未审核，可在同一次写入中显式指定审核结果；只改状态时，正文和未传状态保持原值。所有写响应和读视图均返回两个状态，软删不修改它们。
 
 列表及详情默认 `include_deleted=false&review_status=approved`，不额外限制启停状态；待审审核工作使用 `review_status=pending`，`all` 可看全部审核状态。`include_deleted=true` 只放开软删条件，不会放开审核条件；详情不满足筛选返回404。业务选取 `select_ontology` 固定要求未软删、启用且审核通过，不提供绕过这些条件的参数。
 
-审核操作示例：`POST /update_ontology_status`，body 为 `{"ontology_id":"32位小写hex","revision":1,"review_status":"approved"}`。查询待审：`POST /list_ontologies?review_status=pending`；查看待审正文：`POST /get_ontology?review_status=pending&view=document`，body 中提供 `ontology_id`。
+审核操作示例：`POST /update_ontology`，body 为 `{"ontology_id":"32位小写hex","revision":1,"review_status":"approved"}`。查询待审：`POST /list_ontologies?review_status=pending`；查看待审正文：`POST /get_ontology?review_status=pending&view=document`，body 中提供 `ontology_id`。
 
 所有 ID 字段统一为 body 中的 `ontology_id`（32位小写 hex），不再从路径取值。列表筛选和分页仍用 query，默认每页100；分页范围由 service 单点校验，路由只解析类型，失败统一400“请求参数不合法”。旧 `/ontology` 路径不再注册。创建、更新、状态变更和删除统一返回元数据，详情/列表/选取使用明确的 Pydantic 模型描述字段；列表不补读文档计算字节数。
 

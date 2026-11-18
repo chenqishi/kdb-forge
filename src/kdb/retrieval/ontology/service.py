@@ -93,32 +93,41 @@ class OntologyService:
         return {"success": True, "message": "", "ontology": _meta(self._existing(ontology_id))}
 
     def update_ontology(self, ontology_id: str, body: Any) -> dict:
-        existing = self._existing(ontology_id)
-        vd = validate_document(_value(body, "data_json"))
-        if (vd.client, vd.product) != (existing.client, existing.product):
-            raise OntologyError(ONTOLOGY_SCOPE_IMMUTABLE, 409, "作用域不可修改，请新建本体",
-                                [{"current": {"client": existing.client, "product": existing.product},
-                                  "requested": {"client": vd.client, "product": vd.product}}])
-        status = _status(_value(body, "status") if _value(body, "status") is not None else existing.status)
-        review_status = _status(_value(body, "review_status") if _value(body, "review_status") is not None
-                                else DEFAULT_REVIEW_STATUS, "review_status")
-        if not self.repo.update_ontology_document(ontology_id, _value(body, "revision"), vd, status, review_status):
-            self._raise_write_conflict(ontology_id)
-        _warn_size(ontology_id, vd.document_bytes)
-        return {"success": True, "message": "", "ontology": _meta(self._existing(ontology_id))}
-
-    def update_ontology_status(self, ontology_id: str, body: Any) -> dict:
+        if not isinstance(body, dict):
+            body = body.model_dump(exclude_unset=True)
         status, review_status = _value(body, "status"), _value(body, "review_status")
-        if status is None and review_status is None:
-            raise OntologyError(ONTOLOGY_BAD_REQUEST, 400, "至少提供 status 或 review_status",
-                                [{"path": "body", "reason": "missing_status", "message": "状态更新不能为空"}])
+        has_document = "data_json" in body
+        if not has_document and status is None and review_status is None:
+            raise OntologyError(ONTOLOGY_BAD_REQUEST, 400, "至少提供 data_json、status 或 review_status",
+                                [{"path": "body", "reason": "empty_update", "message": "更新内容不能为空"}])
+        existing = self._existing(ontology_id)
         if status is not None:
             _status(status)
         if review_status is not None:
             _status(review_status, "review_status")
-        if not self.repo.update_ontology_status(ontology_id, _value(body, "revision"), status, review_status):
+        if has_document:
+            vd = validate_document(body["data_json"])
+            if (vd.client, vd.product) != (existing.client, existing.product):
+                raise OntologyError(ONTOLOGY_SCOPE_IMMUTABLE, 409, "作用域不可修改，请新建本体",
+                                    [{"current": {"client": existing.client, "product": existing.product},
+                                      "requested": {"client": vd.client, "product": vd.product}}])
+            count = self.repo.update_ontology_document(
+                ontology_id, _value(body, "revision"), vd,
+                status if status is not None else existing.status,
+                review_status if review_status is not None else DEFAULT_REVIEW_STATUS)
+        else:
+            count = self.repo.update_ontology_status(ontology_id, _value(body, "revision"), status, review_status)
+        if not count:
             self._raise_write_conflict(ontology_id)
+        if has_document:
+            _warn_size(ontology_id, vd.document_bytes)
         return {"success": True, "message": "", "ontology": _meta(self._existing(ontology_id))}
+
+    def update_ontology_status(self, ontology_id: str, body: Any) -> dict:
+        if _value(body, "review_status") is not None:
+            raise OntologyError(ONTOLOGY_BAD_REQUEST, 400, "审核状态请通过 update_ontology 修改")
+        return self.update_ontology(ontology_id, {"revision": _value(body, "revision"),
+                                                  "status": _status(_value(body, "status"))})
 
     def delete_ontology(self, ontology_id: str, revision: Optional[int] = None) -> dict:
         count = self.repo.delete_ontology(ontology_id, revision)

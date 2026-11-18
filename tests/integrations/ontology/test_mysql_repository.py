@@ -265,7 +265,7 @@ class MySQLRepositoryTests(unittest.TestCase):
         self.assert_error("ONTOLOGY_NOT_FOUND", lambda: self.service.get_ontology(oid))
         self.assertIsNone(self.resolve(self.client)["ontology"])
         self.assertEqual(self.service.get_ontology(oid, review_status="pending")["ontology"]["ontology_id"], oid)
-        approved = self.service.update_ontology_status(oid, {"revision": 1, "review_status": "approved"})["ontology"]
+        approved = self.service.update_ontology(oid, {"revision": 1, "review_status": "approved"})["ontology"]
         self.assertEqual((approved["status"], approved["review_status"], approved["revision"]), ("active", "approved", 2))
         self.assertEqual(self.resolve(self.client)["ontology"]["ontology_id"], oid)
         self.assertEqual(self.repo.list_ontologies(client=self.client)[1], 1)
@@ -276,7 +276,7 @@ class MySQLRepositoryTests(unittest.TestCase):
         self.service.update_ontology(oid, {"revision": 3, "data_json": dict(doc, description="changed")})
         stored = self.repo.select_ontology_by_id(oid)
         self.assertEqual((stored.status, stored.review_status, stored.revision), ("inactive", "pending", 4))
-        self.assert_error("ONTOLOGY_REVISION_CONFLICT", lambda: self.service.update_ontology_status(oid, {"revision": 3, "review_status": "approved"}))
+        self.assert_error("ONTOLOGY_REVISION_CONFLICT", lambda: self.service.update_ontology(oid, {"revision": 3, "review_status": "approved"}))
         self.service.delete_ontology(oid, 4)
         self.assertEqual(self.repo.list_ontologies(client=self.client, review_status=None)[1], 0)
         self.assertEqual(self.repo.list_ontologies(client=self.client, include_deleted=True)[1], 0)
