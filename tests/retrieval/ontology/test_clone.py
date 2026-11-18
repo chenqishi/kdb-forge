@@ -11,13 +11,13 @@ ARGS = ["--source-client", "", "--source-product", "ecommerce", "--target-client
 
 def test_clone_dry_run_is_active_pending_and_does_not_change_source(doc, service, repo, capsys):
     doc.update(product="ecommerce")
-    source = service.insert_ontology({"data_json": doc, "review_status": "approved"})["ontology"]
+    source = service.insert_ontology({"data_json": doc, "audit_status": "approved"})["ontology"]
     assert main(ARGS + ["--dry-run"], service=service) == 0
     assert len(repo.rows) == 1
-    assert json.loads(capsys.readouterr().out)["review_status"] == "pending"
+    assert json.loads(capsys.readouterr().out)["audit_status"] == "pending"
     assert main(ARGS, service=service) == 0
     created = json.loads(capsys.readouterr().out)["ontology"]
-    assert created["client"] == "wayfair" and created["status"] == "active" and created["review_status"] == "pending"
+    assert created["client"] == "wayfair" and created["status"] == "active" and created["audit_status"] == "pending"
     unchanged = service.get_ontology(source["ontology_id"])["ontology"]
     assert all(unchanged[key] == value for key, value in source.items())
     assert unchanged["data_json"]["client"] == ""
@@ -40,3 +40,12 @@ def test_clone_absent_source_and_empty_target(service, capsys):
     assert main(ARGS, service=service) == 2
     assert json.loads(capsys.readouterr().err)["code"] == "ONTOLOGY_NOT_FOUND"
     assert main(ARGS[:-1] + [""], service=service) == 4
+
+
+def test_clone_accepts_audit_status_argument(doc, service, capsys):
+    doc.update(product="ecommerce")
+    service.insert_ontology({"data_json": doc, "audit_status": "approved"})
+    assert main(ARGS + ["--audit-status", "rejected", "--status", "inactive"], service=service) == 0
+    created = json.loads(capsys.readouterr().out)["ontology"]
+    assert created["audit_status"] == "rejected" and created["status"] == "inactive"
+    assert "review_status" not in created

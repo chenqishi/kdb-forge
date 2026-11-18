@@ -14,7 +14,7 @@ HTTP 请求由现有检索应用接收，依次经过请求模型、路由、业
 | [repository.py](../src/kdb/retrieval/ontology/repository.py) | 参数化 SQL、连接管理、事务判重、版本条件更新、搜索与选取 |
 | [schema.py](../src/kdb/retrieval/ontology/schema.py) / [ontology.schema.json](../src/kdb/retrieval/ontology/ontology.schema.json) | 共享枚举和限制；从 Pydantic 模型生成、核对 JSON Schema |
 | [ontology_clone.py](../src/kdb/entrypoints/cli/tools/ontology_clone.py) | 直接调用 service，复制源文档到目标客户作用域 |
-| [建表](../migrations/20261117_ontology.sql) / [审核字段迁移](../migrations/20261118_ontology_review_status.sql) | 创建或升级唯一业务表 `dops_ontology` |
+| [建表](../migrations/20261117_ontology.sql) / [审核字段迁移](../migrations/20261118_ontology_review_status.sql) / [字段改名](../migrations/20261118_ontology_status_rename.sql) | 创建或升级唯一业务表 `dops_ontology` |
 | [resources/ontology](../resources/ontology/) | 全局、行业、客户三份完整示例文档及 HTTP 验收脚本 |
 
 现有 [routes.py](../src/kdb/entrypoints/http/retrieval/routes.py) 只增加本体路由的导入与注册，保留原有 12 个操作。对应函数的 Inputs、Outputs、SQL 契约位于 [function_schema](../function_schema/)，文件名前缀为 `kdb.retrieval.ontology`、`kdb.entrypoints.http.retrieval.ontology` 和 `kdb.entrypoints.cli.tools.ontology_clone`。
@@ -40,11 +40,11 @@ service 与 repository 的公开操作使用以下名称；失败后按ID回查�
 | `id` / `ontology_id` | 自增物理主键 / UUID4 hex 对外标识；分别有主键和唯一索引 |
 | `client/product/name/alias_name/description` | 从校验后的文档生成的五个投影列，用于筛选、判重和列表展示 |
 | `status` | `active` 启用或 `inactive` 停用；创建默认 active，与审核状态独立 |
-| `review_status` | `pending` 未审核、`approved` 通过、`rejected` 驳回；创建默认 pending |
+| `audit_status` | `pending` 未审核、`approved` 通过、`rejected` 驳回；创建默认 pending |
 | `revision` | 创建为 1；成功替换、切换状态或首次软删时加 1 |
 | `del_flag` | 0 正常、1 已删除；软删保留整篇文档 |
 | `create_time/update_time` | 毫秒精度时间；对外格式为 `YYYY-MM-DD HH:mm:ss.SSS` |
-| 三个普通索引 | `(client,product,name,del_flag)`、`(client,product,status,review_status,del_flag)`、`(update_time,id)` |
+| 三个普通索引 | `(client,product,name,del_flag)`、`(client,product,status,audit_status,del_flag)`、`(update_time,id)` |
 
 业务键是 `(client, product, name)`。数据库没有该业务键的唯一约束或生成列；插入及整篇替换都在同一写事务内，以 `SELECT ... FOR UPDATE` 检查未删除行，待审、驳回和停用记录同样占用业务键。默认迁移使用 `utf8mb4_0900_ai_ci`，业务名称判重按数据库排序规则执行；文档内部名称的比较另用 NFKC + casefold。
 
@@ -52,7 +52,7 @@ service 与 repository 的公开操作使用以下名称；失败后按ID回查�
 
 这些判重约束依赖接口的事务逻辑，直接绕过接口写表不会获得同样的业务保护。写入成功后，service 会另行读取该行组装响应；写入和回查不是一个包含响应快照的事务。
 
-升级旧表先运行20261118迁移再启动新代码：新增review_status默认pending，原active保持启用，原draft转inactive并revision+1，既有内容不自动审核通过。迁移可重跑，不重置已存在的审核结果；文档、ID及软删标记保留。新建表直接具有两个状态字段和更新后的作用域索引。
+升级旧表先运行审核字段迁移，再运行字段改名迁移，最后启动新代码。初次增加审核字段时默认pending，原draft转inactive并revision+1；已有review_status的表直接改列名为audit_status，保留所有审核结果、文档、ID、版本、时间及软删标记，索引也使用新列名。两个脚本可按顺序重跑，不重置审核结果或重新创建旧列。新建表直接具有audit_status和对应作用域索引。
 
 ## 文档校验顺序
 
@@ -78,22 +78,22 @@ service 与 repository 的公开操作使用以下名称；失败后按ID回查�
 | `POST /get_ontology` | 默认只返回未软删且approved的记录；支持full/document/outline，可显式筛选pending/rejected/all，软删筛选独立 |
 | `POST /list_ontologies` | 按作用域、启停状态、审核状态、关键词和删除标记筛选，默认未删且approved，分页返回元数据；查询投影不加载整篇文档 |
 | `POST /update_ontology` | 统一更新：不传data_json时只改指定启停/审核状态；传正文时校验完整文档、禁止改作用域、事务判重；两种方式都校验revision并回meta |
-| `POST /update_ontology_status` | 保留原有启停入口，status必填，不接受review_status；委托update_ontology，仅改启停而保留正文和审核结果 |
+| `POST /update_ontology_status` | 保留原有启停入口，status必填，不接受audit_status；委托update_ontology，仅改启停而保留正文和审核结果 |
 | `POST /delete_ontology` | 软删除；revision 可选；已删除行重复调用成功，版本不再增加；不存在返回 404 |
 | `POST /select_ontology` | 从 active、approved、未删除行中选出一个符合优先级的本体；不合并文档 |
 | `GET /ontology_meta` | 返回结构版本、枚举和限制，不创建数据库连接 |
 
-update_ontology、update_ontology_status 的 SQL 条件包含 `ontology_id/revision/del_flag=0`。更新行数为 0 后回查：不存在或已删除返回 404，仍存在则返回 409 和当前 revision。update_ontology 可以修改名称，未指定 status 时沿用当前状态；提供正文且未指定 review_status 时重置为 pending（未审核），也可显式指定审核结果；未提供正文时只更新传入的状态，另一状态和完整文档不变。空更新400，显式null正文422；不存在/已删仍404。delete_ontology 在已经删除时保持幂等，即使调用方携带旧 revision，也返回已删除结果。
+update_ontology、update_ontology_status 的 SQL 条件包含 `ontology_id/revision/del_flag=0`。更新行数为 0 后回查：不存在或已删除返回 404，仍存在则返回 409 和当前 revision。update_ontology 可以修改名称，未指定 status 时沿用当前状态；提供正文且未指定 audit_status 时重置为 pending（未审核），也可显式指定审核结果；未提供正文时只更新传入的状态，另一状态和完整文档不变。空更新400，显式null正文422；不存在/已删仍404。delete_ontology 在已经删除时保持幂等，即使调用方携带旧 revision，也返回已删除结果。
 
-full 包含行元数据、删除标记、完整文档和文档字节数；document 顶层返回 `ontology_id/status/review_status/revision/document`；outline 返回类、属性名称及各集合计数。列表只返回元数据，不返回 `data_json`。所有写响应和读视图都包含两个状态；详情不满足审核/软删筛选返回404。
+full 包含行元数据、删除标记、完整文档和文档字节数；document 顶层返回 `ontology_id/status/audit_status/revision/document`；outline 返回类、属性名称及各集合计数。列表只返回元数据，不返回 `data_json`。所有写响应和读视图都包含两个状态；详情不满足审核/软删筛选返回404。
 
 成功响应采用 `success/message` 加业务字段。错误响应采用 `success=false/code/message/details`：参数错误 400、未找到 404、业务键或版本或作用域冲突 409、文档过大 413、文档校验失败 422、数据库不可用 503、其他存储错误 500。错误处理器按匹配路由的 ontology tag 区分作用范围，其他路径沿用已有处理器。
 
-ID 统一从 body.ontology_id 取得，删除的 revision 也移到 body；get_ontology 的 view/include_deleted/review_status 和 list_ontologies 的筛选、分页继续使用 query。默认分页复用 DEFAULT_PAGE_SIZE=100，service 统一检查范围并返回带字段路径的400，路由只解析类型。创建及其他写入返回 OntologyMeta；详情为 Full/Outline 联合类型，列表为 OntologyListItem，选取为 SelectedOntologyDocument/Outline 联合类型。
+ID 统一从 body.ontology_id 取得，删除的 revision 也移到 body；get_ontology 的 view/include_deleted/audit_status 和 list_ontologies 的筛选、分页继续使用 query。默认分页复用 DEFAULT_PAGE_SIZE=100，service 统一检查范围并返回带字段路径的400，路由只解析类型。创建及其他写入返回 OntologyMeta；详情为 Full/Outline 联合类型，列表为 OntologyListItem，选取为 SelectedOntologyDocument/Outline 联合类型。
 
 ## 搜索和作用域选取
 
-列表中，未传 client/product 表示不按该字段过滤，传空串表示只取公用作用域。默认只返回未软删且审核通过的记录，review_status=pending/rejected/all可显式调整；include_deleted与审核筛选相互独立，默认不过滤启停状态。默认每页 100，最多 100。q 匹配名称、说明及别名；deep=1 以 OR 方式额外匹配完整 JSON。`!/%/_` 在 LIKE 查询中转义为字面量。
+列表中，未传 client/product 表示不按该字段过滤，传空串表示只取公用作用域。默认只返回未软删且审核通过的记录，audit_status=pending/rejected/all可显式调整；include_deleted与审核筛选相互独立，默认不过滤启停状态。默认每页 100，最多 100。q 匹配名称、说明及别名；deep=1 以 OR 方式额外匹配完整 JSON。`!/%/_` 在 LIKE 查询中转义为字面量。
 
 关键词排序分值为：名称精确 100、别名精确 90、名称前缀 70、名称包含 50、其他命中 20，再按更新时间和 id 倒序。别名精确匹配使用 JSON_CONTAINS，区分拉丁大小写；别名包含匹配不区分大小写。deep 查询会扫描文档，不使用全文索引。
 

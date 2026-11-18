@@ -10,17 +10,17 @@ client/product由service传入，公用维度为空串；name可选精确匹配�
 
 ## Outputs
 
-返回一行完整OntologyRow或None，仅del_flag=0、status=active、review_status=approved参与候选。按作用域优先级选取，待审/驳回/停用行不会阻止向上回落；不合并。故障明确抛422/503/500。
+返回一行完整OntologyRow或None，仅del_flag=0、status=active、audit_status=approved参与候选。按作用域优先级选取，待审/驳回/停用行不会阻止向上回落；不合并。故障明确抛422/503/500。
 
 ## SQL
 
-实际表：`dops_ontology`；DDL 来源：[建表](../migrations/20261117_ontology.sql)与[审核状态迁移](../migrations/20261118_ontology_review_status.sql)。仅 PRIMARY(id)、uk_ontology_id 唯一，不建业务唯一索引。
+实际表：`dops_ontology`；DDL 来源：[建表](../migrations/20261117_ontology.sql)与[审核状态迁移](../migrations/20261118_ontology_review_status.sql)及[字段改名迁移](../migrations/20261118_ontology_status_rename.sql)。仅 PRIMARY(id)、uk_ontology_id 唯一，不建业务唯一索引。
 
 ```sql
-SELECT id,ontology_id,client,product,name,alias_name,description,status,review_status,revision,
+SELECT id,ontology_id,client,product,name,alias_name,description,status,audit_status,revision,
        create_time,update_time,del_flag,data_json,
        ((client=%s AND %s!='')*2+(product=%s AND %s!='')) AS scope_rank
-FROM dops_ontology WHERE del_flag=0 AND status='active' AND review_status='approved'
+FROM dops_ontology WHERE del_flag=0 AND status='active' AND audit_status='approved'
 AND (client=%s OR client='')
 AND (product=%s OR product='') [AND name=%s]
 ORDER BY scope_rank DESC,(product='') DESC,update_time DESC,id DESC LIMIT 1;

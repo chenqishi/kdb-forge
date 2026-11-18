@@ -41,22 +41,22 @@
 
 | 方法与路径 | 主要输入 | 输出与行为 |
 |---|---|---|
-| `POST /insert_ontology` | `data_json` 为对象或 JSON 对象字符串；`status=active/inactive` 默认 active；`review_status=pending/approved/rejected` 默认 pending（未审核） | 201，`ontology` 为 meta，含 document_bytes，不返回 data_json，UUID4 hex、revision=1；同 `(client,product,name)` 未删行冲突 409，待审、驳回和停用行也占业务键 |
-| `POST /get_ontology` | body 中必填 `ontology_id`；query 保留 `view=full/document/outline`、`include_deleted=false`、`review_status=approved`（可传 pending/rejected/all） | full 含完整文档和紧凑 UTF-8 `document_bytes`；document 为顶层 `ontology_id/status/review_status/revision/document`；outline 只含类及属性大纲与计数 |
-| `POST /list_ontologies` | 可选 `client/product/status/q`、`deep=0/1`、`include_deleted=false`、`review_status=approved`（可传 pending/rejected/all）、`page=1`、`page_size=100`（1–100） | `total/page/page_size/items`，列表不加载/返回 `data_json`；未传作用域=不过滤，空串=只看公用 |
-| `POST /update_ontology` | body 中必填 `ontology_id`、正整数 `revision`；`data_json/status/review_status` 至少提供一项有效更新 | 统一更新正文、启停和审核，revision+1，回meta；省略data_json只改指定状态；提供时整篇替换且不可为null；作用域不可变，改名判重，旧revision返回409 |
+| `POST /insert_ontology` | `data_json` 为对象或 JSON 对象字符串；`status=active/inactive` 默认 active；`audit_status=pending/approved/rejected` 默认 pending（未审核） | 201，`ontology` 为 meta，含 document_bytes，不返回 data_json，UUID4 hex、revision=1；同 `(client,product,name)` 未删行冲突 409，待审、驳回和停用行也占业务键 |
+| `POST /get_ontology` | body 中必填 `ontology_id`；query 保留 `view=full/document/outline`、`include_deleted=false`、`audit_status=approved`（可传 pending/rejected/all） | full 含完整文档和紧凑 UTF-8 `document_bytes`；document 为顶层 `ontology_id/status/audit_status/revision/document`；outline 只含类及属性大纲与计数 |
+| `POST /list_ontologies` | 可选 `client/product/status/q`、`deep=0/1`、`include_deleted=false`、`audit_status=approved`（可传 pending/rejected/all）、`page=1`、`page_size=100`（1–100） | `total/page/page_size/items`，列表不加载/返回 `data_json`；未传作用域=不过滤，空串=只看公用 |
+| `POST /update_ontology` | body 中必填 `ontology_id`、正整数 `revision`；`data_json/status/audit_status` 至少提供一项有效更新 | 统一更新正文、启停和审核，revision+1，回meta；省略data_json只改指定状态；提供时整篇替换且不可为null；作用域不可变，改名判重，旧revision返回409 |
 | `POST /update_ontology_status` | body 中必填 `ontology_id`、正整数 `revision`、`status=active/inactive` | 保留原有启停入口，委托update_ontology；不接收审核字段，不改变正文及审核结果 |
 | `POST /delete_ontology` | body 中必填 `ontology_id`，可选正整数 `revision` | 软删，回 `deleted=true` 及含 del_flag 的 meta；重复删除 200/本体已删除 且不再 +1；不存在 404 |
 | `POST /select_ontology` | `client/product` 默认空串，可选精确 `name`、`include_document=true` | 只返回一行、不合并；客户行业→客户通用→行业→全局，限 active、approved、未删行；无匹配为 200/ontology=null |
-| `GET /ontology_meta` | 无 | 结构版本、两套状态枚举（status_values/review_status_values）与上限；不初始化数据库连接 |
+| `GET /ontology_meta` | 无 | 结构版本、两套状态枚举（status_values/audit_status_values）与上限；不初始化数据库连接 |
 
-当前insert_ontology按单条记录插入，review_status属于该条请求；可显式指定，省略时为pending（未审核）。
+当前insert_ontology按单条记录插入，audit_status属于该条请求；可显式指定，省略时为pending（未审核）。
 
-生效和审核是独立字段：新建默认启用且未审核，启用不代表审核通过。`update_ontology` 可只传 `ontology_id/revision/review_status` 修改审核结果，也可只改 `status`；省略正文及两个状态或仅传null状态返回400，显式null正文返回422。原有 `update_ontology_status` 仅用于启停，不作为审核入口。正文替换缺省回到未审核，可在同一次写入中显式指定审核结果；只改状态时，正文和未传状态保持原值。所有写响应和读视图均返回两个状态，软删不修改它们。
+生效和审核是独立字段：新建默认启用且未审核，启用不代表审核通过。`update_ontology` 可只传 `ontology_id/revision/audit_status` 修改审核结果，也可只改 `status`；省略正文及两个状态或仅传null状态返回400，显式null正文返回422。原有 `update_ontology_status` 仅用于启停，不作为审核入口。正文替换缺省回到未审核，可在同一次写入中显式指定审核结果；只改状态时，正文和未传状态保持原值。所有写响应和读视图均返回两个状态，软删不修改它们。
 
-列表及详情默认 `include_deleted=false&review_status=approved`，不额外限制启停状态；待审审核工作使用 `review_status=pending`，`all` 可看全部审核状态。`include_deleted=true` 只放开软删条件，不会放开审核条件；详情不满足筛选返回404。业务选取 `select_ontology` 固定要求未软删、启用且审核通过，不提供绕过这些条件的参数。
+列表及详情默认 `include_deleted=false&audit_status=approved`，不额外限制启停状态；待审审核工作使用 `audit_status=pending`，`all` 可看全部审核状态。`include_deleted=true` 只放开软删条件，不会放开审核条件；详情不满足筛选返回404。业务选取 `select_ontology` 固定要求未软删、启用且审核通过，不提供绕过这些条件的参数。
 
-审核操作示例：`POST /update_ontology`，body 为 `{"ontology_id":"32位小写hex","revision":1,"review_status":"approved"}`。查询待审：`POST /list_ontologies?review_status=pending`；查看待审正文：`POST /get_ontology?review_status=pending&view=document`，body 中提供 `ontology_id`。
+审核操作示例：`POST /update_ontology`，body 为 `{"ontology_id":"32位小写hex","revision":1,"audit_status":"approved"}`。查询待审：`POST /list_ontologies?audit_status=pending`；查看待审正文：`POST /get_ontology?audit_status=pending&view=document`，body 中提供 `ontology_id`。
 
 所有 ID 字段统一为 body 中的 `ontology_id`（32位小写 hex），不再从路径取值。列表筛选和分页仍用 query，默认每页100；分页范围由 service 单点校验，路由只解析类型，失败统一400“请求参数不合法”。旧 `/ontology` 路径不再注册。创建、更新、状态变更和删除统一返回元数据，详情/列表/选取使用明确的 Pydantic 模型描述字段；列表不补读文档计算字节数。
 
@@ -64,7 +64,7 @@
 
 所有字符串值去首尾空白；client/product 必须原本就是小写，禁止静默 lower。类、属性、关系、枚举、枚举值、规则和术语名禁止点号与 ASCII 控制字符。节点名、别名与引用按 NFKC+casefold 比较，存储保留规范化后的原始拼写；引用不重写。条件必填和引用错误都有 JSON 路径，最多 50 条。行控制字段禁止出现在文档任何层，`extensions` 子树例外。文档硬上限 1MB，200KB 起记录 warning；根 llm_hints/extensions 各 64KB，节点 llm_hints 16KB。
 
-外部可用 [JSON Schema](../src/kdb/retrieval/ontology/ontology.schema.json) 校验单节点结构，过 schema 不等于能入库：跨节点唯一性、引用、保留键、组合约束由服务端校验。三层完整种子在 [resources/ontology](../resources/ontology/)；导入请求需包装为 `{"data_json":文档,"status":"active","review_status":"pending"}`。
+外部可用 [JSON Schema](../src/kdb/retrieval/ontology/ontology.schema.json) 校验单节点结构，过 schema 不等于能入库：跨节点唯一性、引用、保留键、组合约束由服务端校验。三层完整种子在 [resources/ontology](../resources/ontology/)；导入请求需包装为 `{"data_json":文档,"status":"active","audit_status":"pending"}`。
 
 select_ontology 不传 name 时，同层按 update_time DESC、id DESC 稳定选取；传 name 时按 MySQL 列排序规则精确匹配。只传 client，优先该客户 product='' 的通用行；仅有该客户行业行时返回最近维护的一条，`scope=client_product,fallback=true`。fallback 严格等于“选中行作用域不等于请求作用域”，因此精确匹配 `(client,'')` 时为 false。任何场景都不补类、不合并。待审、驳回或停用客户行继续占业务键，但 select_ontology 回落行业或全局。
 
@@ -74,7 +74,7 @@ select_ontology 不传 name 时，同层按 update_time DESC、id DESC 稳定选
 
 先在目标库执行 [20261117_ontology.sql](../migrations/20261117_ontology.sql)，不写死库名；MySQL 8.0 默认 utf8mb4_0900_ai_ci，5.7 需改为 utf8mb4_unicode_ci。数据库仅 PRIMARY(id) 与 uk_ontology_id 唯一，业务键无唯一索引/生成列。判重在插入/整篇更新的同一事务中 FOR UPDATE，只看 del_flag=0；每个写事务显式使用 REPEATABLE READ，避免部署默认 READ COMMITTED 导致缺失键并发重复。死锁整笔重试一次；仍失败或锁等待超时返回 503。绕过接口裸写不受业务判重保护。
 
-已有旧表需执行 [20261118_ontology_review_status.sql](../migrations/20261118_ontology_review_status.sql) 后再启动新代码，迁移可重跑。既有记录的审核状态设为 pending，不自动批准；原 active 保留，原 draft 转为 inactive 并 revision+1，保留文档和软删标记。新建表脚本已含 review_status，仍只有一张业务表。
+新建表直接使用 `audit_status`。没有审核字段的旧表，依次执行 [审核状态迁移](../migrations/20261118_ontology_review_status.sql) 和 [字段改名迁移](../migrations/20261118_ontology_status_rename.sql)，再启动新代码；初次增加审核字段默认 pending，原 draft 转 inactive 并 revision+1。已有 `review_status` 的表只需执行字段改名迁移，已有审核结果、版本号、时间、文档和软删标记全部保留，索引同步改用 `audit_status`。迁移可重跑，前一个脚本不会重新创建旧列，仍只有一张业务表。
 
 连接配置取 `KDB_MYSQL_CONFIG`，未设置时用项目 `config/mysql_conn_config.json`；每个进程懒加载一个共享 MySQLConnector，池大小沿用 5，连接归还前关闭游标，读写均设置会话 utf8mb4，写操作显式 commit/rollback。安装基础依赖包含 mysql-connector-python；元信息、导入模块和生成 schema 不创建连接。
 
@@ -82,7 +82,7 @@ select_ontology 不传 name 时，同层按 update_time DESC、id DESC 稳定选
 python -m kdb.retrieval.ontology.schema --check
 python -m kdb.entrypoints.cli.tools.ontology_clone \
   --source-client '' --source-product ecommerce \
-  --target-client wayfair --status active --review-status pending --dry-run
+  --target-client wayfair --status active --audit-status pending --dry-run
 ```
 
 克隆直接调用 service，解析源文档后整篇复制、改作用域、重校验，默认 active + pending；去掉 --dry-run 才写入。target-product 缺省为请求的 source-product。退出码 0 成功、2 源不存在、3 目标已有业务键、4 校验失败、5 数据库不可用；错误 code/details 写 stderr。模板变更不自动传播到客户。

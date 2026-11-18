@@ -2,11 +2,11 @@
 
 ## Signature
 
-`OntologyService.list_ontologies(self, client=None, product=None, status=None, q=None, deep=False, include_deleted=False, page=1, page_size=DEFAULT_PAGE_SIZE, review_status='approved') -> dict`
+`OntologyService.list_ontologies(self, client=None, product=None, status=None, q=None, deep=False, include_deleted=False, page=1, page_size=DEFAULT_PAGE_SIZE, audit_status='approved') -> dict`
 
 ## Inputs
 
-client/product可选，未传不过滤、空串只取公用；status可选active/inactive。review_status默认approved，可传pending/rejected/all；include_deleted=false；q可选、deep=0/1；page>=1，page_size=1..100默认100。所有HTTP筛选和分页位于query。
+client/product可选，未传不过滤、空串只取公用；status可选active/inactive。audit_status默认approved，可传pending/rejected/all；include_deleted=false；q可选、deep=0/1；page>=1，page_size=1..100默认100。所有HTTP筛选和分页位于query。
 
 ## Outputs
 

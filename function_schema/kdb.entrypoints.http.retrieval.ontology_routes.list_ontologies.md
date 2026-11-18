@@ -2,11 +2,11 @@
 
 ## Signature
 
-`list_ontologies(client: ScopeQuery=None, product: ScopeQuery=None, status: Optional[OntologyStatus]=None, q: Optional[str]=None, deep: Annotated[int, Query(ge=0, le=1)]=0, include_deleted: bool=False, review_status: Annotated[ReviewFilter, Query(description='默认仅审核通过；all不过滤审核状态，软删筛选独立')]='approved', page: Annotated[int, Query(description='页码，从1开始，范围由业务服务校验')]=1, page_size: Annotated[int, Query(description='每页条数，1至100，范围由业务服务校验')]=schema.DEFAULT_PAGE_SIZE, service: OntologyService=Depends(get_service))`
+`list_ontologies(client: ScopeQuery=None, product: ScopeQuery=None, status: Optional[OntologyStatus]=None, q: Optional[str]=None, deep: Annotated[int, Query(ge=0, le=1)]=0, include_deleted: bool=False, audit_status: Annotated[AuditFilter, Query(description='默认仅审核通过；all不过滤审核状态，软删筛选独立')]='approved', page: Annotated[int, Query(description='页码，从1开始，范围由业务服务校验')]=1, page_size: Annotated[int, Query(description='每页条数，1至100，范围由业务服务校验')]=schema.DEFAULT_PAGE_SIZE, service: OntologyService=Depends(get_service))`
 
 ## Inputs
 
-client/product可选，未传不过滤、空串只取公用；status可选active/inactive。review_status默认approved，可传pending/rejected/all；include_deleted=false；q可选、deep=0/1；page>=1，page_size=1..100默认100。所有HTTP筛选和分页位于query。 service经Depends(get_service)注入。
+client/product可选，未传不过滤、空串只取公用；status可选active/inactive。audit_status默认approved，可传pending/rejected/all；include_deleted=false；q可选、deep=0/1；page>=1，page_size=1..100默认100。所有HTTP筛选和分页位于query。 service经Depends(get_service)注入。
 
 ## Outputs
 

@@ -5,14 +5,14 @@ from typing import Any, Optional
 from .errors import (OntologyError, ONTOLOGY_BAD_REQUEST, ONTOLOGY_NOT_FOUND,
                      ONTOLOGY_REVISION_CONFLICT, ONTOLOGY_SCOPE_IMMUTABLE)
 from .repository import OntologyRepository
-from .schema import (DEFAULT_PAGE_SIZE, DEFAULT_REVIEW_STATUS, DEFAULT_STATUS, MAX_PAGE_SIZE,
-                     REVIEW_STATUS_VALUES, STATUS_VALUES, WARN_DOCUMENT_BYTES)
+from .schema import (DEFAULT_PAGE_SIZE, DEFAULT_AUDIT_STATUS, DEFAULT_STATUS, MAX_PAGE_SIZE,
+                     AUDIT_STATUS_VALUES, STATUS_VALUES, WARN_DOCUMENT_BYTES)
 from .validation import document_size, validate_document
 
 logger = logging.getLogger(__name__)
-META_FIELDS = ("ontology_id", "client", "product", "name", "status", "review_status", "revision", "create_time", "update_time")
+META_FIELDS = ("ontology_id", "client", "product", "name", "status", "audit_status", "revision", "create_time", "update_time")
 LIST_FIELDS = META_FIELDS + ("alias_name", "description")
-OUTLINE_FIELDS = ("ontology_id", "client", "product", "name", "status", "review_status", "revision", "update_time")
+OUTLINE_FIELDS = ("ontology_id", "client", "product", "name", "status", "audit_status", "revision", "update_time")
 
 
 def _value(body, name, default=None):
@@ -20,7 +20,7 @@ def _value(body, name, default=None):
 
 
 def _status(value, field="status", location="body", allow_all=False):
-    values = REVIEW_STATUS_VALUES if field == "review_status" else STATUS_VALUES
+    values = AUDIT_STATUS_VALUES if field == "audit_status" else STATUS_VALUES
     if allow_all:
         values += ("all",)
     if value not in values:
@@ -85,26 +85,26 @@ class OntologyService:
 
     def insert_ontology(self, body: Any) -> dict:
         status = _status(_value(body, "status") if _value(body, "status") is not None else DEFAULT_STATUS)
-        review_status = _status(_value(body, "review_status") if _value(body, "review_status") is not None
-                                else DEFAULT_REVIEW_STATUS, "review_status")
+        audit_status = _status(_value(body, "audit_status") if _value(body, "audit_status") is not None
+                                else DEFAULT_AUDIT_STATUS, "audit_status")
         vd = validate_document(_value(body, "data_json"))
-        ontology_id = self.repo.insert_ontology(vd, status, review_status)
+        ontology_id = self.repo.insert_ontology(vd, status, audit_status)
         _warn_size(ontology_id, vd.document_bytes)
         return {"success": True, "message": "", "ontology": _meta(self._existing(ontology_id))}
 
     def update_ontology(self, ontology_id: str, body: Any) -> dict:
         if not isinstance(body, dict):
             body = body.model_dump(exclude_unset=True)
-        status, review_status = _value(body, "status"), _value(body, "review_status")
+        status, audit_status = _value(body, "status"), _value(body, "audit_status")
         has_document = "data_json" in body
-        if not has_document and status is None and review_status is None:
-            raise OntologyError(ONTOLOGY_BAD_REQUEST, 400, "至少提供 data_json、status 或 review_status",
+        if not has_document and status is None and audit_status is None:
+            raise OntologyError(ONTOLOGY_BAD_REQUEST, 400, "至少提供 data_json、status 或 audit_status",
                                 [{"path": "body", "reason": "empty_update", "message": "更新内容不能为空"}])
         existing = self._existing(ontology_id)
         if status is not None:
             _status(status)
-        if review_status is not None:
-            _status(review_status, "review_status")
+        if audit_status is not None:
+            _status(audit_status, "audit_status")
         if has_document:
             vd = validate_document(body["data_json"])
             if (vd.client, vd.product) != (existing.client, existing.product):
@@ -114,9 +114,9 @@ class OntologyService:
             count = self.repo.update_ontology_document(
                 ontology_id, _value(body, "revision"), vd,
                 status if status is not None else existing.status,
-                review_status if review_status is not None else DEFAULT_REVIEW_STATUS)
+                audit_status if audit_status is not None else DEFAULT_AUDIT_STATUS)
         else:
-            count = self.repo.update_ontology_status(ontology_id, _value(body, "revision"), status, review_status)
+            count = self.repo.update_ontology_status(ontology_id, _value(body, "revision"), status, audit_status)
         if not count:
             self._raise_write_conflict(ontology_id)
         if has_document:
@@ -124,7 +124,7 @@ class OntologyService:
         return {"success": True, "message": "", "ontology": _meta(self._existing(ontology_id))}
 
     def update_ontology_status(self, ontology_id: str, body: Any) -> dict:
-        if _value(body, "review_status") is not None:
+        if _value(body, "audit_status") is not None:
             raise OntologyError(ONTOLOGY_BAD_REQUEST, 400, "审核状态请通过 update_ontology 修改")
         return self.update_ontology(ontology_id, {"revision": _value(body, "revision"),
                                                   "status": _status(_value(body, "status"))})
@@ -141,24 +141,24 @@ class OntologyService:
         return {"success": True, "message": "" if count else "本体已删除", "deleted": True, "ontology": meta}
 
     def get_ontology(self, ontology_id: str, view: str = "full", include_deleted: bool = False,
-                     review_status: str = "approved") -> dict:
+                     audit_status: str = "approved") -> dict:
         if view not in ("full", "document", "outline"):
             raise OntologyError(ONTOLOGY_BAD_REQUEST, 400, "view 必须是 full、document 或 outline")
-        _status(review_status, "review_status", "query", allow_all=True)
+        _status(audit_status, "audit_status", "query", allow_all=True)
         row = self._existing(ontology_id, include_deleted)
-        if review_status != "all" and row.review_status != review_status:
+        if audit_status != "all" and row.audit_status != audit_status:
             raise OntologyError(ONTOLOGY_NOT_FOUND, 404, "未找到符合审核状态的本体")
         if view == "document":
             return {"success": True, "message": "", "ontology_id": row.ontology_id,
-                    "status": row.status, "review_status": row.review_status,
+                    "status": row.status, "audit_status": row.audit_status,
                     "revision": row.revision, "document": row.data_json}
         return {"success": True, "message": "", "ontology": _full(row) if view == "full" else _outline(row)}
 
     def list_ontologies(self, client=None, product=None, status=None, q=None, deep=False,
-             include_deleted=False, page=1, page_size=DEFAULT_PAGE_SIZE, review_status="approved") -> dict:
+             include_deleted=False, page=1, page_size=DEFAULT_PAGE_SIZE, audit_status="approved") -> dict:
         if status is not None:
             _status(status, location="query")
-        _status(review_status, "review_status", "query", allow_all=True)
+        _status(audit_status, "audit_status", "query", allow_all=True)
         issues = []
         if type(page) is not int or page < 1:
             issues.append({"path": "query.page", "reason": "invalid_pagination", "message": "page 必须为正整数"})
@@ -169,7 +169,7 @@ class OntologyService:
             raise OntologyError(ONTOLOGY_BAD_REQUEST, 400, "请求参数不合法", issues)
         rows, total = self.repo.list_ontologies(client=client, product=product, status=status, q=q, deep=deep,
                                     include_deleted=include_deleted, limit=page_size, offset=(page - 1) * page_size,
-                                    review_status=None if review_status == "all" else review_status)
+                                    audit_status=None if audit_status == "all" else audit_status)
         return {"success": True, "message": "", "total": total, "page": page, "page_size": page_size,
                 "items": [{key: getattr(row, key) for key in LIST_FIELDS} for row in rows]}
 

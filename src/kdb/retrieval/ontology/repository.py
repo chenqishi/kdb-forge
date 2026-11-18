@@ -11,7 +11,7 @@ from kdb.shared.config.paths import project_path
 
 from .errors import (OntologyError, ONTOLOGY_DB_UNAVAILABLE, ONTOLOGY_INTERNAL_ERROR,
                      ONTOLOGY_NAME_CONFLICT, ONTOLOGY_VALIDATION_FAILED)
-from .schema import DEFAULT_PAGE_SIZE, DEFAULT_REVIEW_STATUS, TABLE_NAME
+from .schema import DEFAULT_PAGE_SIZE, DEFAULT_AUDIT_STATUS, TABLE_NAME
 from .validation import ValidatedDocument, compact_json
 
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ _LOCK = threading.Lock()
 _CONNECTOR = None
 TABLE = "`%s`" % TABLE_NAME
 META_COLUMNS = ("`ontology_id`, `client`, `product`, `name`, `alias_name`, `description`, "
-                "`status`, `review_status`, `revision`, `create_time`, `update_time`")
+                "`status`, `audit_status`, `revision`, `create_time`, `update_time`")
 FULL_COLUMNS = "`id`, " + META_COLUMNS + ", `del_flag`, `data_json`"
 
 
@@ -44,7 +44,7 @@ class OntologyRow:
     alias_name: List[str]
     description: str
     status: str
-    review_status: str
+    audit_status: str
     revision: int
     create_time: str
     update_time: str
@@ -70,7 +70,7 @@ def to_row(raw: Dict[str, Any]) -> OntologyRow:
     return OntologyRow(
         ontology_id=raw["ontology_id"], client=raw["client"] or "", product=raw["product"] or "",
         name=raw["name"], alias_name=_load_json(raw["alias_name"], []), description=raw["description"] or "",
-        status=raw["status"], review_status=raw["review_status"], revision=int(raw["revision"]),
+        status=raw["status"], audit_status=raw["audit_status"], revision=int(raw["revision"]),
         create_time=fmt_dt(raw["create_time"]),
         update_time=fmt_dt(raw["update_time"]), del_flag=int(raw.get("del_flag", 0)),
         data_json=_load_json(raw.get("data_json"), {}))
@@ -158,7 +158,7 @@ class OntologyRepository:
         return to_row(rows[0]) if rows else None
 
     def _check_name(self, cursor, vd, exclude=None):
-        sql = ("SELECT `ontology_id`, `status`, `review_status`, `revision` FROM " + TABLE +
+        sql = ("SELECT `ontology_id`, `status`, `audit_status`, `revision` FROM " + TABLE +
                " WHERE `client` = %s AND `product` = %s AND `name` = %s AND `del_flag` = 0")
         params = [vd.client, vd.product, vd.name]
         if exclude is not None:
@@ -170,11 +170,11 @@ class OntologyRepository:
             existing = rows[0]
             raise OntologyError(ONTOLOGY_NAME_CONFLICT, 409, "同一业务键已存在本体",
                                 [{"existing_ontology_id": existing["ontology_id"],
-                                  "status": existing["status"], "review_status": existing["review_status"],
+                                  "status": existing["status"], "audit_status": existing["audit_status"],
                                   "revision": int(existing["revision"])}])
 
     def insert_ontology(self, vd: ValidatedDocument, status: str,
-                        review_status: str = DEFAULT_REVIEW_STATUS) -> str:
+                        audit_status: str = DEFAULT_AUDIT_STATUS) -> str:
         def insert(cursor):
             self._check_name(cursor, vd)
             for attempt in range(2):
@@ -182,10 +182,10 @@ class OntologyRepository:
                 try:
                     cursor.execute(
                         "INSERT INTO " + TABLE + " (`ontology_id`, `client`, `product`, `name`, "
-                        "`alias_name`, `description`, `data_json`, `status`, `review_status`) "
+                        "`alias_name`, `description`, `data_json`, `status`, `audit_status`) "
                         "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                         (ontology_id, vd.client, vd.product, vd.name, compact_json(vd.alias_name),
-                         vd.description, compact_json(vd.document), status, review_status))
+                         vd.description, compact_json(vd.document), status, audit_status))
                     return ontology_id
                 except Exception as exc:
                     if getattr(exc, "errno", None) != 1062 or attempt:
@@ -193,26 +193,26 @@ class OntologyRepository:
         return self._tx(insert)
 
     def update_ontology_document(self, ontology_id: str, revision: int, vd: ValidatedDocument, status: str,
-                                 review_status: str = DEFAULT_REVIEW_STATUS) -> int:
+                                 audit_status: str = DEFAULT_AUDIT_STATUS) -> int:
         def replace(cursor):
             self._check_name(cursor, vd, exclude=ontology_id)
             cursor.execute(
                 "UPDATE " + TABLE + " SET `name` = %s, `alias_name` = %s, `description` = %s, "
-                "`data_json` = %s, `status` = %s, `review_status` = %s, `revision` = `revision` + 1, "
+                "`data_json` = %s, `status` = %s, `audit_status` = %s, `revision` = `revision` + 1, "
                 "`update_time` = CURRENT_TIMESTAMP(3) WHERE `ontology_id` = %s AND `revision` = %s AND `del_flag` = 0",
                 (vd.name, compact_json(vd.alias_name), vd.description, compact_json(vd.document),
-                 status, review_status, ontology_id, revision))
+                 status, audit_status, ontology_id, revision))
             return cursor.rowcount
         return self._tx(replace)
 
     def update_ontology_status(self, ontology_id: str, revision: int, status: Optional[str] = None,
-                               review_status: Optional[str] = None) -> int:
+                               audit_status: Optional[str] = None) -> int:
         def update(cursor):
             cursor.execute(
                 "UPDATE " + TABLE + " SET `status` = COALESCE(%s, `status`), "
-                "`review_status` = COALESCE(%s, `review_status`), `revision` = `revision` + 1, "
+                "`audit_status` = COALESCE(%s, `audit_status`), `revision` = `revision` + 1, "
                 "`update_time` = CURRENT_TIMESTAMP(3) WHERE `ontology_id` = %s AND `revision` = %s AND `del_flag` = 0",
-                (status, review_status, ontology_id, revision))
+                (status, audit_status, ontology_id, revision))
             return cursor.rowcount
         return self._tx(update)
 
@@ -230,11 +230,11 @@ class OntologyRepository:
 
     def list_ontologies(self, client=None, product=None, status=None, q=None, deep=False,
              include_deleted=False, limit=DEFAULT_PAGE_SIZE, offset=0,
-             review_status="approved") -> Tuple[List[OntologyRow], int]:
+             audit_status="approved") -> Tuple[List[OntologyRow], int]:
         where = [] if include_deleted else ["`del_flag` = 0"]
         params = []
         for column, value in (("client", client), ("product", product), ("status", status),
-                              ("review_status", review_status)):
+                              ("audit_status", audit_status)):
             if value is not None:
                 where.append("`%s` = %%s" % column)
                 params.append(value)
@@ -269,7 +269,7 @@ class OntologyRepository:
     def select_ontology(self, client: str, product: str, name: Optional[str]) -> Optional[OntologyRow]:
         sql = ("SELECT " + FULL_COLUMNS +
                ", ((`client` = %s AND %s != '') * 2 + (`product` = %s AND %s != '')) AS `scope_rank` "
-               "FROM " + TABLE + " WHERE `del_flag` = 0 AND `status` = 'active' AND `review_status` = 'approved' "
+               "FROM " + TABLE + " WHERE `del_flag` = 0 AND `status` = 'active' AND `audit_status` = 'approved' "
                "AND (`client` = %s OR `client` = '')")
         params = [client, client, product, product, client]
         # The documented client-only request can fall back to that client's latest industry row.

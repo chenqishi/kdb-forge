@@ -13,7 +13,7 @@ def test_create_projection_status_and_conflict(doc, repo, service):
     assert created["revision"] == 1
     assert created["client"] == "wayfair"
     assert "data_json" not in created
-    assert service.get_ontology(created["ontology_id"], review_status="pending")["ontology"]["data_json"]["client"] == "wayfair"
+    assert service.get_ontology(created["ontology_id"], audit_status="pending")["ontology"]["data_json"]["client"] == "wayfair"
     assert sum(call[0] == "insert" for call in repo.calls) == 1
     with pytest.raises(OntologyError) as caught:
         service.insert_ontology({"data_json": doc, "status": "inactive"})
@@ -64,7 +64,7 @@ def test_delete_idempotence_recreation_and_missing(doc, service):
         assert first["ontology"]["revision"] == second["ontology"]["revision"] == 2
         assert second["message"] == "本体已删除"
         assert second["ontology"]["del_flag"] == 1
-        assert service.get_ontology(oid, include_deleted=True, review_status="all")["ontology"]["del_flag"] == 1
+        assert service.get_ontology(oid, include_deleted=True, audit_status="all")["ontology"]["del_flag"] == 1
     with pytest.raises(OntologyError) as caught:
         service.delete_ontology("0" * 32)
     assert caught.value.http_status == 404
@@ -87,9 +87,9 @@ def test_resolve_never_merges_and_inactive_falls_back(doc, service):
     industry = deepcopy(doc)
     industry.update(product="ecommerce", name="行业模板")
     industry["object_types"].append({"name": "行业专属", "identity": ["id"], "attributes": [{"name": "id", "data_type": "string"}]})
-    service.insert_ontology({"data_json": industry, "review_status": "approved"})
+    service.insert_ontology({"data_json": industry, "audit_status": "approved"})
     doc.update(client="wayfair", product="ecommerce")
-    oid = service.insert_ontology({"data_json": doc, "status": "inactive", "review_status": "approved"})["ontology"]["ontology_id"]
+    oid = service.insert_ontology({"data_json": doc, "status": "inactive", "audit_status": "approved"})["ontology"]["ontology_id"]
     assert service.select_ontology("wayfair", "ecommerce")["scope"] == "industry"
     service.update_ontology_status(oid, {"status": "active", "revision": 1})
     chosen = service.select_ontology("wayfair", "ecommerce")["ontology"]["data_json"]
@@ -100,7 +100,7 @@ def test_resolve_never_merges_and_inactive_falls_back(doc, service):
 
 
 def test_list_preserves_absent_vs_empty_scope(doc, repo, service):
-    service.insert_ontology({"data_json": doc, "review_status": "approved"})
+    service.insert_ontology({"data_json": doc, "audit_status": "approved"})
     result = service.list_ontologies(client="", status="active", page=2, page_size=5)
     filters = repo.calls[-1][1]
     assert filters["client"] == "" and filters["product"] is None
@@ -117,28 +117,28 @@ def test_pagination_rejected_before_repository(service, repo, page, size):
     assert repo.calls == []
 
 
-@pytest.mark.parametrize("review_status", ["pending", "rejected"])
-def test_unreviewed_customer_falls_back_and_replacement_requires_review(doc, service, review_status):
-    industry = service.insert_ontology({"data_json": dict(doc, product="retail"), "review_status": "approved"})["ontology"]
+@pytest.mark.parametrize("audit_status", ["pending", "rejected"])
+def test_unreviewed_customer_falls_back_and_replacement_requires_review(doc, service, audit_status):
+    industry = service.insert_ontology({"data_json": dict(doc, product="retail"), "audit_status": "approved"})["ontology"]
     customer_doc = dict(doc, client="customer", product="retail")
-    customer = service.insert_ontology({"data_json": customer_doc, "review_status": review_status})["ontology"]
+    customer = service.insert_ontology({"data_json": customer_doc, "audit_status": audit_status})["ontology"]
     assert service.select_ontology("customer", "retail")["ontology"]["ontology_id"] == industry["ontology_id"]
     oid = customer["ontology_id"]
-    service.update_ontology(oid, {"revision": 1, "review_status": "approved"})
+    service.update_ontology(oid, {"revision": 1, "audit_status": "approved"})
     assert service.select_ontology("customer", "retail")["ontology"]["ontology_id"] == oid
     updated = service.update_ontology(oid, {"revision": 2, "data_json": dict(customer_doc, description="changed")})["ontology"]
-    assert (updated["status"], updated["review_status"]) == ("active", "pending")
+    assert (updated["status"], updated["audit_status"]) == ("active", "pending")
     assert service.select_ontology("customer", "retail")["ontology"]["ontology_id"] == industry["ontology_id"]
     approved = service.update_ontology(oid, {"revision": 3, "data_json": customer_doc,
-                                             "review_status": "approved"})["ontology"]
-    assert approved["review_status"] == "approved" and approved["revision"] == 4
+                                             "audit_status": "approved"})["ontology"]
+    assert approved["audit_status"] == "approved" and approved["revision"] == 4
     assert service.select_ontology("customer", "retail")["ontology"]["ontology_id"] == oid
 
 
-def test_invalid_review_status_does_not_write(doc):
+def test_invalid_audit_status_does_not_write(doc):
     repo = Mock()
     with pytest.raises(OntologyError) as caught:
-        OntologyService(repo).insert_ontology({"data_json": doc, "review_status": "all"})
+        OntologyService(repo).insert_ontology({"data_json": doc, "audit_status": "all"})
     assert caught.value.http_status == 400
     assert repo.mock_calls == []
 
@@ -147,14 +147,14 @@ def test_partial_update_model_and_dict_preserve_document(doc, service, repo):
     from kdb.entrypoints.http.retrieval.ontology_models import UpdateOntologyRequest
     oid = service.insert_ontology({"data_json": doc})["ontology"]["ontology_id"]
     original = deepcopy(repo.rows[oid].data_json)
-    body = UpdateOntologyRequest(ontology_id=oid, revision=1, review_status="approved")
+    body = UpdateOntologyRequest(ontology_id=oid, revision=1, audit_status="approved")
     result = service.update_ontology(oid, body)["ontology"]
-    assert result["review_status"] == "approved" and result["revision"] == 2
+    assert result["audit_status"] == "approved" and result["revision"] == 2
     assert not any(call[0] == "replace" for call in repo.calls)
     assert repo.rows[oid].data_json == original
     service.update_ontology(oid, {"revision": 2, "status": "inactive"})
-    assert repo.rows[oid].review_status == "approved" and repo.rows[oid].data_json == original
+    assert repo.rows[oid].audit_status == "approved" and repo.rows[oid].data_json == original
     service.delete_ontology(oid)
     with pytest.raises(OntologyError) as caught:
-        service.update_ontology(oid, {"revision": 4, "review_status": "rejected"})
+        service.update_ontology(oid, {"revision": 4, "audit_status": "rejected"})
     assert caught.value.http_status == 404

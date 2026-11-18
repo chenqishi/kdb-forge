@@ -13,11 +13,11 @@ MAX_ERRORS = 50
 DEFAULT_PAGE_SIZE = 100
 MAX_PAGE_SIZE = 100
 STATUS_VALUES = ("active", "inactive")
-REVIEW_STATUS_VALUES = ("pending", "approved", "rejected")
+AUDIT_STATUS_VALUES = ("pending", "approved", "rejected")
 DEFAULT_STATUS = "active"
-DEFAULT_REVIEW_STATUS = "pending"
+DEFAULT_AUDIT_STATUS = "pending"
 SCOPE_VALUES = ("client_product", "client", "industry", "global", "none")
-RESERVED_FIELD_ORDER = ("id", "ontology_id", "status", "review_status", "revision", "create_time",
+RESERVED_FIELD_ORDER = ("id", "ontology_id", "status", "audit_status", "revision", "create_time",
                         "update_time", "del_flag")
 RESERVED_FIELDS = frozenset(RESERVED_FIELD_ORDER)
 RESERVED_SCAN_SKIP = frozenset({"extensions"})

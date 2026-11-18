@@ -6,7 +6,7 @@
 
 ## Inputs
 
-body.ontology_id为32位小写hex，revision为正整数；data_json可省略，提供时必须是完整文档且不能为null。status、review_status可选；至少提供文档或一个非null状态。仅更新状态时保留未传字段和文档，更新正文时未传review_status默认重置pending（未审核）。 service经Depends(get_service)注入。
+body.ontology_id为32位小写hex，revision为正整数；data_json可省略，提供时必须是完整文档且不能为null。status、audit_status可选；至少提供文档或一个非null状态。仅更新状态时保留未传字段和文档，更新正文时未传audit_status默认重置pending（未审核）。 service经Depends(get_service)注入。
 
 ## Outputs
 

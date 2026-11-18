@@ -9,7 +9,7 @@ from kdb.retrieval.ontology.errors import (OntologyError, ONTOLOGY_BAD_REQUEST, 
                                          ONTOLOGY_NAME_CONFLICT, ONTOLOGY_NOT_FOUND)
 from kdb.retrieval.ontology.repository import OntologyRepository
 from kdb.retrieval.ontology.service import OntologyService
-from kdb.retrieval.ontology.schema import DEFAULT_REVIEW_STATUS, DEFAULT_STATUS, REVIEW_STATUS_VALUES, STATUS_VALUES
+from kdb.retrieval.ontology.schema import DEFAULT_AUDIT_STATUS, DEFAULT_STATUS, AUDIT_STATUS_VALUES, STATUS_VALUES
 from kdb.retrieval.ontology.validation import validate_document
 
 
@@ -20,7 +20,7 @@ def main(argv=None, service=None) -> int:
     parser.add_argument("--target-client", required=True)
     parser.add_argument("--target-product")
     parser.add_argument("--status", default=DEFAULT_STATUS, choices=STATUS_VALUES)
-    parser.add_argument("--review-status", default=DEFAULT_REVIEW_STATUS, choices=REVIEW_STATUS_VALUES)
+    parser.add_argument("--audit-status", default=DEFAULT_AUDIT_STATUS, choices=AUDIT_STATUS_VALUES)
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
     try:
@@ -44,11 +44,11 @@ def main(argv=None, service=None) -> int:
         if args.dry_run:
             result = {"success": True, "message": "dry run", "client": validated.client,
                       "product": validated.product, "name": validated.name, "status": args.status,
-                      "review_status": args.review_status,
+                      "audit_status": args.audit_status,
                       "object_types": len(validated.document["object_types"]), "document_bytes": validated.document_bytes}
         else:
             result = service.insert_ontology({"data_json": validated.document, "status": args.status,
-                                              "review_status": args.review_status})
+                                              "audit_status": args.audit_status})
         print(json.dumps(result, ensure_ascii=False))
         return 0
     except OntologyError as exc:

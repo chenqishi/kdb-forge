@@ -6,7 +6,7 @@
 
 ## Inputs
 
-body.ontology_id、正整数revision；status=active/inactive必填。保留原有启停入口，不接收review_status；审核使用update_ontology。 service经Depends(get_service)注入。
+body.ontology_id、正整数revision；status=active/inactive必填。保留原有启停入口，不接收audit_status；审核使用update_ontology。 service经Depends(get_service)注入。
 
 ## Outputs
 

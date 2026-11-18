@@ -52,14 +52,14 @@ KDB_OFFLINE_OUTPUT_DIR=/absolute/path/to/test-output ./run_offline_tests.sh -q -
 
 测试项数表示离线断言（含参数化用例），不是生产日志中约 1000 条请求的重放。生产配对回放、真实模型质量、后端可用性必须单独记录。
 
-业务本体的校验、schema 产物、SQL 参数/异常/事务、服务、HTTP 与克隆 CLI 均进入默认离线回归；HTTP 覆盖8条动词路径、body ID/revision 校验、100条默认分页、写响应meta、结构化响应模型，以及代理前缀下按tag返回400/422；审核/启停/软删的12种组合、默认查询过滤、显式待审及all筛选、统一更新入口仅改状态时正文保持不变、空更新/null正文拒绝、插入时逐条指定审核结果和正文修改后重新未审核：
+业务本体的校验、schema 产物、SQL 参数/异常/事务、服务、HTTP 与克隆 CLI 均进入默认离线回归；HTTP 覆盖8条动词路径、body ID/revision 校验、100条默认分页、写响应meta、结构化响应模型，以及代理前缀下按tag返回400/422；审核/启停/软删的12种组合、默认查询过滤、显式待审及all筛选、统一更新入口仅改状态时正文保持不变、空更新/null正文拒绝、audit_status接口/响应/OpenAPI命名、插入时逐条指定审核结果和正文修改后重新未审核：
 
 ```bash
 ./run_offline_tests.sh --group explicit tests/retrieval/ontology -q
 python -m kdb.retrieval.ontology.schema --check
 ```
 
-真实 MySQL 用例位于 [test_mysql_repository.py](../tests/integrations/ontology/test_mysql_repository.py)，在默认 pytest 下全部 skip，任何环境变量都不会关闭离线守卫。用专用测试库通过独立 unittest 入口运行；配置 database 只能为 `test` 或以 `_test` 结尾，禁止生产库。用例执行幂等建表和增量迁移，只清理各自生成的唯一名称前缀；迁移用例在独立临时表验证旧数据保留、draft转inactive、默认pending和重跑不覆盖审核结果；并发用例强制两连接同时读空业务键，再验证一成功一 409。
+真实 MySQL 用例位于 [test_mysql_repository.py](../tests/integrations/ontology/test_mysql_repository.py)，在默认 pytest 下全部 skip，任何环境变量都不会关闭离线守卫。用专用测试库通过独立 unittest 入口运行；配置 database 只能为 `test` 或以 `_test` 结尾，禁止生产库。用例执行幂等建表和增量迁移，只清理各自生成的唯一名称前缀；迁移用例在独立临时表验证旧数据保留、draft转inactive、默认pending，以及review_status改为audit_status后12种状态组合的值、版本、时间和文档不变，重跑不重建旧列或覆盖审核结果；并发用例强制两连接同时读空业务键，再验证一成功一 409。
 
 ```bash
 KDB_ONTOLOGY_TEST_MYSQL=1 KDB_MYSQL_CONFIG=/absolute/path/to/dedicated_test.json \

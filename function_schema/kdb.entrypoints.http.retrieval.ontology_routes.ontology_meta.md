@@ -10,7 +10,7 @@
 
 ## Outputs
 
-200 success/message，加schema_version、status_values=active/inactive、review_status_values=pending/approved/rejected、scope_values、各文档枚举、reserved_fields与limits。review_status是文档保留字段，extensions豁免不变。不初始化或连接数据库。
+200 success/message，加schema_version、status_values=active/inactive、audit_status_values=pending/approved/rejected、scope_values、各文档枚举、reserved_fields与limits。audit_status是文档保留字段，extensions豁免不变。不初始化或连接数据库。
 
 ## SQL
 

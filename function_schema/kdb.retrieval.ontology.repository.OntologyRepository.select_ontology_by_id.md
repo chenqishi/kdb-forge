@@ -14,11 +14,11 @@
 
 ## SQL
 
-实际表：`dops_ontology`；DDL 来源：[建表](../migrations/20261117_ontology.sql)与[审核状态迁移](../migrations/20261118_ontology_review_status.sql)。仅 PRIMARY(id)、uk_ontology_id 唯一，不建业务唯一索引。
+实际表：`dops_ontology`；DDL 来源：[建表](../migrations/20261117_ontology.sql)与[审核状态迁移](../migrations/20261118_ontology_review_status.sql)及[字段改名迁移](../migrations/20261118_ontology_status_rename.sql)。仅 PRIMARY(id)、uk_ontology_id 唯一，不建业务唯一索引。
 
 ```sql
 SELECT id, ontology_id, client, product, name, alias_name, description,
-       status, review_status, revision, create_time, update_time, del_flag, data_json
+       status, audit_status, revision, create_time, update_time, del_flag, data_json
 FROM dops_ontology WHERE ontology_id = %s
 ```
 

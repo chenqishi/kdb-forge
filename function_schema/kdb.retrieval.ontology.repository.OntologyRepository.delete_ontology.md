@@ -14,7 +14,7 @@ ontology_id、可选revision；审核与启停状态不限制删除。
 
 ## SQL
 
-实际表：`dops_ontology`；DDL 来源：[建表](../migrations/20261117_ontology.sql)与[审核状态迁移](../migrations/20261118_ontology_review_status.sql)。仅 PRIMARY(id)、uk_ontology_id 唯一，不建业务唯一索引。
+实际表：`dops_ontology`；DDL 来源：[建表](../migrations/20261117_ontology.sql)与[审核状态迁移](../migrations/20261118_ontology_review_status.sql)及[字段改名迁移](../migrations/20261118_ontology_status_rename.sql)。仅 PRIMARY(id)、uk_ontology_id 唯一，不建业务唯一索引。
 
 ```sql
 UPDATE dops_ontology SET del_flag=1,revision=revision+1,update_time=CURRENT_TIMESTAMP(3)

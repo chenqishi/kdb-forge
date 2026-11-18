@@ -1,8 +1,10 @@
 -- Upgrade an existing ontology table. Fresh installs use 20261117_ontology.sql first.
 -- Existing rows are pending review, never implicitly approved. Safe to rerun.
+-- The later rename migration uses audit_status. Do not recreate the old column on reruns.
 SET @ontology_has_review = (
   SELECT COUNT(*) FROM information_schema.COLUMNS
-  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dops_ontology' AND COLUMN_NAME = 'review_status'
+  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dops_ontology'
+    AND COLUMN_NAME IN ('review_status', 'audit_status')
 );
 SET @ontology_review_ddl = IF(@ontology_has_review = 0,
   'ALTER TABLE `dops_ontology`
