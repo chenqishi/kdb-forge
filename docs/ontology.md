@@ -4,7 +4,7 @@
 
 这份本体描述 KDB Forge 的业务能力、实现模块、协作关系与维护边界。用途是从一个需求找到负责的代码，并判断修改会影响谁。对象保持在稳定的业务与模块层级；知识条目、客户、实际 index、普通字段和每个函数不逐个登记，知识数据增长不会扩大这份说明。
 
-第一版使用这一份 Markdown 维护模型和代码链接。现有实现以源码为依据；接口、算法和参数细节继续由已有文档与函数契约维护。下文“入库去重与冲突检测”中的扩展建议单独标明，不代表已经实现。
+第一版使用这一份 Markdown 维护模型和代码链接。现有实现以源码为依据；接口、算法和参数细节继续由已有文档与函数契约维护。入库去重与冲突检查按下文列出的实际入口维护，模型效果和部署验收另行说明。
 
 ## 怎样读这个模型
 
@@ -113,11 +113,11 @@
 |---|---|---|
 | 检索 HTTP → 检索业务门面 | Python 调用；把现有协议请求交给查询、入库等业务处理 | [routes.py](../src/kdb/entrypoints/http/retrieval/routes.py)、[application](../src/kdb/retrieval/application/) |
 | 检索 HTTP → 业务本体 | 提供 ontology tag 下的 8 个动词式操作；Python service → repository → 共享 MySQL 连接池，独立于 ES | [ontology_routes.py](../src/kdb/entrypoints/http/retrieval/ontology_routes.py)、[ontology](../src/kdb/retrieval/ontology/) |
-| 入库检查 → 查询与相似度辅助 | Python 调用；查找候选并按现有规则判断重复 | [deduplication.py](../src/kdb/retrieval/ingestion/deduplication.py)、[knowledge.py](../src/kdb/shared/similarity/knowledge.py) |
+| 入库检查 → 查询与相似度辅助 | Python调用；快速查重及离线增量复用同index/同类型召回，直接LLM校验证据；CLI和默认关闭的leader工具共用处理策略 | [deduplication.py](../src/kdb/retrieval/ingestion/deduplication.py)、[knowledge.py](../src/kdb/shared/similarity/knowledge.py) |
 | 入库准备、查询 → 多模态组装与展示 | Python 调用；prepare 调用 `join_multimodal_contents`；单查询、多查询、分页调用 `render_multimodal_urls` | [prepare.py](../src/kdb/retrieval/ingestion/prepare.py)、[queries.py](../src/kdb/retrieval/search/queries.py)、[multi_query.py](../src/kdb/retrieval/search/multi_query.py)、[pagination.py](../src/kdb/retrieval/search/pagination.py) |
 | 任务管理 → 来源管道 | 子进程运行管道 CLI；不是对管道实现的直接 import | [processes.py](../src/kdb/mining/tasks/processes.py)、[管道 CLI](../src/kdb/entrypoints/cli/mining/) |
 | 来源管道 → 检索入库 | 子进程运行 `kdb.entrypoints.cli.retrieval insert_data_to_search_index`；批量入口读取文件并保留质量/审核等适配规则，再调用门面入库 | [文档 QA 阶段](../src/kdb/mining/document/workflows/qa/stages.py)、[文档 QA/段落阶段](../src/kdb/mining/document/workflows/qa_segment/stages.py)、[网页阶段](../src/kdb/mining/web/workflows/qa_segment/stages.py)、[对话阶段](../src/kdb/mining/chat/workflows/qa/stages.py)、[Excel 阶段](../src/kdb/mining/document/workflows/excel/stages.py)、[index_upload.py](../src/kdb/entrypoints/cli/index_upload.py) |
-| 对话问题复盘 → 检索桥 → 检索 | Python 调用；查找已有知识用于覆盖情况分析；当前 document/web 没有导入该桥 | [unanswered_review.py](../src/kdb/mining/chat/query_analysis/unanswered_review.py)、[bridges/retrieval.py](../src/kdb/mining/bridges/retrieval.py) |
+| 对话问题复盘 → 检索桥 → 检索 | Python 调用；查找已有知识用于覆盖情况分析；文档去重阶段也通过此桥访问检索；web未导入该桥 | [unanswered_review.py](../src/kdb/mining/chat/query_analysis/unanswered_review.py)、[bridges/retrieval.py](../src/kdb/mining/bridges/retrieval.py) |
 | 聊天抽取、通用质检 → 挖掘公共 LLM 能力 | Python 调用；共用 Prompt 加载、模型调用和输出清理，质检不反向调用聊天抽取器 | [chat/generation](../src/kdb/mining/chat/generation/)、[common/quality](../src/kdb/mining/common/quality/)、[common/llm](../src/kdb/mining/common/llm/) |
 
 表中列出定位需求所需的主要协作；完整静态 import 图由现有架构检查计算。子进程命令与静态导入分别核对，不能将“Python 导入经过 bridge”扩大为“所有挖掘入库都经过 bridge”。
@@ -156,17 +156,16 @@
 
 ## 用需求定位代码：入库去重与冲突检测
 
-这是使用本体定位修改范围的例子；本版只增加维护说明。
+本能力归属知识检索的入库与更新职责；知识条目增长不新增本体条目。四级能力及实现映射见[框架图](Architecture_Overview_Diagram.md#去重与冲突能力展开)，参数、结果、策略和运行步骤见[去重说明](knowledge_dedup.md)。
 
-| 定位项 | 当前实现或扩展位置 |
+| 能力 | 实现、协作和边界 |
 |---|---|
-| 业务归属 | 知识检索 → 入库与更新；不因新增知识条目而新增本体条目 |
-| 已有检查 | [find_duplicates](../src/kdb/retrieval/ingestion/deduplication.py)查询候选，再进行相似性判断，返回重复列表 |
-| 已有写入 | [insert_data](../src/kdb/retrieval/ingestion/writes.py)按开关跳过重复，或软删除旧记录后插入；不是已实现的独立冲突分类流程 |
-| 可复用能力 | 查询与索引路由、现有相似度/模型客户端；复用当前门面状态 |
-| 受影响的调用方 | HTTP 插入与管道批量入库；包括 Excel 阶段显式传入的更新参数及图片处理后的输入选择，不能只验证一个入口 |
-| 后续扩展建议 | 将新的检查和写入决策放在入库职责中；结果结构、判定算法及覆盖策略属于该功能设计，尚未实现，也不在全局本体解释通用词义 |
-| 回归起点 | [批量入库参数测试](../tests/retrieval/test_insert_check_duplicate_arg.py)、[HTTP 契约测试](../tests/retrieval/test_business_http_contract.py)、[网页入库模型开关测试](../tests/mining/test_html_insert_llm_override.py)；新增能力需要补充相应行为测试，现有测试不证明冲突检测已存在 |
+| 快速查重 | [find_duplicates](../src/kdb/retrieval/ingestion/deduplication.py)调用同index/同类型召回与[相似度工具](../src/kdb/shared/similarity/knowledge.py)；可选直接LLM，不再使用Dify |
+| 离线增量 | [conflict_jobs](../src/kdb/retrieval/ingestion/conflict_jobs.py)组织召回、重排、主题筛选、证据判断、策略；[conflict_store](../src/kdb/retrieval/ingestion/conflict_store.py)负责ES及journal/CAS；[CLI](../src/kdb/entrypoints/cli/knowledge_dedup.py)提供可执行入口 |
+| 文档级检查 | [document_dedup](../src/kdb/retrieval/ingestion/document_dedup.py)负责名称/Segment覆盖判断；[文档阶段](../src/kdb/mining/document/workflows/deduplication.py)经唯一[检索桥](../src/kdb/mining/bridges/retrieval.py)接入解析后检查和入库后替换 |
+| Agent harness | [dedup_tools](../src/kdb/retrieval/application/dedup_tools.py)提供六个工具，[MCP接线](../src/kdb/entrypoints/http/retrieval/dedup_routes.py)挂在原检索服务；[skill](../resources/skills/knowledge-dedup/SKILL.md)供sell_agents既有skill_agent使用，默认关闭、仅admin leader可用 |
+| 既有入库 | 原[insert_data](../src/kdb/retrieval/ingestion/writes.py)保持默认和协议；新离线策略独立接线，未把高成本检查强加给在线插入 |
+| 验证入口 | [核心策略](../tests/retrieval/test_conflict_jobs.py)、[文档](../tests/retrieval/test_document_dedup.py)、[权限](../tests/services/test_dedup_harness.py)、[CLI](../tests/retrieval/test_dedup_cli.py)及原入库/HTTP/架构回归；真实LLM测试与ES生产写入验收分开 |
 
 ## 怎样保持这份说明精简
 

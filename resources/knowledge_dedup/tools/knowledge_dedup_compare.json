@@ -1,0 +1,71 @@
+{
+  "name": "knowledge_dedup_compare",
+  "description": "精查额外召回得到的候选ID，支持Agent多轮查找；默认只预览。",
+  "parameters": {
+    "additionalProperties": false,
+    "properties": {
+      "index": {
+        "title": "Index",
+        "type": "string"
+      },
+      "data_type": {
+        "enum": [
+          "qa",
+          "segment"
+        ],
+        "title": "Data Type",
+        "type": "string"
+      },
+      "id": {
+        "title": "Id",
+        "type": "string"
+      },
+      "candidate_ids": {
+        "items": {
+          "type": "string"
+        },
+        "maxItems": 60,
+        "minItems": 1,
+        "title": "Candidate Ids",
+        "type": "array"
+      },
+      "threshold": {
+        "default": 0,
+        "maximum": 1,
+        "minimum": 0,
+        "title": "Threshold",
+        "type": "number"
+      },
+      "min_shared_topics": {
+        "default": 0,
+        "maximum": 2,
+        "minimum": 0,
+        "title": "Min Shared Topics",
+        "type": "integer"
+      },
+      "policy": {
+        "default": "record_only",
+        "enum": [
+          "record_only",
+          "keep_new",
+          "keep_old"
+        ],
+        "title": "Policy",
+        "type": "string"
+      },
+      "dry_run": {
+        "default": true,
+        "title": "Dry Run",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "index",
+      "data_type",
+      "id",
+      "candidate_ids"
+    ],
+    "title": "CompareArguments",
+    "type": "object"
+  }
+}

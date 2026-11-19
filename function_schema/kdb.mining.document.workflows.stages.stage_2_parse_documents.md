@@ -30,3 +30,7 @@
 ## Source
 
 `src/kdb/mining/document/workflows/stages.py`。SQL 字段依据保留在上面的 SQL 契约中；没有真实 DDL 的部分不宣称完整表结构已核验。
+
+## Optional document deduplication
+
+task_info.document_dedup.enabled=true 时，解析成功后调用 prepare_document_dedup；record_only/skip_new/replace_old 可选，默认关闭。失败沿原阶段False返回，不会继续生成或删除旧文档。

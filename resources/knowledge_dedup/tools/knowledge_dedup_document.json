@@ -1,0 +1,62 @@
+{
+  "name": "knowledge_dedup_document",
+  "description": "文档主体名或450字segment覆盖检测；replace_old会软删匹配的旧文档知识。",
+  "parameters": {
+    "additionalProperties": false,
+    "properties": {
+      "index": {
+        "title": "Index",
+        "type": "string"
+      },
+      "name": {
+        "maxLength": 256,
+        "minLength": 1,
+        "title": "Name",
+        "type": "string"
+      },
+      "text": {
+        "maxLength": 100000,
+        "minLength": 1,
+        "title": "Text",
+        "type": "string"
+      },
+      "seed": {
+        "default": 0,
+        "title": "Seed",
+        "type": "integer"
+      },
+      "name_check": {
+        "default": true,
+        "title": "Name Check",
+        "type": "boolean"
+      },
+      "content_check": {
+        "default": true,
+        "title": "Content Check",
+        "type": "boolean"
+      },
+      "policy": {
+        "default": "record_only",
+        "enum": [
+          "record_only",
+          "skip_new",
+          "replace_old"
+        ],
+        "title": "Policy",
+        "type": "string"
+      },
+      "dry_run": {
+        "default": true,
+        "title": "Dry Run",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "index",
+      "name",
+      "text"
+    ],
+    "title": "DocumentArguments",
+    "type": "object"
+  }
+}

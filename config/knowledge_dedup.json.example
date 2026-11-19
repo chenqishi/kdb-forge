@@ -1,0 +1,18 @@
+{
+  "search_config_path": "config/config_for_search_index.json",
+  "rerank": {
+    "endpoint": "https://dashscope.aliyuncs.com/api/v1/services/rerank/text-rerank/text-rerank",
+    "api_key_env": "DASHSCOPE_API_KEY",
+    "model": "gte-rerank-v2",
+    "timeout": 60
+  },
+  "llm": {
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "api_key_env": "KNOWLEDGE_DEDUP_LLM_API_KEY",
+    "model": "deepseek-chat",
+    "max_tokens": 1500,
+    "timeout": 90,
+    "json_mode": true
+  },
+  "strategy": {"limit": 60, "threshold": 0.1, "min_shared_topics": 1, "aliases": {}}
+}

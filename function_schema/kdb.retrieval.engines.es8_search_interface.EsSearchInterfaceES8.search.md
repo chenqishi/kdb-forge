@@ -2,7 +2,7 @@
 
 ## Signature
 
-`search(self, query: Optional[Dict[str, Any]]=None, size: int=10, index_names: IndexNames=None) -> List[Dict[str, Any]]`
+`EsSearchInterfaceES8.search(self, query: Optional[Dict[str, Any]]=None, size: int=10, index_names: IndexNames=None) -> List[Dict[str, Any]]`
 
 ## Inputs
 
@@ -10,7 +10,7 @@ query、size、目标索引。
 
 ## Outputs
 
-旧单路检索结果列表。
+旧单路检索结果列表。native KNN 的 k 随请求 size 增长，确保离线Top60不被默认k=10截断；size=None使用10条，size=0仍保留空返回语义。不设置min_score，不增加审核/platform过滤。
 
 ## SQL
 

@@ -103,3 +103,5 @@ Prompt 位于 `resources/prompts/`，共享路径工具为 `kdb.shared.config.pa
 当前运行根与资源从源码项目目录解析。发布采用配对源码检出及可编辑安装，不宣称单独 wheel 已包含完整运行资源。
 
 远程聊天素材默认目录 `/root/dify/dify-on-wechat` 属于远端输入数据位置，保留在 chat/media 与 chat/sources/remote_messages；它不是本地代码依赖。可通过原 CHAT_IMAGE_REMOTE_ROOT 或 remote_path_root_dir 参数指定远端路径，不将远程数据目录重绑为本项目。
+
+知识去重模型、离线CLI及可选leader MCP接线见[去重配置与运行](knowledge_dedup.md)。`KDB_DEDUP_HARNESS_CONFIG`默认不设置，模板enabled=false；快速查重的可选LLM改为直接模型调用，原Dify密钥不能替代模型凭据。

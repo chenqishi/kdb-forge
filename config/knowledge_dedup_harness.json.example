@@ -1,0 +1,15 @@
+{
+  "enabled": false,
+  "dedup_config_path": "config/knowledge_dedup.json",
+  "allowed_origins": [],
+  "principals": [
+    {
+      "name": "knowledge-admin",
+      "token_env": "KNOWLEDGE_DEDUP_ADMIN_TOKEN",
+      "is_admin": true,
+      "role": "leader",
+      "indices": ["SET_ALLOWED_INDEX"],
+      "allow_mutations": false
+    }
+  ]
+}

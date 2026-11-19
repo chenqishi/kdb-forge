@@ -1,0 +1,561 @@
+{
+  "skill_key": "knowledge-dedup",
+  "skill_name": "知识去重与冲突处理",
+  "scope": "admin_system",
+  "applicable_scopes": [
+    "role:leader"
+  ],
+  "default_enabled": 0,
+  "status": 0,
+  "prompt_template_source": "resources/skills/knowledge-dedup/SKILL.md",
+  "tools": [
+    {
+      "tool_key": "knowledge_dedup_select",
+      "tool_type": "mcp",
+      "scope": "admin_system",
+      "user_visible": 0,
+      "status": 0,
+      "tool_schema": {
+        "name": "knowledge_dedup_select",
+        "description": "按index、类型、时间、未审核和未检查状态选取增量，返回token估算。",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "index": {
+              "title": "Index",
+              "type": "string"
+            },
+            "data_type": {
+              "enum": [
+                "qa",
+                "segment"
+              ],
+              "title": "Data Type",
+              "type": "string"
+            },
+            "since": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Since"
+            },
+            "until": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Until"
+            },
+            "unaudited": {
+              "default": false,
+              "title": "Unaudited",
+              "type": "boolean"
+            },
+            "task_id": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Task Id"
+            },
+            "only_unchecked": {
+              "default": true,
+              "title": "Only Unchecked",
+              "type": "boolean"
+            },
+            "max_records": {
+              "default": 50,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Max Records",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "index",
+            "data_type"
+          ],
+          "title": "Selection",
+          "type": "object"
+        }
+      },
+      "config": {
+        "server_url": "http://127.0.0.1:8003/knowledge_dedup/mcp",
+        "tool_name": "knowledge_dedup_select",
+        "headers": {
+          "Authorization": "Bearer SET_ADMIN_TOKEN"
+        },
+        "timeout": 1800
+      }
+    },
+    {
+      "tool_key": "knowledge_dedup_recall",
+      "tool_type": "mcp",
+      "scope": "admin_system",
+      "user_visible": 0,
+      "status": 0,
+      "tool_schema": {
+        "name": "knowledge_dedup_recall",
+        "description": "只读召回同类型候选，可改写query进行下一轮召回。",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "index": {
+              "title": "Index",
+              "type": "string"
+            },
+            "data_type": {
+              "enum": [
+                "qa",
+                "segment"
+              ],
+              "title": "Data Type",
+              "type": "string"
+            },
+            "id": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Id"
+            },
+            "query": {
+              "anyOf": [
+                {
+                  "maxLength": 20000,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Query"
+            },
+            "limit": {
+              "default": 60,
+              "maximum": 60,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "index",
+            "data_type"
+          ],
+          "title": "RecallArguments",
+          "type": "object"
+        }
+      },
+      "config": {
+        "server_url": "http://127.0.0.1:8003/knowledge_dedup/mcp",
+        "tool_name": "knowledge_dedup_recall",
+        "headers": {
+          "Authorization": "Bearer SET_ADMIN_TOKEN"
+        },
+        "timeout": 1800
+      }
+    },
+    {
+      "tool_key": "knowledge_dedup_run",
+      "tool_type": "mcp",
+      "scope": "admin_system",
+      "user_visible": 0,
+      "status": 0,
+      "tool_schema": {
+        "name": "knowledge_dedup_run",
+        "description": "Top60重排及LLM判重/冲突；dry_run默认true；按显式policy处理并返回证据和token。",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "index": {
+              "title": "Index",
+              "type": "string"
+            },
+            "data_type": {
+              "enum": [
+                "qa",
+                "segment"
+              ],
+              "title": "Data Type",
+              "type": "string"
+            },
+            "since": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Since"
+            },
+            "until": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Until"
+            },
+            "unaudited": {
+              "default": false,
+              "title": "Unaudited",
+              "type": "boolean"
+            },
+            "task_id": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Task Id"
+            },
+            "only_unchecked": {
+              "default": true,
+              "title": "Only Unchecked",
+              "type": "boolean"
+            },
+            "max_records": {
+              "default": 50,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Max Records",
+              "type": "integer"
+            },
+            "policy": {
+              "default": "record_only",
+              "enum": [
+                "record_only",
+                "keep_new",
+                "keep_old"
+              ],
+              "title": "Policy",
+              "type": "string"
+            },
+            "dry_run": {
+              "default": true,
+              "title": "Dry Run",
+              "type": "boolean"
+            },
+            "ids": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "maxItems": 500,
+                  "minItems": 1,
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Ids"
+            },
+            "threshold": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Threshold"
+            },
+            "min_shared_topics": {
+              "anyOf": [
+                {
+                  "maximum": 2,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Min Shared Topics"
+            }
+          },
+          "required": [
+            "index",
+            "data_type"
+          ],
+          "title": "RunArguments",
+          "type": "object"
+        }
+      },
+      "config": {
+        "server_url": "http://127.0.0.1:8003/knowledge_dedup/mcp",
+        "tool_name": "knowledge_dedup_run",
+        "headers": {
+          "Authorization": "Bearer SET_ADMIN_TOKEN"
+        },
+        "timeout": 1800
+      }
+    },
+    {
+      "tool_key": "knowledge_dedup_fast",
+      "tool_type": "mcp",
+      "scope": "admin_system",
+      "user_visible": 0,
+      "status": 0,
+      "tool_schema": {
+        "name": "knowledge_dedup_fast",
+        "description": "快速少量候选查重，复用在线规则，不写入。",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "index": {
+              "title": "Index",
+              "type": "string"
+            },
+            "data_type": {
+              "enum": [
+                "qa",
+                "segment"
+              ],
+              "title": "Data Type",
+              "type": "string"
+            },
+            "title": {
+              "default": "",
+              "maxLength": 4000,
+              "title": "Title",
+              "type": "string"
+            },
+            "content": {
+              "maxLength": 20000,
+              "minLength": 1,
+              "title": "Content",
+              "type": "string"
+            },
+            "is_need_llm": {
+              "default": false,
+              "title": "Is Need Llm",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "index",
+            "data_type",
+            "content"
+          ],
+          "title": "FastArguments",
+          "type": "object"
+        }
+      },
+      "config": {
+        "server_url": "http://127.0.0.1:8003/knowledge_dedup/mcp",
+        "tool_name": "knowledge_dedup_fast",
+        "headers": {
+          "Authorization": "Bearer SET_ADMIN_TOKEN"
+        },
+        "timeout": 1800
+      }
+    },
+    {
+      "tool_key": "knowledge_dedup_compare",
+      "tool_type": "mcp",
+      "scope": "admin_system",
+      "user_visible": 0,
+      "status": 0,
+      "tool_schema": {
+        "name": "knowledge_dedup_compare",
+        "description": "精查额外召回得到的候选ID，支持Agent多轮查找；默认只预览。",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "index": {
+              "title": "Index",
+              "type": "string"
+            },
+            "data_type": {
+              "enum": [
+                "qa",
+                "segment"
+              ],
+              "title": "Data Type",
+              "type": "string"
+            },
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "candidate_ids": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 60,
+              "minItems": 1,
+              "title": "Candidate Ids",
+              "type": "array"
+            },
+            "threshold": {
+              "default": 0,
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Threshold",
+              "type": "number"
+            },
+            "min_shared_topics": {
+              "default": 0,
+              "maximum": 2,
+              "minimum": 0,
+              "title": "Min Shared Topics",
+              "type": "integer"
+            },
+            "policy": {
+              "default": "record_only",
+              "enum": [
+                "record_only",
+                "keep_new",
+                "keep_old"
+              ],
+              "title": "Policy",
+              "type": "string"
+            },
+            "dry_run": {
+              "default": true,
+              "title": "Dry Run",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "index",
+            "data_type",
+            "id",
+            "candidate_ids"
+          ],
+          "title": "CompareArguments",
+          "type": "object"
+        }
+      },
+      "config": {
+        "server_url": "http://127.0.0.1:8003/knowledge_dedup/mcp",
+        "tool_name": "knowledge_dedup_compare",
+        "headers": {
+          "Authorization": "Bearer SET_ADMIN_TOKEN"
+        },
+        "timeout": 1800
+      }
+    },
+    {
+      "tool_key": "knowledge_dedup_document",
+      "tool_type": "mcp",
+      "scope": "admin_system",
+      "user_visible": 0,
+      "status": 0,
+      "tool_schema": {
+        "name": "knowledge_dedup_document",
+        "description": "文档主体名或450字segment覆盖检测；replace_old会软删匹配的旧文档知识。",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "index": {
+              "title": "Index",
+              "type": "string"
+            },
+            "name": {
+              "maxLength": 256,
+              "minLength": 1,
+              "title": "Name",
+              "type": "string"
+            },
+            "text": {
+              "maxLength": 100000,
+              "minLength": 1,
+              "title": "Text",
+              "type": "string"
+            },
+            "seed": {
+              "default": 0,
+              "title": "Seed",
+              "type": "integer"
+            },
+            "name_check": {
+              "default": true,
+              "title": "Name Check",
+              "type": "boolean"
+            },
+            "content_check": {
+              "default": true,
+              "title": "Content Check",
+              "type": "boolean"
+            },
+            "policy": {
+              "default": "record_only",
+              "enum": [
+                "record_only",
+                "skip_new",
+                "replace_old"
+              ],
+              "title": "Policy",
+              "type": "string"
+            },
+            "dry_run": {
+              "default": true,
+              "title": "Dry Run",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "index",
+            "name",
+            "text"
+          ],
+          "title": "DocumentArguments",
+          "type": "object"
+        }
+      },
+      "config": {
+        "server_url": "http://127.0.0.1:8003/knowledge_dedup/mcp",
+        "tool_name": "knowledge_dedup_document",
+        "headers": {
+          "Authorization": "Bearer SET_ADMIN_TOKEN"
+        },
+        "timeout": 1800
+      }
+    }
+  ]
+}

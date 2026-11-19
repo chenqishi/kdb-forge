@@ -1,5 +1,5 @@
 {
-  "contract_count": 578,
+  "contract_count": 702,
   "modules": [
     {
       "source_file": "scripts/scheduled/chat_mining.sh",
@@ -118,6 +118,19 @@
       ]
     },
     {
+      "source_file": "src/kdb/entrypoints/cli/knowledge_dedup.py",
+      "contracts": [
+        {
+          "symbol": "main",
+          "schema_file": "function_schema/kdb.entrypoints.cli.knowledge_dedup.main.md"
+        },
+        {
+          "symbol": "read_records",
+          "schema_file": "function_schema/kdb.entrypoints.cli.knowledge_dedup.read_records.md"
+        }
+      ]
+    },
+    {
       "source_file": "src/kdb/entrypoints/cli/tools/ontology_clone.py",
       "contracts": [
         {
@@ -150,6 +163,23 @@
         {
           "symbol": "module",
           "schema_file": "function_schema/kdb.entrypoints.http.retrieval.app.module.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/entrypoints/http/retrieval/dedup_routes.py",
+      "contracts": [
+        {
+          "symbol": "register_dedup_routes",
+          "schema_file": "function_schema/kdb.entrypoints.http.retrieval.dedup_routes.register_dedup_routes.md"
+        },
+        {
+          "symbol": "register_dedup_routes.authenticate",
+          "schema_file": "function_schema/kdb.entrypoints.http.retrieval.dedup_routes.register_dedup_routes.authenticate.md"
+        },
+        {
+          "symbol": "register_dedup_routes.mcp",
+          "schema_file": "function_schema/kdb.entrypoints.http.retrieval.dedup_routes.register_dedup_routes.mcp.md"
         }
       ]
     },
@@ -187,16 +217,16 @@
       "source_file": "src/kdb/entrypoints/http/retrieval/ontology_routes.py",
       "contracts": [
         {
-          "symbol": "insert_ontology",
-          "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.insert_ontology.md"
-        },
-        {
           "symbol": "delete_ontology",
           "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.delete_ontology.md"
         },
         {
           "symbol": "get_ontology",
           "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.get_ontology.md"
+        },
+        {
+          "symbol": "insert_ontology",
+          "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.insert_ontology.md"
         },
         {
           "symbol": "list_ontologies",
@@ -207,20 +237,20 @@
           "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.ontology_meta.md"
         },
         {
-          "symbol": "update_ontology_status",
-          "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.update_ontology_status.md"
-        },
-        {
           "symbol": "register_ontology_routes",
           "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.register_ontology_routes.md"
+        },
+        {
+          "symbol": "select_ontology",
+          "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.select_ontology.md"
         },
         {
           "symbol": "update_ontology",
           "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.update_ontology.md"
         },
         {
-          "symbol": "select_ontology",
-          "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.select_ontology.md"
+          "symbol": "update_ontology_status",
+          "schema_file": "function_schema/kdb.entrypoints.http.retrieval.ontology_routes.update_ontology_status.md"
         }
       ]
     },
@@ -298,8 +328,20 @@
       "source_file": "src/kdb/mining/bridges/retrieval.py",
       "contracts": [
         {
+          "symbol": "apply_document_duplicates",
+          "schema_file": "function_schema/kdb.mining.bridges.retrieval.apply_document_duplicates.md"
+        },
+        {
+          "symbol": "build_dedup_job",
+          "schema_file": "function_schema/kdb.mining.bridges.retrieval.build_dedup_job.md"
+        },
+        {
           "symbol": "build_search_interface",
           "schema_file": "function_schema/kdb.mining.bridges.retrieval.build_search_interface.md"
+        },
+        {
+          "symbol": "check_document_duplicate",
+          "schema_file": "function_schema/kdb.mining.bridges.retrieval.check_document_duplicate.md"
         },
         {
           "symbol": "search_knowledge",
@@ -986,11 +1028,24 @@
       ]
     },
     {
+      "source_file": "src/kdb/mining/document/pipelines/qa.py",
+      "contracts": [
+        {
+          "symbol": "DocumentQAMiningTaskController.run_all_stages",
+          "schema_file": "function_schema/kdb.mining.document.pipelines.qa.DocumentQAMiningTaskController.run_all_stages.md"
+        }
+      ]
+    },
+    {
       "source_file": "src/kdb/mining/document/pipelines/qa_segment.py",
       "contracts": [
         {
           "symbol": "DocumentQAMiningTaskController.__init__",
           "schema_file": "function_schema/kdb.mining.document.pipelines.qa_segment.DocumentQAMiningTaskController.__init__.md"
+        },
+        {
+          "symbol": "DocumentQAMiningTaskController.run_all_stages",
+          "schema_file": "function_schema/kdb.mining.document.pipelines.qa_segment.DocumentQAMiningTaskController.run_all_stages.md"
         }
       ]
     },
@@ -1000,6 +1055,19 @@
         {
           "symbol": "calculate_credits",
           "schema_file": "function_schema/kdb.mining.document.workflows.accounting.calculate_credits.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/mining/document/workflows/deduplication.py",
+      "contracts": [
+        {
+          "symbol": "finish_document_dedup",
+          "schema_file": "function_schema/kdb.mining.document.workflows.deduplication.finish_document_dedup.md"
+        },
+        {
+          "symbol": "prepare_document_dedup",
+          "schema_file": "function_schema/kdb.mining.document.workflows.deduplication.prepare_document_dedup.md"
         }
       ]
     },
@@ -1506,6 +1574,48 @@
         {
           "symbol": "detect_language",
           "schema_file": "function_schema/kdb.multilingual.detection.detect_language.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/retrieval/application/dedup_tools.py",
+      "contracts": [
+        {
+          "symbol": "DedupHarness.__init__",
+          "schema_file": "function_schema/kdb.retrieval.application.dedup_tools.DedupHarness.__init__.md"
+        },
+        {
+          "symbol": "DedupHarness.authorize",
+          "schema_file": "function_schema/kdb.retrieval.application.dedup_tools.DedupHarness.authorize.md"
+        },
+        {
+          "symbol": "DedupHarness.call",
+          "schema_file": "function_schema/kdb.retrieval.application.dedup_tools.DedupHarness.call.md"
+        },
+        {
+          "symbol": "DedupHarness.list_tools",
+          "schema_file": "function_schema/kdb.retrieval.application.dedup_tools.DedupHarness.list_tools.md"
+        },
+        {
+          "symbol": "collect",
+          "schema_file": "function_schema/kdb.retrieval.application.dedup_tools.collect.md"
+        },
+        {
+          "symbol": "compact_record",
+          "schema_file": "function_schema/kdb.retrieval.application.dedup_tools.compact_record.md"
+        },
+        {
+          "symbol": "module",
+          "schema_file": "function_schema/kdb.retrieval.application.dedup_tools.module.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/retrieval/application/search_index_data_interface.py",
+      "contracts": [
+        {
+          "symbol": "SearchDataInterface.__init__",
+          "schema_file": "function_schema/kdb.retrieval.application.search_index_data_interface.SearchDataInterface.__init__.md"
         }
       ]
     },
@@ -2041,11 +2151,193 @@
       ]
     },
     {
+      "source_file": "src/kdb/retrieval/ingestion/conflict_check.py",
+      "contracts": [
+        {
+          "symbol": "check_batch",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_check.check_batch.md"
+        },
+        {
+          "symbol": "compare_candidates",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_check.compare_candidates.md"
+        },
+        {
+          "symbol": "shared_topics",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_check.shared_topics.md"
+        },
+        {
+          "symbol": "topic_terms",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_check.topic_terms.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/retrieval/ingestion/conflict_jobs.py",
+      "contracts": [
+        {
+          "symbol": "DedupJob.__init__",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_jobs.DedupJob.__init__.md"
+        },
+        {
+          "symbol": "DedupJob.analyze",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_jobs.DedupJob.analyze.md"
+        },
+        {
+          "symbol": "DedupJob.apply",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_jobs.DedupJob.apply.md"
+        },
+        {
+          "symbol": "DedupJob.run",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_jobs.DedupJob.run.md"
+        },
+        {
+          "symbol": "estimate_tokens",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_jobs.estimate_tokens.md"
+        },
+        {
+          "symbol": "newness",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_jobs.newness.md"
+        },
+        {
+          "symbol": "shortlist",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_jobs.shortlist.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/retrieval/ingestion/conflict_models.py",
+      "contracts": [
+        {
+          "symbol": "ModelGateway.__init__",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_models.ModelGateway.__init__.md"
+        },
+        {
+          "symbol": "ModelGateway.judge",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_models.ModelGateway.judge.md"
+        },
+        {
+          "symbol": "ModelGateway.names",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_models.ModelGateway.names.md"
+        },
+        {
+          "symbol": "ModelGateway.rerank",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_models.ModelGateway.rerank.md"
+        },
+        {
+          "symbol": "ModelGateway.resolve",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_models.ModelGateway.resolve.md"
+        },
+        {
+          "symbol": "_rerank_request",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_models._rerank_request.md"
+        },
+        {
+          "symbol": "_text",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_models._text.md"
+        },
+        {
+          "symbol": "_text_chunks",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_models._text_chunks.md"
+        },
+        {
+          "symbol": "judge_pair",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_models.judge_pair.md"
+        },
+        {
+          "symbol": "rerank_candidates",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_models.rerank_candidates.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/retrieval/ingestion/conflict_runtime.py",
+      "contracts": [
+        {
+          "symbol": "build_job",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_runtime.build_job.md"
+        },
+        {
+          "symbol": "load_config",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_runtime.load_config.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/retrieval/ingestion/conflict_store.py",
+      "contracts": [
+        {
+          "symbol": "KnowledgeStore.__init__",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_store.KnowledgeStore.__init__.md"
+        },
+        {
+          "symbol": "KnowledgeStore.file_names",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_store.KnowledgeStore.file_names.md"
+        },
+        {
+          "symbol": "KnowledgeStore.file_records",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_store.KnowledgeStore.file_records.md"
+        },
+        {
+          "symbol": "KnowledgeStore.insert",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_store.KnowledgeStore.insert.md"
+        },
+        {
+          "symbol": "KnowledgeStore.patch",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_store.KnowledgeStore.patch.md"
+        },
+        {
+          "symbol": "KnowledgeStore.read",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_store.KnowledgeStore.read.md"
+        },
+        {
+          "symbol": "KnowledgeStore.recall",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_store.KnowledgeStore.recall.md"
+        },
+        {
+          "symbol": "KnowledgeStore.scan",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_store.KnowledgeStore.scan.md"
+        },
+        {
+          "symbol": "fingerprint",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_store.fingerprint.md"
+        },
+        {
+          "symbol": "validate_index",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.conflict_store.validate_index.md"
+        }
+      ]
+    },
+    {
       "source_file": "src/kdb/retrieval/ingestion/deduplication.py",
       "contracts": [
         {
           "symbol": "find_duplicates",
           "schema_file": "function_schema/kdb.retrieval.ingestion.deduplication.find_duplicates.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/retrieval/ingestion/document_dedup.py",
+      "contracts": [
+        {
+          "symbol": "apply_document_matches",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.document_dedup.apply_document_matches.md"
+        },
+        {
+          "symbol": "check_document",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.document_dedup.check_document.md"
+        },
+        {
+          "symbol": "coverage",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.document_dedup.coverage.md"
+        },
+        {
+          "symbol": "parsed_text",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.document_dedup.parsed_text.md"
+        },
+        {
+          "symbol": "sample_text",
+          "schema_file": "function_schema/kdb.retrieval.ingestion.document_dedup.sample_text.md"
         }
       ]
     },
@@ -2274,8 +2566,8 @@
       "source_file": "src/kdb/retrieval/ontology/repository.py",
       "contracts": [
         {
-          "symbol": "OntologyRepository.select_ontology_by_id",
-          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.select_ontology_by_id.md"
+          "symbol": "OntologyRepository.delete_ontology",
+          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.delete_ontology.md"
         },
         {
           "symbol": "OntologyRepository.insert_ontology",
@@ -2286,16 +2578,16 @@
           "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.list_ontologies.md"
         },
         {
-          "symbol": "OntologyRepository.update_ontology_document",
-          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.update_ontology_document.md"
-        },
-        {
           "symbol": "OntologyRepository.select_ontology",
           "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.select_ontology.md"
         },
         {
-          "symbol": "OntologyRepository.delete_ontology",
-          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.delete_ontology.md"
+          "symbol": "OntologyRepository.select_ontology_by_id",
+          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.select_ontology_by_id.md"
+        },
+        {
+          "symbol": "OntologyRepository.update_ontology_document",
+          "schema_file": "function_schema/kdb.retrieval.ontology.repository.OntologyRepository.update_ontology_document.md"
         },
         {
           "symbol": "OntologyRepository.update_ontology_status",
@@ -2320,10 +2612,6 @@
       "source_file": "src/kdb/retrieval/ontology/service.py",
       "contracts": [
         {
-          "symbol": "OntologyService.insert_ontology",
-          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.insert_ontology.md"
-        },
-        {
           "symbol": "OntologyService.delete_ontology",
           "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.delete_ontology.md"
         },
@@ -2332,20 +2620,24 @@
           "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.get_ontology.md"
         },
         {
+          "symbol": "OntologyService.insert_ontology",
+          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.insert_ontology.md"
+        },
+        {
           "symbol": "OntologyService.list_ontologies",
           "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.list_ontologies.md"
         },
         {
-          "symbol": "OntologyService.update_ontology_status",
-          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.update_ontology_status.md"
+          "symbol": "OntologyService.select_ontology",
+          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.select_ontology.md"
         },
         {
           "symbol": "OntologyService.update_ontology",
           "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.update_ontology.md"
         },
         {
-          "symbol": "OntologyService.select_ontology",
-          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.select_ontology.md"
+          "symbol": "OntologyService.update_ontology_status",
+          "schema_file": "function_schema/kdb.retrieval.ontology.service.OntologyService.update_ontology_status.md"
         }
       ]
     },
@@ -2501,6 +2793,19 @@
       ]
     },
     {
+      "source_file": "src/kdb/shared/clients/structured_llm.py",
+      "contracts": [
+        {
+          "symbol": "record_usage",
+          "schema_file": "function_schema/kdb.shared.clients.structured_llm.record_usage.md"
+        },
+        {
+          "symbol": "request_json",
+          "schema_file": "function_schema/kdb.shared.clients.structured_llm.request_json.md"
+        }
+      ]
+    },
+    {
       "source_file": "src/kdb/shared/config/global_config.py",
       "contracts": [
         {
@@ -2549,6 +2854,27 @@
         {
           "symbol": "private_value",
           "schema_file": "function_schema/kdb.shared.config.private_values.private_value.md"
+        }
+      ]
+    },
+    {
+      "source_file": "src/kdb/shared/similarity/knowledge.py",
+      "contracts": [
+        {
+          "symbol": "SimLLMModel.__init__",
+          "schema_file": "function_schema/kdb.shared.similarity.knowledge.SimLLMModel.__init__.md"
+        },
+        {
+          "symbol": "SimLLMModel.is_simility_knowledge",
+          "schema_file": "function_schema/kdb.shared.similarity.knowledge.SimLLMModel.is_simility_knowledge.md"
+        },
+        {
+          "symbol": "SimilityTools.__init__",
+          "schema_file": "function_schema/kdb.shared.similarity.knowledge.SimilityTools.__init__.md"
+        },
+        {
+          "symbol": "SimilityTools.is_simility_knowledge",
+          "schema_file": "function_schema/kdb.shared.similarity.knowledge.SimilityTools.is_simility_knowledge.md"
         }
       ]
     },
@@ -2644,6 +2970,23 @@
         {
           "symbol": "test_service_lifespan_constructs_both_real_factory_roles",
           "schema_file": "function_schema/tests.entry_smoke.test_service_contracts.test_service_lifespan_constructs_both_real_factory_roles.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/integrations/dedup/skill_agent_service.py",
+      "contracts": [
+        {
+          "symbol": "dispatch",
+          "schema_file": "function_schema/tests.integrations.dedup.skill_agent_service.dispatch.md"
+        },
+        {
+          "symbol": "restricted",
+          "schema_file": "function_schema/tests.integrations.dedup.skill_agent_service.restricted.md"
+        },
+        {
+          "symbol": "scan",
+          "schema_file": "function_schema/tests.integrations.dedup.skill_agent_service.scan.md"
         }
       ]
     },
@@ -2974,11 +3317,228 @@
       ]
     },
     {
+      "source_file": "tests/retrieval/test_conflict_check.py",
+      "contracts": [
+        {
+          "symbol": "test_bad_evidence_shape_is_uncertain_instead_of_model_success_or_crash",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_check.test_bad_evidence_shape_is_uncertain_instead_of_model_success_or_crash.md"
+        },
+        {
+          "symbol": "test_different_is_not_persisted",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_check.test_different_is_not_persisted.md"
+        },
+        {
+          "symbol": "test_duplicate_evidence_checked_and_type_boundaries",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_check.test_duplicate_evidence_checked_and_type_boundaries.md"
+        },
+        {
+          "symbol": "test_increment_batch_uses_same_type_and_reports_truncation",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_check.test_increment_batch_uses_same_type_and_reports_truncation.md"
+        },
+        {
+          "symbol": "test_policy_conflict_requires_shared_effective_scope",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_check.test_policy_conflict_requires_shared_effective_scope.md"
+        },
+        {
+          "symbol": "test_rerank_chunks_long_items_without_omission",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_check.test_rerank_chunks_long_items_without_omission.md"
+        },
+        {
+          "symbol": "test_rerank_chunks_long_items_without_omission.request",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_check.test_rerank_chunks_long_items_without_omission.request.md"
+        },
+        {
+          "symbol": "test_rerank_preserves_candidate_order_and_usage",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_check.test_rerank_preserves_candidate_order_and_usage.md"
+        },
+        {
+          "symbol": "test_rerank_preserves_candidate_order_and_usage.Response.json",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_check.test_rerank_preserves_candidate_order_and_usage.Response.json.md"
+        },
+        {
+          "symbol": "test_rerank_preserves_candidate_order_and_usage.Response.raise_for_status",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_check.test_rerank_preserves_candidate_order_and_usage.Response.raise_for_status.md"
+        },
+        {
+          "symbol": "test_unverifiable_quote_is_uncertain_and_errors_are_visible",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_check.test_unverifiable_quote_is_uncertain_and_errors_are_visible.md"
+        },
+        {
+          "symbol": "test_unverifiable_quote_is_uncertain_and_errors_are_visible.broken",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_check.test_unverifiable_quote_is_uncertain_and_errors_are_visible.broken.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/retrieval/test_conflict_jobs.py",
+      "contracts": [
+        {
+          "symbol": "Models.__init__",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.Models.__init__.md"
+        },
+        {
+          "symbol": "Models.judge",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.Models.judge.md"
+        },
+        {
+          "symbol": "Models.rerank",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.Models.rerank.md"
+        },
+        {
+          "symbol": "Models.resolve",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.Models.resolve.md"
+        },
+        {
+          "symbol": "Store.__init__",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.Store.__init__.md"
+        },
+        {
+          "symbol": "Store.insert",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.Store.insert.md"
+        },
+        {
+          "symbol": "Store.patch",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.Store.patch.md"
+        },
+        {
+          "symbol": "Store.read",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.Store.read.md"
+        },
+        {
+          "symbol": "Store.recall",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.Store.recall.md"
+        },
+        {
+          "symbol": "row",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.row.md"
+        },
+        {
+          "symbol": "test_conflict_uses_real_preparation_without_mutating_snapshot",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.test_conflict_uses_real_preparation_without_mutating_snapshot.md"
+        },
+        {
+          "symbol": "test_conflicts_update_old_and_reset_review",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.test_conflicts_update_old_and_reset_review.md"
+        },
+        {
+          "symbol": "test_dry_run_and_bad_scope",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.test_dry_run_and_bad_scope.md"
+        },
+        {
+          "symbol": "test_duplicate_policy_uses_age_and_repeated_batch_is_safe",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.test_duplicate_policy_uses_age_and_repeated_batch_is_safe.md"
+        },
+        {
+          "symbol": "test_explicit_round_preserves_unseen_prior_relations",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.test_explicit_round_preserves_unseen_prior_relations.md"
+        },
+        {
+          "symbol": "test_malformed_evidence_and_multimodal_failure_never_delete",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.test_malformed_evidence_and_multimodal_failure_never_delete.md"
+        },
+        {
+          "symbol": "test_offline_insertion_then_old_deleted",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.test_offline_insertion_then_old_deleted.md"
+        },
+        {
+          "symbol": "test_offline_no_delete_before_insert_and_failure_preserves_old",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.test_offline_no_delete_before_insert_and_failure_preserves_old.md"
+        },
+        {
+          "symbol": "test_offline_no_delete_before_insert_and_failure_preserves_old.broken",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.test_offline_no_delete_before_insert_and_failure_preserves_old.broken.md"
+        },
+        {
+          "symbol": "test_offline_same_batch_duplicate_skips_older_output",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.test_offline_same_batch_duplicate_skips_older_output.md"
+        },
+        {
+          "symbol": "test_older_selected_conflict_cannot_overwrite_newer_answer",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.test_older_selected_conflict_cannot_overwrite_newer_answer.md"
+        },
+        {
+          "symbol": "test_record_only_different_progress_and_type_scope",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_jobs.test_record_only_different_progress_and_type_scope.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/retrieval/test_conflict_store.py",
+      "contracts": [
+        {
+          "symbol": "test_incomplete_es_response_cannot_mark_dedup_complete",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_store.test_incomplete_es_response_cannot_mark_dedup_complete.md"
+        },
+        {
+          "symbol": "test_native_recall_reaches_requested_topn",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_store.test_native_recall_reaches_requested_topn.md"
+        },
+        {
+          "symbol": "test_online_recall_no_score_or_platform_or_audit_filter",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_store.test_online_recall_no_score_or_platform_or_audit_filter.md"
+        },
+        {
+          "symbol": "test_patch_snapshot_and_version_precondition",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_store.test_patch_snapshot_and_version_precondition.md"
+        },
+        {
+          "symbol": "test_scan_increment_resets_after_content_change_and_includes_unaudited_only",
+          "schema_file": "function_schema/tests.retrieval.test_conflict_store.test_scan_increment_resets_after_content_change_and_includes_unaudited_only.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/retrieval/test_dedup_cli.py",
+      "contracts": [
+        {
+          "symbol": "test_cli_estimate_does_not_call_models",
+          "schema_file": "function_schema/tests.retrieval.test_dedup_cli.test_cli_estimate_does_not_call_models.md"
+        },
+        {
+          "symbol": "test_cli_never_overwrites_input_with_generated_sidecar",
+          "schema_file": "function_schema/tests.retrieval.test_dedup_cli.test_cli_never_overwrites_input_with_generated_sidecar.md"
+        },
+        {
+          "symbol": "test_cli_offline_output_and_real_failure_exit",
+          "schema_file": "function_schema/tests.retrieval.test_dedup_cli.test_cli_offline_output_and_real_failure_exit.md"
+        },
+        {
+          "symbol": "test_cli_offline_output_and_real_failure_exit.failed",
+          "schema_file": "function_schema/tests.retrieval.test_dedup_cli.test_cli_offline_output_and_real_failure_exit.failed.md"
+        }
+      ]
+    },
+    {
       "source_file": "tests/retrieval/test_delete_by_file.py",
       "contracts": [
         {
           "symbol": "test_list_file_names_applies_scope_and_keyword",
           "schema_file": "function_schema/tests.retrieval.test_delete_by_file.test_list_file_names_applies_scope_and_keyword.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/retrieval/test_document_dedup.py",
+      "contracts": [
+        {
+          "symbol": "segment",
+          "schema_file": "function_schema/tests.retrieval.test_document_dedup.segment.md"
+        },
+        {
+          "symbol": "test_coverage_threshold_union_and_no_cross_document_accumulation",
+          "schema_file": "function_schema/tests.retrieval.test_document_dedup.test_coverage_threshold_union_and_no_cross_document_accumulation.md"
+        },
+        {
+          "symbol": "test_name_or_content_and_qa_forbidden",
+          "schema_file": "function_schema/tests.retrieval.test_document_dedup.test_name_or_content_and_qa_forbidden.md"
+        },
+        {
+          "symbol": "test_parser_and_optional_workflow_skip",
+          "schema_file": "function_schema/tests.retrieval.test_document_dedup.test_parser_and_optional_workflow_skip.md"
+        },
+        {
+          "symbol": "test_replace_defers_delete_and_checks_new_insert_count",
+          "schema_file": "function_schema/tests.retrieval.test_document_dedup.test_replace_defers_delete_and_checks_new_insert_count.md"
         }
       ]
     },
@@ -3026,6 +3586,31 @@
         {
           "symbol": "test_partial_retry_retains_success_and_final_hits",
           "schema_file": "function_schema/tests.retrieval.test_es8_native_batch.test_partial_retry_retains_success_and_final_hits.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/retrieval/test_fast_dedup.py",
+      "contracts": [
+        {
+          "symbol": "test_direct_judge_needs_real_quotes",
+          "schema_file": "function_schema/tests.retrieval.test_fast_dedup.test_direct_judge_needs_real_quotes.md"
+        },
+        {
+          "symbol": "test_fast_same_index_across_platforms_and_type_boundary",
+          "schema_file": "function_schema/tests.retrieval.test_fast_dedup.test_fast_same_index_across_platforms_and_type_boundary.md"
+        },
+        {
+          "symbol": "test_structured_model_usage_and_bad_json",
+          "schema_file": "function_schema/tests.retrieval.test_fast_dedup.test_structured_model_usage_and_bad_json.md"
+        },
+        {
+          "symbol": "test_structured_model_usage_and_bad_json.Response.json",
+          "schema_file": "function_schema/tests.retrieval.test_fast_dedup.test_structured_model_usage_and_bad_json.Response.json.md"
+        },
+        {
+          "symbol": "test_structured_model_usage_and_bad_json.Response.raise_for_status",
+          "schema_file": "function_schema/tests.retrieval.test_fast_dedup.test_structured_model_usage_and_bad_json.Response.raise_for_status.md"
         }
       ]
     },
@@ -3153,6 +3738,27 @@
         {
           "symbol": "update_api",
           "schema_file": "function_schema/tests.retrieval.test_update_by_condition_count.update_api.md"
+        }
+      ]
+    },
+    {
+      "source_file": "tests/services/test_dedup_harness.py",
+      "contracts": [
+        {
+          "symbol": "test_harness_disabled_invisible",
+          "schema_file": "function_schema/tests.services.test_dedup_harness.test_harness_disabled_invisible.md"
+        },
+        {
+          "symbol": "test_select_returns_estimate_and_closes_scan",
+          "schema_file": "function_schema/tests.services.test_dedup_harness.test_select_returns_estimate_and_closes_scan.md"
+        },
+        {
+          "symbol": "test_select_returns_estimate_and_closes_scan.scan",
+          "schema_file": "function_schema/tests.services.test_dedup_harness.test_select_returns_estimate_and_closes_scan.scan.md"
+        },
+        {
+          "symbol": "test_server_identity_admin_leader_scope_and_mutation_gate",
+          "schema_file": "function_schema/tests.services.test_dedup_harness.test_server_identity_admin_leader_scope_and_mutation_gate.md"
         }
       ]
     },

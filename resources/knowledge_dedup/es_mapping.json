@@ -1,0 +1,6 @@
+{
+  "properties": {
+    "similarity_info": {"type": "object", "enabled": false},
+    "dedup_check": {"type": "object", "enabled": false}
+  }
+}

@@ -109,3 +109,7 @@ python -m kdb.entrypoints.cli.tools.ontology_clone \
 CSAT `/csat_report` 请求包含 `start_time`、`end_time`、`channel_type`、`client`、`timestamp`、`signature`；时间戳为 Unix 秒，签名为 `md5(secret + timestamp)`，允许时差 300 秒，可选 `include_chat_detail`。内部两个查询接口沿现有无签名协议，仅应置于相应的内部网络边界。用户映射请求含 `client/start_time/end_time`，可选 `user_id`。
 
 SQL/LLM/ES/MinIO 失败与实际写入数量必须按具体接口和当前契约处理；离线返回示例不证明真实凭据、模型与后端已可用。
+
+## 可选知识去重工具
+
+显式启用后，原检索服务增加隐藏于OpenAPI的 `POST /knowledge_dedup/mcp`，支持initialize/ping/tools/list/tools/call。Bearer凭据由服务端绑定admin、leader和具体index；默认不注册路由。六个工具、输入schema及权限配置见[去重说明](knowledge_dedup.md#sell_agents-接入与权限)。原知识路由/认证/返回保持原协议。

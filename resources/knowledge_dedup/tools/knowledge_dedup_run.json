@@ -1,0 +1,140 @@
+{
+  "name": "knowledge_dedup_run",
+  "description": "Top60重排及LLM判重/冲突；dry_run默认true；按显式policy处理并返回证据和token。",
+  "parameters": {
+    "additionalProperties": false,
+    "properties": {
+      "index": {
+        "title": "Index",
+        "type": "string"
+      },
+      "data_type": {
+        "enum": [
+          "qa",
+          "segment"
+        ],
+        "title": "Data Type",
+        "type": "string"
+      },
+      "since": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Since"
+      },
+      "until": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Until"
+      },
+      "unaudited": {
+        "default": false,
+        "title": "Unaudited",
+        "type": "boolean"
+      },
+      "task_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Task Id"
+      },
+      "only_unchecked": {
+        "default": true,
+        "title": "Only Unchecked",
+        "type": "boolean"
+      },
+      "max_records": {
+        "default": 50,
+        "maximum": 500,
+        "minimum": 1,
+        "title": "Max Records",
+        "type": "integer"
+      },
+      "policy": {
+        "default": "record_only",
+        "enum": [
+          "record_only",
+          "keep_new",
+          "keep_old"
+        ],
+        "title": "Policy",
+        "type": "string"
+      },
+      "dry_run": {
+        "default": true,
+        "title": "Dry Run",
+        "type": "boolean"
+      },
+      "ids": {
+        "anyOf": [
+          {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 500,
+            "minItems": 1,
+            "type": "array"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Ids"
+      },
+      "threshold": {
+        "anyOf": [
+          {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Threshold"
+      },
+      "min_shared_topics": {
+        "anyOf": [
+          {
+            "maximum": 2,
+            "minimum": 0,
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Min Shared Topics"
+      }
+    },
+    "required": [
+      "index",
+      "data_type"
+    ],
+    "title": "RunArguments",
+    "type": "object"
+  }
+}

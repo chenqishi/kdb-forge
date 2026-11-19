@@ -1,0 +1,80 @@
+{
+  "name": "knowledge_dedup_select",
+  "description": "按index、类型、时间、未审核和未检查状态选取增量，返回token估算。",
+  "parameters": {
+    "additionalProperties": false,
+    "properties": {
+      "index": {
+        "title": "Index",
+        "type": "string"
+      },
+      "data_type": {
+        "enum": [
+          "qa",
+          "segment"
+        ],
+        "title": "Data Type",
+        "type": "string"
+      },
+      "since": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Since"
+      },
+      "until": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Until"
+      },
+      "unaudited": {
+        "default": false,
+        "title": "Unaudited",
+        "type": "boolean"
+      },
+      "task_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Task Id"
+      },
+      "only_unchecked": {
+        "default": true,
+        "title": "Only Unchecked",
+        "type": "boolean"
+      },
+      "max_records": {
+        "default": 50,
+        "maximum": 500,
+        "minimum": 1,
+        "title": "Max Records",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "index",
+      "data_type"
+    ],
+    "title": "Selection",
+    "type": "object"
+  }
+}

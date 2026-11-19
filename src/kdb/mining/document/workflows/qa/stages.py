@@ -155,6 +155,9 @@ def stage_7_insert_index(self):
 
     cmd = f"{shlex.quote(sys.executable)} -m kdb.entrypoints.cli.retrieval insert_data_to_search_index --data_file={self.search_data_file_path} --config_path={index_config_path} --index_name_assign={self.index_name}"
 
+    if self.task_info.get("document_dedup", {}).get("enabled") and self.task_info["document_dedup"].get("policy") == "replace_old":
+        cmd += " --check_duplicate=False"
+
     if self._run_command(cmd, "index_insert"):
         logging.info("ES插入索引阶段完成")
         return True

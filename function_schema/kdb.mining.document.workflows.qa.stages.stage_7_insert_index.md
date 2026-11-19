@@ -29,3 +29,7 @@
 ## Source
 
 `src/kdb/mining/document/workflows/qa/stages.py`。SQL 字段依据保留在上面的 SQL 契约中；没有真实 DDL 的部分不宣称完整表结构已核验。
+
+## Document replacement
+
+仅document_dedup.enabled=true且policy=replace_old时传--check_duplicate=False，避免新版本被仍在库的旧版本挡住。其他任务参数及默认不变。

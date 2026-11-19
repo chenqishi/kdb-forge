@@ -19,3 +19,7 @@ No SQL/ES/HTTP query change. Validation substitutes server/client boundaries and
 ## Source
 
 `src/kdb/entrypoints/http/retrieval/app.py`。SQL 字段依据保留在上面的 SQL 契约中；没有真实 DDL 的部分不宣称完整表结构已核验。
+
+## Optional knowledge tools
+
+`register_dedup_routes` reads an explicitly provided KDB_DEDUP_HARNESS_CONFIG. Absent/disabled configuration adds no route. When enabled, POST /knowledge_dedup/mcp requires a server-bound admin leader credential and index authorization; existing routes/auth/defaults are unchanged.

@@ -38,8 +38,7 @@ def find_duplicates(self, data: Dict[str, Any], topK: int = 5,
 
     # 3. 添加属性过滤
     query["attribute"] = {
-        "data_type": processed_data.get('data_type', 'unkonw'),
-        "platform": processed_data.get('platform', 'unkonw')
+        "data_type": processed_data.get('data_type', 'unkonw')
     }
 
     # 4. 检索相似文档

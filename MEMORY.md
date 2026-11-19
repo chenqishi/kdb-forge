@@ -10,3 +10,5 @@
 - 当前仓库只保留有效源码、资源及操作文档；历史材料和执行证据保存在仓库外，不复制进项目归档目录。
 
 - 业务依赖方向由 scripts/testing/architecture.py 与默认测试约束；状态归属见 docs/state_ownership.md。CSAT 与身份映射属于独立 assistant-data-tools，版本与回退边界见运行配置。
+
+- 四级知识去重的CLI、文档任务参数、默认关闭的admin/leader MCP工具与sell_agents验证见 [去重说明](docs/knowledge_dedup.md)；每次调整职责或依赖同步代码本体及架构图。

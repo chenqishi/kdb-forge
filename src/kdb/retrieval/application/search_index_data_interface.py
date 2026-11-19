@@ -57,7 +57,8 @@ class SearchDataInterface(object):
                 'audit_result', 'quality_level', 'keywords', 'tags', 'indexes',
                 'insert_time', 'update_time', 'from_type', 'ext_info', '_id',
                 'title_embedding', 'content_embedding', 'image_indexes', 'del_flag', 'from_type_norm', 'category_infos', "client", 'primary_category', 'dataset',
-                'task_id', 'flag', 'multimodal_contents', 'index_name'   # 将embedding字段加入schema
+                'task_id', 'flag', 'multimodal_contents', 'index_name',
+                'similarity_info', 'dedup_check'
             }
         self.multimodal_prefix = config.get('multimodal_prefix', '')
         

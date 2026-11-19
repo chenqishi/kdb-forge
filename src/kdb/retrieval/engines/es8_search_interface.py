@@ -236,6 +236,8 @@ class EsSearchInterfaceES8(EngineMaintenanceMixin):
                 "data_type": {"type": "keyword"}, "platform": {"type": "keyword"},
                 "dataset": {"type": "keyword", "index": False}, "audit_result": {"type": "integer"},
                 "del_flag": {"type": "integer"},
+                "similarity_info": {"type": "object", "enabled": False},
+                "dedup_check": {"type": "object", "enabled": False},
                 "quality_level": {"type": "keyword", "normalizer": "lowercase"},
                 "keywords": {"type": "keyword"}, "tags": {"type": "keyword"},
                 "indexes": {
@@ -865,9 +867,10 @@ class EsSearchInterfaceES8(EngineMaintenanceMixin):
     def search(self, query: Optional[Dict[str, Any]] = None, size: int = 10, index_names: IndexNames = None) -> List[Dict[str, Any]]:
         """执行单路 BM25/native KNN 混合 query。"""
         query = query or {}
+        size = 10 if size is None else size
         results: List[Dict[str, Any]] = []
         for binding, names in self._group_indexes(index_names):
-            response = self._search_request(binding.es, names, self._build_search_query(query), size=size)
+            response = self._search_request(binding.es, names, self._build_search_query(query, vector_k=size or 10), size=size)
             results.extend(self._hits(response))
         return results
 

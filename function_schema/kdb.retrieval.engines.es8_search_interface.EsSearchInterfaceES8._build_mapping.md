@@ -2,7 +2,7 @@
 
 ## Signature
 
-`_build_mapping(self) -> Dict[str, Any]`
+`EsSearchInterfaceES8._build_mapping(self) -> Dict[str, Any]`
 
 ## Inputs
 
@@ -10,7 +10,7 @@
 
 ## Outputs
 
-ES8.17 `mappings` 对象；`indexes.embedding` 和 `image_indexes.embedding` 为 indexed cosine HNSW dense_vector。
+ES8.17 `mappings` 对象；新增 `similarity_info`、`dedup_check` 为 enabled=false 的 object，仅保留原始JSON；`indexes.embedding` 和 `image_indexes.embedding` 为 indexed cosine HNSW dense_vector。
 
 ## SQL
 

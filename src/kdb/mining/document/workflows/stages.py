@@ -82,7 +82,8 @@ def stage_2_parse_documents(self):
                     parsed_count = sum(1 for line in f if line.strip())
 
                 logging.info(f"文件解析阶段完成，共解析 {parsed_count} 个文件")
-                return True
+                from kdb.mining.document.workflows.deduplication import prepare_document_dedup
+                return prepare_document_dedup(self)
             else:
                 logging.error("文档解析失败：输出文件不存在")
                 return False

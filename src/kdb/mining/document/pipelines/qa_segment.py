@@ -203,6 +203,8 @@ class DocumentQAMiningTaskController:
 
         try:
             for stage_name, stage_func in stages:
+                if getattr(self, "_dedup_all_skipped", False):
+                    break
                 logging.info("=" * 100)
                 logging.info(f"开始执行阶段: {stage_name}")
                 logging.info("=" * 100)
@@ -218,6 +220,9 @@ class DocumentQAMiningTaskController:
                 logging.info("=" * 100)
                 logging.info(f"阶段 {stage_name} 执行完成")
                 logging.info("=" * 100)
+
+            from kdb.mining.document.workflows.deduplication import finish_document_dedup
+            finish_document_dedup(self)
 
             # 所有阶段完成后，计算实际成本
             logging.info("=" * 100)

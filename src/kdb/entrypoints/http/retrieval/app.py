@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from kdb.entrypoints.http.retrieval.bootstrap import init_config
 from kdb.entrypoints.http.retrieval.bootstrap import lifespan
 from kdb.entrypoints.http.retrieval.routes import register_routes
+from kdb.entrypoints.http.retrieval.dedup_routes import register_dedup_routes
 from kdb.retrieval.modification.modify_knowledge import ModifyKnowledge
 import kdb.retrieval.application.runtime as runtime_state
 import logging
@@ -31,6 +32,7 @@ logging.basicConfig(
 
 
 register_routes(app)
+register_dedup_routes(app)
 
 
 if __name__ == "__main__":

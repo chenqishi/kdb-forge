@@ -11,8 +11,7 @@ basic_threshold, title_basic_threshold)`。
 
 ## Outputs
 
-返回重复文档列表；候选来自 ES8.17 检索，精确判断使用旧 SimilityTools 兼容实现。
-通过 _get_simility_tools 懒加载；无旧依赖时用本地阈值工具，不再跳过查重。
+返回重复文档列表；候选来自相同 index、相同 data_type 的 ES8.17 在线召回，不限制 platform 或审核状态；保留 topK、向量阈值及 exclude_self 行为。精确文本与向量规则由 SimilityTools 实现，可选 LLM 直接调用，不再使用 Dify。
 
 ## SQL
 

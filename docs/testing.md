@@ -73,3 +73,5 @@ BASE=http://127.0.0.1:8003 bash resources/ontology/acceptance.sh
 ```
 
 启动测试仅临时隔离待执行的入口模块，并在 finally 恢复其缓存及父包属性；业务 runtime 模块保持同一身份。该方式消除先 import 再 runpy 的重复模块告警，不屏蔽 warning、不关闭离线守卫，也不改变生产多 worker 启动方式。可用 `-W error::RuntimeWarning` 检查启动回归。
+
+四级去重的定向验证、独立真实模型及sell_agents服务测试见[去重验证](knowledge_dedup.md#验证)。默认离线套件包含新的范围、策略、CAS、文档、CLI和MCP权限回归，不访问生产知识。

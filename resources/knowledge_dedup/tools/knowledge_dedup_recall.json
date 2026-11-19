@@ -1,0 +1,60 @@
+{
+  "name": "knowledge_dedup_recall",
+  "description": "只读召回同类型候选，可改写query进行下一轮召回。",
+  "parameters": {
+    "additionalProperties": false,
+    "properties": {
+      "index": {
+        "title": "Index",
+        "type": "string"
+      },
+      "data_type": {
+        "enum": [
+          "qa",
+          "segment"
+        ],
+        "title": "Data Type",
+        "type": "string"
+      },
+      "id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Id"
+      },
+      "query": {
+        "anyOf": [
+          {
+            "maxLength": 20000,
+            "minLength": 1,
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Query"
+      },
+      "limit": {
+        "default": 60,
+        "maximum": 60,
+        "minimum": 1,
+        "title": "Limit",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "index",
+      "data_type"
+    ],
+    "title": "RecallArguments",
+    "type": "object"
+  }
+}

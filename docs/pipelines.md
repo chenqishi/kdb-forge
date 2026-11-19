@@ -46,3 +46,5 @@ python -m kdb.mining.tasks.submission.local_batch --tasks-file /absolute/path/to
 ## 定时入口
 
 定时接线位于 `kdb.entrypoints.scheduled`，业务实现位于 mining/tasks、mining/chat/reports 与 retrieval/maintenance，由 `scripts/scheduled/` 启动；主要入口为 `chat_mining.sh`、`auto_audit_all_indexes.sh`、`chat_learning_report.sh`。脚本保留锁、日志、水位和退出码语义，真实运行前配置解释器与当前运行资源。修改代码不会自动注册 cron 或启动任务。
+
+文档QA和QA+Segment任务支持默认关闭的 `task_info.document_dedup`：解析后检测、可选跳过新文档，或新知识入库验证后精确替换旧文档快照。参数与动作见[文档去重流程](knowledge_dedup.md#文档流程)；普通任务默认和ChatQA入库更新开关保持原值。

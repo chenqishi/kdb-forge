@@ -10,6 +10,22 @@ import copy
 import logging
 import os
 
+
+def build_dedup_job(index, **kwargs):
+    from kdb.retrieval.ingestion.conflict_runtime import build_job
+    return build_job(index, **kwargs)
+
+
+def check_document_duplicate(job, name, parsed, **kwargs):
+    from kdb.retrieval.ingestion.document_dedup import check_document, parsed_text
+    text = parsed if isinstance(parsed, str) else parsed_text(parsed)
+    return check_document(job.store, job.models, name, text, **kwargs)
+
+
+def apply_document_duplicates(job, report, policy):
+    from kdb.retrieval.ingestion.document_dedup import apply_document_matches
+    return apply_document_matches(job.store, report, policy)
+
 def build_search_interface(search_config_path: str = DEFAULT_SEARCH_CONFIG):
     """初始化线上同款检索接口。"""
     from kdb.retrieval.application.search_index_data_interface import SearchDataInterface

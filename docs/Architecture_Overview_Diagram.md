@@ -14,17 +14,17 @@ flowchart TB
   GOAL --> SUPPORT["语言与内容支撑"]
 
   PRODUCE --> MC["知识提取、任务组织与质量处理<br/>文档 / 网页 / 对话"]
-  USE --> KC["知识入库、维护与查询<br/>更新 / 纠错 / 检索 / 结果整理"]
+  USE --> KC["知识入库、维护与查询<br/>去重与冲突 / 更新纠错 / 检索整理"]
   USE --> OC["业务本体管理<br/>文档 / 审核与启停 / 作用域 / 模板"]
   SUPPORT --> SC["语言识别与对象访问"]
 
   MC --> MF["流程与规则<br/>任务调度、来源处理、提取与质检"]
-  KC --> KF["流程与规则<br/>入库查重、更新维护、检索与展示"]
+  KC --> KF["流程与规则<br/>快速检查、离线增量、文档检查<br/>Agent 工具、更新维护、检索展示"]
   OC --> OF["流程与规则<br/>校验、版本控制、审核与启停<br/>作用域选取、整篇克隆"]
   SC --> SF["流程与规则<br/>语言判定、对象读取与上传"]
 
   MF --> MI["实现：mining<br/>tasks / document / web / chat / common"]
-  KF --> KI["实现：retrieval<br/>ingestion / modification / maintenance<br/>search / ranking / presentation"]
+  KF --> KI["实现：retrieval<br/>ingestion / application / modification<br/>maintenance / search / ranking / presentation"]
   OF --> OI["实现：retrieval/ontology<br/>validation / service / repository<br/>本体 HTTP 与克隆 CLI"]
   SF --> SI["实现：multilingual<br/>shared/storage 与 files HTTP"]
 
@@ -43,7 +43,39 @@ flowchart TB
   class MI,KI,SI,EVIDENCE implementation
 ```
 
-黄色分支是本次补齐业务层级的本体管理能力。它已实现独立的管理与选取接口；默认新增为启用且待审，默认查询未删且审核通过，业务选取还要求启用；挖掘、入库、查询尚未接入本体规则执行。客户/行业/全局是本体适用作用域；数据库、模型客户端、配置等是共用技术支撑，具体依赖见下图。
+黄色分支表示业务本体管理能力。它已实现独立的管理与选取接口；默认新增为启用且待审，默认查询未删且审核通过，业务选取还要求启用；挖掘、入库、查询尚未接入本体规则执行。客户/行业/全局是本体适用作用域。知识去重与冲突的四级能力见下图；数据库、模型客户端、配置等共用技术支撑的依赖另见工程图。
+
+## 去重与冲突能力展开
+
+以下实线表示能力分解及实现映射。知识比较限定同一个 index，QA 与 Segment 各自比较；Agent 工具复用前三类能力，由 sell_agents 既有 skill_agent 组织多轮调用。参数及运行方式见[去重说明](knowledge_dedup.md)。
+
+```mermaid
+flowchart TB
+  ROOT["知识管理与取用 → 入库与更新<br/>知识去重与冲突处理"]
+  ROOT --> FAST["① 快速检查<br/>在线单条 / 批量入库"]
+  ROOT --> BATCH["② 离线增量检查<br/>已入库 / 未入库数据"]
+  ROOT --> DOC["③ 文档级检查<br/>解析后检查 / 整篇替换"]
+  ROOT --> HARNESS["④ Agent 工具与 Skill<br/>交互 / 非交互模式"]
+
+  FAST --> F_RULE["少量候选、原相似度阈值<br/>归一化文本 / 向量<br/>可选直接 LLM 判断"]
+  BATCH --> B_RULE["Top60 召回 → gte 重排<br/>分数与主题筛选 → LLM 证据校验<br/>记录结果 / 保留新 / 保留旧"]
+  DOC --> D_RULE["主体名称相同<br/>或抽样文本的 Segment 覆盖率 ≥70%<br/>记录 / 跳过新文档 / 替换旧文档"]
+  HARNESS --> H_RULE["选取估算 / 召回 / 快速检查<br/>增量处理 / 候选精查 / 文档检查<br/>默认关闭，仅 admin leader 可用"]
+
+  F_RULE --> F_IMPL["retrieval/ingestion/deduplication<br/>shared/similarity/knowledge"]
+  B_RULE --> B_IMPL["retrieval/ingestion/conflict_*<br/>knowledge_dedup CLI"]
+  D_RULE --> D_IMPL["retrieval/ingestion/document_dedup<br/>文档 workflows → 检索 bridge"]
+  H_RULE --> H_IMPL["application/dedup_tools<br/>原检索服务可选 MCP<br/>sell_agents 既有 skill_agent"]
+
+  classDef goal fill:#17324d,color:#fff,stroke:#17324d
+  classDef capability fill:#e8f0fe,color:#17324d,stroke:#9bb7df
+  classDef implementation fill:#f3f4f6,color:#273444,stroke:#bac3cf
+  class ROOT goal
+  class FAST,BATCH,DOC,HARNESS capability
+  class F_IMPL,B_IMPL,D_IMPL,H_IMPL implementation
+```
+
+离线知识检查写入关系与检查状态，未入库数据写入离线产物；different 不保存为相似关系，overlap 与 uncertain 只记录。文档管道的替换在新知识入库并核验数量后删除旧快照。图中的 Agent 分支提供工具及 Skill，没有新增 Agent 实现。
 
 ## 工程实现与依赖
 
@@ -66,6 +98,9 @@ flowchart TB
   WEB --> COMMON
   CHAT --> COMMON
   CHAT --> BRIDGE[检索衔接 mining/bridges/retrieval]
+  DOC --> BRIDGE
+  ENTRY --> DEDUP[去重 CLI / 可选 leader MCP]
+  DEDUP --> RET
   BRIDGE --> RET
   COMMON --> QUALITY[质量 / 去重 / schema / 解析切分 / LLM]
   RET --> SHARED[顶层公共模块 shared]
@@ -78,21 +113,21 @@ flowchart TB
 
 任务管理通过子进程启动管道 CLI，图中任务到管道的箭头包括运行时调用，不全是 Python import。`scripts/testing/architecture.py` 校验实际静态 import 方向和环；动态命令的入口另有离线断言。
 
-当前检索桥只有对话域的未回复问题复盘调用：用问题改写检索现有知识，再判断知识覆盖情况。document/web 当前没有调用该桥，图中不画这些依赖。files HTTP 属于工程入口，shared/storage 属于公共能力。
+当前检索桥由对话域的未回复问题复盘和文档去重阶段调用：前者改写问题、检索知识并分析覆盖情况，后者检查重复文档并在新知识入库后处理旧文档。web 当前没有导入该桥。去重 CLI 与可选 MCP 直接进入检索域，复用原检索门面；files HTTP 属于工程入口，shared/storage 属于公共能力。
 
 | 目录 | 职责与边界 |
 |---|---|
 | `retrieval/application/` | 唯一 SearchDataInterface 门面、服务运行对象与业务查询 |
 | `retrieval/ontology/` | 完整业务本体文档及投影、MySQL 事务判重/版本/软删、作用域选取；入口同检索服务，无 ES 依赖、无元素级 CRUD |
 | `retrieval/search/`、`ranking.py`、`statistics.py` | 查询、多查询、分页、分数整理与计数聚合 |
-| `retrieval/ingestion/`、`categories/`、`file_operations.py` | 数据准备、ID、入库去重、写入、类目与按文件操作 |
+| `retrieval/ingestion/`、`categories/`、`file_operations.py` | 数据准备、ID、入库去重、写入、类目与按文件操作；增量去重/冲突任务与文档检查共用召回、模型与存储边界，CLI、文档阶段和leader工具已接线 |
 | `retrieval/presentation/` | 入库 content 的多模态组装与检索返回 URL 展示；死链维护保留另一份有空值差异的重建实现，修改时联动检查 |
 | `retrieval/engines/` | 项目声明支持 ES8.17、索引路由、协议与初始化；工厂仍保留 ES7/OpenSearch provider 选择分支，保留代码不代表旧后端已验收 |
 | `retrieval/maintenance/` | 审核、导出、迁移、修复与清理 |
 | `mining/tasks/` | 唯一队列状态、资源计数、SQL 记录、子进程、提交、估算与任务报表 |
 | `mining/document/`、`web/`、`chat/` | 各来源专属管道、阶段、数据读取与处理 |
 | `mining/common/` | 共用 llm、quality、deduplication、schema、parsing、segmentation、generation 等 |
-| `mining/bridges/retrieval.py` | 挖掘在 Python 内导入检索的唯一模块；公共质检不依赖该桥或聊天抽取器 |
+| `mining/bridges/retrieval.py` | 挖掘在 Python 内导入检索的唯一模块；文档去重和对话复盘经该桥访问检索；公共质检不依赖该桥或聊天抽取器 |
 | `multilingual/` | 模型加载、规则优先识别、标签转换与唯一模型状态 |
 | `shared/` | 通用存储、SQL、客户端、相似度、类目树、配置和文本文件处理，不导入业务域 |
 | `entrypoints/http/` | 四服务：retrieval、tasks、files、multilingual，保留原协议 |

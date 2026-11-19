@@ -1,0 +1,45 @@
+{
+  "name": "knowledge_dedup_fast",
+  "description": "快速少量候选查重，复用在线规则，不写入。",
+  "parameters": {
+    "additionalProperties": false,
+    "properties": {
+      "index": {
+        "title": "Index",
+        "type": "string"
+      },
+      "data_type": {
+        "enum": [
+          "qa",
+          "segment"
+        ],
+        "title": "Data Type",
+        "type": "string"
+      },
+      "title": {
+        "default": "",
+        "maxLength": 4000,
+        "title": "Title",
+        "type": "string"
+      },
+      "content": {
+        "maxLength": 20000,
+        "minLength": 1,
+        "title": "Content",
+        "type": "string"
+      },
+      "is_need_llm": {
+        "default": false,
+        "title": "Is Need Llm",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "index",
+      "data_type",
+      "content"
+    ],
+    "title": "FastArguments",
+    "type": "object"
+  }
+}
